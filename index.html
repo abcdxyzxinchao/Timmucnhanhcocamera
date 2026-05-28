@@ -20,7 +20,7 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             overflow: hidden; position: fixed;
             -webkit-tap-highlight-color: transparent; user-select: none;
-            /* Chặn hành vi phóng to thu nhỏ mặc định của trình duyệt */
+            /* Chặn phóng to thu nhỏ mặc định của trình duyệt */
             touch-action: none;
         }
 
@@ -51,7 +51,7 @@
 
         .video-recording-timer {
             position: absolute; top: calc(20px + env(safe-area-inset-top)); left: 50%; transform: translateX(-50%);
-            background: rgba(255, 69, 58, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            background: rgba(255, 69, 58, 0.8);
             padding: 6px 16px; font-weight: 700; font-size: 14px; border-radius: 20px; display: none; z-index: 10005; color: #fff;
             letter-spacing: 0.5px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
@@ -64,47 +64,48 @@
         .left-controls, .right-controls { display: flex; align-items: center; gap: 10px; }
 
         .res-badge-select {
-            background: rgba(0, 0, 0, 0.25); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            color: var(--ios-yellow); border: 1px solid rgba(255,255,255,0.15);
+            background: rgba(0, 0, 0, 0.4);
+            color: var(--ios-yellow); border: 1px solid rgba(255,255,255,0.2);
             padding: 6px 12px; font-size: 12px; font-weight: 600; border-radius: 14px; outline: none;
         }
         .btn-icon-top {
-            background: rgba(0, 0, 0, 0.25); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.1); color: #fff;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255,255,255,0.15); color: #fff;
             width: 38px; height: 38px; border-radius: 50%; font-size: 16px;
             display: flex; align-items: center; justify-content: center;
         }
         .btn-icon-top.active { background: var(--ios-yellow); color: #000; border-color: var(--ios-yellow); }
 
-        /* ĐẨY KHU VỰC ĐIỀU KHIỂN ZOOM XA NÚT CHỤP HƠN (ĐÃ ĐIỀU CHỈNH XA RA ĐỂ THỰC TẾ HƠN) */
+        /* KHOẢNG CÁCH CỤM ZOOM XA NÚT CHỤP */
         .zoom-control-layer {
             position: absolute; bottom: calc(185px + env(safe-area-inset-bottom)); left: 0; width: 100%;
             display: flex; flex-direction: column; align-items: center; z-index: 10005; pointer-events: none;
         }
         .collapsed-zoom-hub { pointer-events: auto; display: flex; justify-content: center; align-items: center; transition: opacity 0.2s; }
         
-        /* HIỆU ỨNG KÍNH GIỌT NƯỚC TRONG SUỐT CHO NÚT ZOOM GIỮA MÀN HÌNH */
+        /* NÚT ZOOM GIỌT NƯỚC TRONG SUỐT 100% - CHỈ CÓ VIỀN KHÔNG MÀU NỀN ĐEN */
         .zoom-single-dot {
-            background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(25px) saturate(180%); -webkit-backdrop-filter: blur(25px) saturate(180%);
-            border: 1px solid rgba(255,255,255,0.25);
+            background: transparent;
+            border: 1.5px solid rgba(255, 255, 255, 0.6);
             color: var(--ios-yellow); width: 46px; height: 46px; border-radius: 50%;
             font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+            text-shadow: 0px 1px 4px rgba(0, 0, 0, 0.8);
+            box-shadow: inset 0 0 4px rgba(255,255,255,0.2), 0 2px 8px rgba(0,0,0,0.2);
         }
 
         .ios-curved-dial-panel { position: absolute; bottom: -20px; width: 340px; height: 130px; pointer-events: auto; display: none; opacity: 0; transition: opacity 0.2s; }
         .dial-center-pointer { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 8px solid var(--ios-yellow); z-index: 150; }
-        .dial-live-text-hub { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); color: var(--ios-yellow); font-size: 14px; font-weight: 700; z-index: 150; background: rgba(0,0,0,0.4); backdrop-filter: blur(15px); padding: 4px 12px; border-radius: 12px; }
+        .dial-live-text-hub { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); color: var(--ios-yellow); font-size: 14px; font-weight: 700; z-index: 150; background: rgba(0,0,0,0.5); padding: 4px 12px; border-radius: 12px; }
         .dial-wheel-rotor { position: absolute; top: 45px; left: 50%; width: 640px; height: 640px; margin-left: -320px; border-radius: 50%; will-change: transform; }
-        .dial-tick-line { position: absolute; top: 0; left: 50%; width: 1.5px; height: 10px; background: rgba(255,255,255,0.3); transform-origin: 50% 320px; }
-        .dial-tick-line.major-line { height: 16px; background: rgba(255,255,255,0.8); width: 2px; }
-        .dial-tick-line span { position: absolute; top: 22px; left: 50%; transform: translateX(-50%); font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.8); }
+        .dial-tick-line { position: absolute; top: 0; left: 50%; width: 1.5px; height: 10px; background: rgba(255,255,255,0.4); transform-origin: 50% 320px; }
+        .dial-tick-line.major-line { height: 16px; background: rgba(255,255,255,0.9); width: 2px; }
+        .dial-tick-line span { position: absolute; top: 22px; left: 50%; transform: translateX(-50%); font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.9); }
 
-        /* HIỆU ỨNG KÍNH TRONG SUỐT GIỌT NƯỚC - NHÌN THẤY RÕ RÀNG PHÍA SAU CAMERA */
+        /* THANH ĐIỀU KHIỂN DƯỚI TRONG SUỐT 100% - NHÌN XUYÊN THẤU HOÀN TOÀN KHÔNG ĐEN KHÔNG BLUR */
         .ios-bottom-dashboard { 
             position: absolute; bottom: 0; left: 0; width: 100vw;
-            background: rgba(0, 0, 0, 0.25); backdrop-filter: blur(30px) saturate(200%); -webkit-backdrop-filter: blur(30px) saturate(200%);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            background: transparent;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
             padding: 16px 0 calc(20px + env(safe-area-inset-bottom)) 0; 
             display: flex; flex-direction: column; align-items: center; gap: 16px; 
             box-sizing: border-box; z-index: 10010; transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
@@ -112,17 +113,17 @@
         
         .app-container.is-fullscreen .ios-bottom-dashboard {
             position: fixed; bottom: calc(16px + env(safe-area-inset-bottom)); left: 5%; width: 90vw;
-            background: rgba(0, 0, 0, 0.35); backdrop-filter: blur(35px) saturate(200%); -webkit-backdrop-filter: blur(35px) saturate(200%);
-            border-radius: 28px; border: 1px solid rgba(255, 255, 255, 0.15);
-            padding: 20px 0; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5); z-index: 100010;
+            background: transparent;
+            border-radius: 28px; border: 1px solid rgba(255, 255, 255, 0.25);
+            padding: 20px 0; z-index: 100010;
         }
         
         .camera-mode-scroller { display: flex; gap: 32px; justify-content: center; width: 100%; }
-        .mode-item { font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.4); letter-spacing: 0.5px; text-transform: uppercase; transition: color 0.2s; }
-        .mode-item.active { color: var(--ios-yellow); text-shadow: 0 0 6px rgba(255,204,0,0.4); }
+        .mode-item { font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.6); letter-spacing: 0.5px; text-transform: uppercase; transition: color 0.2s; text-shadow: 0 1px 3px rgba(0,0,0,0.6); }
+        .mode-item.active { color: var(--ios-yellow); text-shadow: 0 0 6px rgba(255,204,0,0.6), 0 1px 3px rgba(0,0,0,0.8); }
         
         .shutter-row { width: 100%; display: flex; justify-content: space-around; align-items: center; padding: 0 36px; box-sizing: border-box; }
-        .album-preview-placeholder { width: 48px; height: 48px; border-radius: 12px; background: #1c1c1e; border: 2px solid rgba(255,255,255,0.8); background-size: cover; background-position: center; box-shadow: 0 2px 8px rgba(0,0,0,0.3); transition: transform 0.1s; }
+        .album-preview-placeholder { width: 48px; height: 48px; border-radius: 12px; background: #1c1c1e; border: 2px solid rgba(255,255,255,0.9); background-size: cover; background-position: center; box-shadow: 0 2px 8px rgba(0,0,0,0.4); transition: transform 0.1s; }
         .album-preview-placeholder:active { transform: scale(0.92); }
 
         .shutter-trigger-btn { border-radius: 50%; border: none; display: none; outline: none; transition: transform 0.1s; }
@@ -131,10 +132,10 @@
         .btn-video-rec { width: 62px; height: 62px; background: var(--ios-red); border: 4px solid #000; box-shadow: 0 0 0 2px #fff; }
         .btn-video-rec.recording { border-radius: 14px; transform: scale(0.8); background: var(--ios-red); }
         
-        .btn-camera-flip { width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.15); border: none; display: flex; align-items: center; justify-content: center; }
+        .btn-camera-flip { width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.25); border: none; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 4px rgba(0,0,0,0.3); }
         .btn-camera-flip svg { width: 22px; height: 22px; fill: #ffffff; }
 
-        /* ĐÃ FIX LỖI THƯ VIỆN ẢNH BỊ THƯA KHOẢNG ĐEN (ẢNH 2) */
+        /* THƯ VIỆN ẢNH ĐƯỢC FIX LƯỚI TRÀN KHÔNG BỊ CHÈN */
         .gallery-modal { 
             position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; 
             background: #000000; z-index: 20000; display: none; flex-direction: column; 
@@ -187,7 +188,7 @@
         .btn-footer-action { flex: 1; border: none; padding: 12px; font-size: 14px; font-weight: 600; border-radius: 12px; color: white; text-align: center; }
 
         .detail-viewer-popup { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: #000; z-index: 30000; display: none; flex-direction: column; }
-        .viewer-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; z-index: 30001; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); }
+        .viewer-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; z-index: 30001; background: rgba(0,0,0,0.8); }
         .viewer-content-pane { flex: 1; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .viewer-content-pane img, .viewer-content-pane video { max-width: 100%; max-height: 100%; object-fit: contain; }
         .btn-save-media { background: var(--ios-green); color: white; border: none; padding: 10px 18px; border-radius: 10px; font-weight: 600; font-size: 14px; }
@@ -288,13 +289,13 @@
     const tickSpacingAngle = 1.5;
     let startX = 0, baseAngle = 0, currentAngle = 0, collapseTimer = null;
 
-    // Chặn menu ngữ cảnh và hành vi đè giữ mặc định của hệ điều hành
+    // Chặn menu ngữ cảnh đè giữ
     window.addEventListener('contextmenu', function(e) {
         e.preventDefault();
         return false;
     }, { capture: true });
 
-    // CHẶN TÍNH NĂNG TỰ ĐỘNG PHÓNG TO KHI BẤM NHIỀU LẦN (DOUBLE-TAP TO ZOOM)
+    // CHẶN HOÀN TOÀN BẤM NHIỀU LẦN TỰ PHÓNG TO TRÊN TRÌNH DUYỆT
     let lastTouchEnd = 0;
     document.addEventListener('touchend', function (e) {
         let now = (new Date()).getTime();
@@ -507,14 +508,14 @@
         }
     }
 
-    // KHI MỞ THƯ VIỆN: ẨN THANH BOTTOM DASHBOARD ĐỂ KHÔNG BỊ HIỆN ĐÈ LÊN GIAO DIỆN (SỬA LỖI ẢNH 2)
+    // ẨN HOÀN TOÀN KHU VỰC CAMERA KHI MỞ THƯ VIỆN ĐỂ TRÁNH CHE MÀN HÌNH LƯỚI ẢNH
     function openGalleryModal() { 
         document.getElementById('bottomDashboard').style.display = 'none';
         renderGalleryGrid(); 
         document.getElementById('galleryModal').style.display = 'flex'; 
     }
     
-    // KHI ĐÓNG THƯ VIỆN: HIỆN LẠI THANH BOTTOM DASHBOARD ĐỂ CHỤP ẢNH BÌNH THƯỜNG
+    // HIỆN LẠI GIAO DIỆN CHỤP ẢNH TRONG SUỐT KHI ĐÓNG THƯ VIỆN
     function closeGalleryModal() { 
         exitSelectMode(); 
         document.getElementById('galleryModal').style.display = 'none'; 
