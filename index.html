@@ -83,14 +83,20 @@
         }
         .collapsed-zoom-hub { pointer-events: auto; display: flex; justify-content: center; align-items: center; transition: opacity 0.2s; }
         
-        /* NÚT ZOOM GIỌT NƯỚC TRONG SUỐT 100% - CHỈ CÓ VIỀN KHÔNG MÀU NỀN ĐEN */
+        /* NÚT ZOOM GIỌT NƯỚC: BÌNH THƯỜNG CÓ NỀN ĐEN MỜ, KHI FULL SCREEN THÌ TRONG SUỐT HOÀN TOÀN */
         .zoom-single-dot {
-            background: transparent;
-            border: 1.5px solid rgba(255, 255, 255, 0.6);
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             color: var(--ios-yellow); width: 46px; height: 46px; border-radius: 50%;
             font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            transition: all 0.2s ease;
+        }
+        .app-container.is-fullscreen .zoom-single-dot {
+            background: transparent;
+            border: 2.5px solid rgba(255, 255, 255, 0.75); /* Viền dày hơn rõ nét */
             text-shadow: 0px 1px 4px rgba(0, 0, 0, 0.8);
-            box-shadow: inset 0 0 4px rgba(255,255,255,0.2), 0 2px 8px rgba(0,0,0,0.2);
+            box-shadow: inset 0 0 6px rgba(255,255,255,0.3), 0 4px 12px rgba(0,0,0,0.4);
         }
 
         .ios-curved-dial-panel { position: absolute; bottom: -20px; width: 340px; height: 130px; pointer-events: auto; display: none; opacity: 0; transition: opacity 0.2s; }
@@ -101,26 +107,31 @@
         .dial-tick-line.major-line { height: 16px; background: rgba(255,255,255,0.9); width: 2px; }
         .dial-tick-line span { position: absolute; top: 22px; left: 50%; transform: translateX(-50%); font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.9); }
 
-        /* THANH ĐIỀU KHIỂN DƯỚI TRONG SUỐT 100% - NHÌN XUYÊN THẤU HOÀN TOÀN KHÔNG ĐEN KHÔNG BLUR */
+        /* THANH ĐIỀU KHIỂN DƯỚI CHẾ ĐỘ MẶC ĐỊNH: NỀN ĐEN CHUẨN IOS */
         .ios-bottom-dashboard { 
             position: absolute; bottom: 0; left: 0; width: 100vw;
-            background: transparent;
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            background: var(--ios-dark-bg); /* Đen hoàn toàn chuẩn ứng dụng Camera gốc */
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
             padding: 16px 0 calc(20px + env(safe-area-inset-bottom)) 0; 
             display: flex; flex-direction: column; align-items: center; gap: 16px; 
             box-sizing: border-box; z-index: 10010; transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
         }
         
+        /* KHI BẤM FULL MÀN HÌNH: BIẾN THÀNH GIỌT NƯỚC TRONG SUỐT 100% VIỀN DÀY SẮC NÉT */
         .app-container.is-fullscreen .ios-bottom-dashboard {
             position: fixed; bottom: calc(16px + env(safe-area-inset-bottom)); left: 5%; width: 90vw;
-            background: transparent;
-            border-radius: 28px; border: 1px solid rgba(255, 255, 255, 0.25);
-            padding: 20px 0; z-index: 100010;
+            background: transparent; /* Trong suốt hoàn toàn */
+            border-radius: 28px; 
+            border: 2.5px solid rgba(255, 255, 255, 0.75); /* Đường viền giọt nước dày dặn hơn */
+            padding: 20px 0; 
+            box-shadow: inset 0 0 10px rgba(255,255,255,0.2), 0 12px 36px rgba(0, 0, 0, 0.5);
+            z-index: 100010;
         }
         
         .camera-mode-scroller { display: flex; gap: 32px; justify-content: center; width: 100%; }
-        .mode-item { font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.6); letter-spacing: 0.5px; text-transform: uppercase; transition: color 0.2s; text-shadow: 0 1px 3px rgba(0,0,0,0.6); }
-        .mode-item.active { color: var(--ios-yellow); text-shadow: 0 0 6px rgba(255,204,0,0.6), 0 1px 3px rgba(0,0,0,0.8); }
+        .mode-item { font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.5); letter-spacing: 0.5px; text-transform: uppercase; transition: color 0.2s; }
+        .mode-item.active { color: var(--ios-yellow); text-shadow: 0 0 6px rgba(255,204,0,0.5); }
+        .app-container.is-fullscreen .mode-item { text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
         
         .shutter-row { width: 100%; display: flex; justify-content: space-around; align-items: center; padding: 0 36px; box-sizing: border-box; }
         .album-preview-placeholder { width: 48px; height: 48px; border-radius: 12px; background: #1c1c1e; border: 2px solid rgba(255,255,255,0.9); background-size: cover; background-position: center; box-shadow: 0 2px 8px rgba(0,0,0,0.4); transition: transform 0.1s; }
@@ -132,7 +143,7 @@
         .btn-video-rec { width: 62px; height: 62px; background: var(--ios-red); border: 4px solid #000; box-shadow: 0 0 0 2px #fff; }
         .btn-video-rec.recording { border-radius: 14px; transform: scale(0.8); background: var(--ios-red); }
         
-        .btn-camera-flip { width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.25); border: none; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 4px rgba(0,0,0,0.3); }
+        .btn-camera-flip { width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.2); border: none; display: flex; align-items: center; justify-content: center; }
         .btn-camera-flip svg { width: 22px; height: 22px; fill: #ffffff; }
 
         /* THƯ VIỆN ẢNH ĐƯỢC FIX LƯỚI TRÀN KHÔNG BỊ CHÈN */
@@ -515,7 +526,7 @@
         document.getElementById('galleryModal').style.display = 'flex'; 
     }
     
-    // HIỆN LẠI GIAO DIỆN CHỤP ẢNH TRONG SUỐT KHI ĐÓNG THƯ VIỆN
+    // HIỆN LẠI GIAO DIỆN CHỤP ẢNH KHI ĐÓNG THƯ VIỆN
     function closeGalleryModal() { 
         exitSelectMode(); 
         document.getElementById('galleryModal').style.display = 'none'; 
