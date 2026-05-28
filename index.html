@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hệ Thống Giám Sát Phòng Thi Chuyên Nghiệp</title>
+    <title>Hệ Thống Giám Sát Chuyên Nghiệp 120X</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         :root {
@@ -18,15 +18,13 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             overflow: hidden; position: fixed; touch-action: none;
             -webkit-tap-highlight-color: transparent; user-select: none;
+            padding-bottom: env(safe-area-inset-bottom); /* Sửa lỗi tràn bố cục trên iPhone */
         }
 
         .app-container {
             width: 100vw; height: 100vh; display: flex; flex-direction: column; box-sizing: border-box;
         }
 
-        /* ========================================== */
-        /* KHUNG ĐỊNH VỊ CAMERA - SỬA LỖI LỆCH CAM TRƯỚC */
-        /* ========================================== */
         .camera-viewport-wrapper {
             position: relative; width: 100%; background: #000;
             aspect-ratio: 3/4; overflow: hidden; touch-action: none;
@@ -37,23 +35,19 @@
 
         video {
             width: 100%; height: 100%; object-fit: cover;
-            will-change: transform; transition: transform 0.1s ease-out;
+            will-change: transform; transition: transform 0.05s ease-out;
         }
-        /* Class lật ngược camera trước bám sát thực tế */
-        video.mirror-mode {
-            transform: scaleX(-1);
-        }
+        video.mirror-mode { transform: scaleX(-1); }
 
-        /* Đồng hồ đếm thời gian quay Video */
         .video-recording-timer {
             position: absolute; top: 60px; left: 50%; transform: translateX(-50%);
-            background: rgba(255, 59, 48, 0.85); padding: 4px 12px; font-weight: 700;
-            font-size: 14px; border-radius: 6px; display: none; z-index: 10005;
-            letter-spacing: 1px; box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            background: rgba(255, 59, 48, 0.9); padding: 4px 14px; font-weight: 700;
+            font-size: 14px; border-radius: 8px; display: none; z-index: 10005;
+            letter-spacing: 1px; box-shadow: 0 2px 10px rgba(0,0,0,0.5);
         }
 
         .top-settings-bar {
-            position: absolute; top: 14px; left: 0; width: 100%;
+            position: absolute; top: 16px; left: 0; width: 100%;
             display: flex; justify-content: space-between; align-items: center;
             padding: 0 16px; box-sizing: border-box; z-index: 10000;
         }
@@ -61,124 +55,122 @@
 
         .res-badge-select {
             background: rgba(0, 0, 0, 0.6); color: var(--ios-yellow); border: 1px solid rgba(255,255,255,0.2);
-            padding: 5px 10px; font-size: 11px; font-weight: 600; border-radius: 12px; outline: none;
+            padding: 6px 12px; font-size: 11px; font-weight: 600; border-radius: 14px; outline: none;
         }
         .btn-icon-top {
             background: rgba(0, 0, 0, 0.6); border: none; color: #fff;
-            width: 32px; height: 32px; border-radius: 50%; font-size: 14px; cursor: pointer;
+            width: 34px; height: 34px; border-radius: 50%; font-size: 14px;
             display: flex; align-items: center; justify-content: center;
         }
         .btn-icon-top.active { background: var(--ios-yellow); color: #000; }
 
-        /* ZOOM ĐỘNG */
+        /* HỆ THỐNG ĐIỀU CHỈNH ZOOM ĐẾN 120X */
         .zoom-control-layer {
             position: absolute; bottom: 15px; left: 0; width: 100%;
             display: flex; flex-direction: column; align-items: center; z-index: 10000; pointer-events: none;
         }
         .collapsed-zoom-hub { pointer-events: auto; display: flex; justify-content: center; align-items: center; }
         .zoom-single-dot {
-            background: rgba(28, 28, 30, 0.8); border: 1px solid rgba(255,255,255,0.15);
-            color: var(--ios-yellow); width: 38px; height: 38px; border-radius: 50%;
+            background: rgba(28, 28, 30, 0.85); border: 1px solid rgba(255,255,255,0.2);
+            color: var(--ios-yellow); width: 42px; height: 42px; border-radius: 50%;
             font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;
-            cursor: pointer;
         }
 
-        .ios-curved-dial-panel { position: absolute; bottom: -10px; width: 300px; height: 130px; pointer-events: auto; display: none; opacity: 0; }
+        .ios-curved-dial-panel { position: absolute; bottom: -10px; width: 320px; height: 130px; pointer-events: auto; display: none; opacity: 0; }
         .dial-center-pointer { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 8px solid var(--ios-yellow); z-index: 150; }
-        .dial-live-text-hub { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); color: var(--ios-yellow); font-size: 14px; font-weight: 700; z-index: 150; background: rgba(0,0,0,0.6); padding: 2px 8px; border-radius: 10px; }
-        .dial-wheel-rotor { position: absolute; top: 40px; left: 50%; width: 600px; height: 600px; margin-left: -300px; border-radius: 50%; will-change: transform; }
-        .dial-tick-line { position: absolute; top: 0; left: 50%; width: 1.5px; height: 10px; background: rgba(255,255,255,0.35); transform-origin: 50% 300px; }
-        .dial-tick-line.major-line { height: 16px; background: rgba(255,255,255,0.8); width: 2px; }
-        .dial-tick-line span { position: absolute; top: 22px; left: 50%; transform: translateX(-50%); font-size: 9px; font-weight: 600; color: rgba(255,255,255,0.6); }
+        .dial-live-text-hub { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); color: var(--ios-yellow); font-size: 14px; font-weight: 700; z-index: 150; background: rgba(0,0,0,0.7); padding: 3px 10px; border-radius: 12px; }
+        .dial-wheel-rotor { position: absolute; top: 40px; left: 50%; width: 640px; height: 640px; margin-left: -320px; border-radius: 50%; will-change: transform; }
+        .dial-tick-line { position: absolute; top: 0; left: 50%; width: 1.5px; height: 10px; background: rgba(255,255,255,0.3); transform-origin: 50% 320px; }
+        .dial-tick-line.major-line { height: 16px; background: rgba(255,255,255,0.85); width: 2px; }
+        .dial-tick-line span { position: absolute; top: 22px; left: 50%; transform: translateX(-50%); font-size: 9px; font-weight: 600; color: rgba(255,255,255,0.7); }
 
         /* ĐÁY ĐIỀU KHIỂN CHẾ ĐỘ */
-        .ios-bottom-dashboard { background: #000000; padding: 12px 0; display: flex; flex-direction: column; align-items: center; gap: 10px; z-index: 10000; }
-        .camera-viewport-wrapper.is-fullscreen ~ .ios-bottom-dashboard { position: absolute; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.5); }
-        .camera-mode-scroller { display: flex; gap: 20px; justify-content: center; width: 100%; overflow: hidden; }
-        .mode-item { font-size: 13px; font-weight: 700; color: #8e8e93; letter-spacing: 0.5px; cursor: pointer; text-transform: uppercase; }
+        .ios-bottom-dashboard { background: #000000; padding: 16px 0; display: flex; flex-direction: column; align-items: center; gap: 12px; z-index: 10000; }
+        .camera-viewport-wrapper.is-fullscreen ~ .ios-bottom-dashboard { position: absolute; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.6); padding-bottom: calc(16px + env(safe-area-inset-bottom)); }
+        .camera-mode-scroller { display: flex; gap: 24px; justify-content: center; width: 100%; }
+        .mode-item { font-size: 14px; font-weight: 700; color: #8e8e93; letter-spacing: 0.5px; text-transform: uppercase; }
         .mode-item.active { color: var(--ios-yellow); }
-        .shutter-row { width: 100%; display: flex; justify-content: space-around; align-items: center; padding: 0 30px; box-sizing: border-box; }
         
-        /* Ô XEM LẠI ẢNH THU NHỎ REALTIME */
+        .shutter-row { width: 100%; display: flex; justify-content: space-around; align-items: center; padding: 0 32px; box-sizing: border-box; }
+        
+        /* Ô REALTIME THU NHỎ - SỬA LỖI ĐỒNG BỘ ẢNH CHỤP */
         .album-preview-placeholder {
-            width: 48px; height: 48px; border-radius: 10px; background: #1c1c1e; 
-            border: 2px solid #fff; overflow: hidden; cursor: pointer; display: flex; align-items: center; justify-content: center;
-            background-size: cover; background-position: center;
+            width: 50px; height: 50px; border-radius: 12px; background: #1c1c1e; 
+            border: 2px solid #fff; overflow: hidden; display: flex; align-items: center; justify-content: center;
+            background-size: cover; background-position: center; transition: transform 0.1s ease;
         }
-        .shutter-trigger-btn { border-radius: 50%; border: none; cursor: pointer; display: none; }
-        .btn-photo-snap { width: 64px; height: 64px; background: #ffffff; border: 4px solid #000; box-shadow: 0 0 0 2px #fff; }
-        .btn-video-rec { width: 58px; height: 58px; background: #ff3b30; border: 4px solid #000; box-shadow: 0 0 0 2px #fff; }
-        .btn-video-rec.recording { border-radius: 10px; transform: scale(0.85); background: #ff3b30; }
-        .btn-camera-flip { width: 44px; height: 44px; border-radius: 50%; background: #1c1c1e; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-        .btn-camera-flip svg { width: 22px; height: 22px; fill: #ffffff; }
+        .album-preview-placeholder:active { transform: scale(0.9); }
+
+        .shutter-trigger-btn { border-radius: 50%; border: none; display: none; }
+        .btn-photo-snap { width: 66px; height: 66px; background: #ffffff; border: 4px solid #000; box-shadow: 0 0 0 2px #fff; }
+        .btn-photo-snap:active { background: #dddddd; }
+        .btn-video-rec { width: 60px; height: 60px; background: #ff3b30; border: 4px solid #000; box-shadow: 0 0 0 2px #fff; }
+        .btn-video-rec.recording { border-radius: 12px; transform: scale(0.85); background: #ff3b30; }
+        .btn-camera-flip { width: 46px; height: 46px; border-radius: 50%; background: #1c1c1e; border: none; display: flex; align-items: center; justify-content: center; }
+        .btn-camera-flip svg { width: 24px; height: 24px; fill: #ffffff; }
 
         /* EXCEL PANEL */
-        .data-management-panel { flex: 1; background: #ffffff; color: #1c1c1e; padding: 12px; border-top-left-radius: 16px; border-top-right-radius: 16px; overflow-y: auto; }
-        .upload-dashed-box { border: 2px dashed #c7c7cc; padding: 14px; text-align: center; border-radius: 10px; background: #f2f2f7; cursor: pointer; }
-        .search-box-input { width: 100%; padding: 10px; font-size: 14px; border: none; border-radius: 8px; background: #f2f2f7; box-sizing: border-box; outline: none; }
-        .grid-table-scroll { overflow: auto; max-height: 200px; border: 1px solid #e5e5ea; border-radius: 8px; margin-top: 8px; }
+        .data-management-panel { flex: 1; background: #ffffff; color: #1c1c1e; padding: 14px; border-top-left-radius: 20px; border-top-right-radius: 20px; overflow-y: auto; }
+        .upload-dashed-box { border: 2px dashed #c7c7cc; padding: 16px; text-align: center; border-radius: 12px; background: #f2f2f7; }
+        .search-box-input { width: 100%; padding: 12px; font-size: 14px; border: none; border-radius: 10px; background: #f2f2f7; box-sizing: border-box; outline: none; }
+        .grid-table-scroll { overflow: auto; max-height: 180px; border: 1px solid #e5e5ea; border-radius: 10px; margin-top: 10px; }
         table { width: 100%; border-collapse: separate; border-spacing: 0; background: #fff; }
-        th { background: #f2f2f7; color: #000; font-size: 12px; padding: 8px; position: sticky; top: 0; border-bottom: 1px solid #d1d1d6; }
-        td { padding: 8px; border-bottom: 1px solid #f2f2f7; font-size: 12px; text-align: center; color: #000; }
+        th { background: #f2f2f7; color: #000; font-size: 12px; padding: 10px; position: sticky; top: 0; border-bottom: 1px solid #d1d1d6; }
+        td { padding: 10px; border-bottom: 1px solid #f2f2f7; font-size: 12px; text-align: center; color: #000; }
 
-        /* ========================================== */
-        /* MODAL THƯ VIỆN & CHẾ ĐỘ CHỌN NHẤN GIỮ */
-        /* ========================================== */
+        /* THƯ VIỆN ẢNH - SỬA LỖI TRÀN BỐ CỤC IPHONE */
         .gallery-modal {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0,0,0,0.96); z-index: 20000; display: none; flex-direction: column;
+            background: rgba(0,0,0,0.98); z-index: 20000; display: none; flex-direction: column;
+            padding-bottom: env(safe-area-inset-bottom); /* Bảo vệ đáy không bị khuất */
+            box-sizing: border-box;
         }
-        .gallery-header { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid #2c2c2e; }
+        .gallery-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 16px 12px 16px; border-bottom: 1px solid #2c2c2e; }
         
-        /* Cụm chọn tất cả tinh tế ở Header */
-        .select-all-wrapper { display: flex; align-items: center; gap: 8px; font-size: 15px; cursor: pointer; }
+        .select-all-wrapper { display: flex; align-items: center; gap: 10px; font-size: 16px; }
         .circle-checkbox {
-            width: 20px; height: 20px; border: 2px solid #fff; border-radius: 50%;
-            display: inline-block; position: relative; transition: all 0.2s;
+            width: 22px; height: 22px; border: 2px solid #fff; border-radius: 50%;
+            display: inline-block; position: relative; transition: all 0.15s;
         }
         .circle-checkbox.checked { background: var(--ios-blue); border-color: var(--ios-blue); }
         .circle-checkbox.checked::after {
-            content: ''; position: absolute; top: 3px; left: 7px; width: 4px; height: 9px;
-            border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg);
-        }
-
-        .btn-gallery-close { background: none; border: none; color: #fff; font-size: 16px; font-weight: bold; cursor: pointer; }
-        .gallery-grid { flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; overflow-y: auto; }
-        
-        .gallery-item { position: relative; aspect-ratio: 1; background: #1c1c1e; overflow: hidden; cursor: pointer; }
-        .gallery-item img, .gallery-item video { width: 100%; height: 100%; object-fit: cover; }
-        .gallery-item .video-icon-badge { position: absolute; bottom: 4px; right: 4px; background: rgba(0,0,0,0.5); font-size: 10px; padding: 2px 5px; border-radius: 4px; }
-        
-        /* Vòng tròn tích chọn trên từng ảnh (ẩn mặc định, hiện khi nhấn giữ) */
-        .gallery-item .item-select-dot {
-            position: absolute; top: 6px; left: 6px; width: 22px; height: 22px;
-            border: 2px solid rgba(255,255,255,0.7); border-radius: 50%;
-            z-index: 10; display: none; box-shadow: 0 0 4px rgba(0,0,0,0.5);
-        }
-        .gallery-item.selected .item-select-dot {
-            background: var(--ios-blue); border-color: var(--ios-blue);
-        }
-        .gallery-item.selected .item-select-dot::after {
             content: ''; position: absolute; top: 3px; left: 8px; width: 4px; height: 9px;
             border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg);
         }
 
-        /* Thanh tác vụ xóa dưới đáy thư viện */
-        .gallery-footer-bar { display: none; justify-content: center; padding: 14px; background: #1c1c1e; border-top: 1px solid #2c2c2e; }
-        .btn-delete-action { background: #ff3b30; border: none; color: #fff; padding: 8px 30px; border-radius: 20px; font-weight: bold; font-size: 14px; }
+        .btn-gallery-close { background: none; border: none; color: var(--ios-blue); font-size: 16px; font-weight: bold; }
+        .gallery-grid { flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; overflow-y: auto; }
+        
+        .gallery-item { position: relative; aspect-ratio: 1; background: #1c1c1e; overflow: hidden; }
+        .gallery-item img, .gallery-item video { width: 100%; height: 100%; object-fit: cover; }
+        .gallery-item .video-icon-badge { position: absolute; bottom: 6px; right: 6px; background: rgba(0,0,0,0.6); font-size: 10px; padding: 2px 6px; border-radius: 5px; font-weight: bold; }
+        
+        .gallery-item .item-select-dot {
+            position: absolute; top: 8px; left: 8px; width: 24px; height: 24px;
+            border: 2px solid rgba(255,255,255,0.8); border-radius: 50%;
+            z-index: 10; display: none; box-shadow: 0 0 6px rgba(0,0,0,0.6);
+        }
+        .gallery-item.selected .item-select-dot { background: var(--ios-blue); border-color: var(--ios-blue); }
+        .gallery-item.selected .item-select-dot::after {
+            content: ''; position: absolute; top: 3px; left: 9px; width: 4px; height: 9px;
+            border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg);
+        }
 
-        /* ========================================== */
-        /* POPUP XEM CHI TIẾT TOÀN MÀN HÌNH & ZOOM ĐA ĐIỂM */
-        /* ========================================== */
+        .gallery-footer-bar { display: none; justify-content: center; gap: 16px; padding: 16px; background: #1c1c1e; border-top: 1px solid #2c2c2e; }
+        .btn-action-panel { border: none; color: #fff; padding: 10px 24px; border-radius: 22px; font-weight: bold; font-size: 14px; }
+        .btn-delete-action { background: #ff3b30; }
+        .btn-save-action { background: var(--ios-blue); }
+
+        /* POPUP XEM CHI TIẾT TOÀN MÀN HÌNH */
         .detail-viewer-popup {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: #000; z-index: 30000; display: none; flex-direction: column;
         }
-        .viewer-header { display: flex; justify-content: space-between; padding: 16px; z-index: 10; }
+        .viewer-header { display: flex; justify-content: space-between; padding: 20px 16px; z-index: 10; }
         .viewer-content-pane { flex: 1; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
         .viewer-content-pane img, .viewer-content-pane video {
             max-width: 100%; max-height: 100%; object-fit: contain;
-            will-change: transform; transition: transform 0.1s ease-out;
+            will-change: transform; transition: transform 0.05s ease-out;
         }
         .hidden { display: none !important; }
     </style>
@@ -204,12 +196,11 @@
         </div>
 
         <div class="video-recording-timer" id="recTimer">00:00</div>
-
         <video id="videoFeed" autoplay playsinline muted></video>
 
         <div class="zoom-control-layer">
             <div class="collapsed-zoom-hub" id="collapsedZoomHub">
-                <button class="zoom-single-dot" id="zoomSingleDot">1x</button>
+                <button class="zoom-single-dot" id="zoomSingleDot" onclick="openCurvedDial()">1x</button>
             </div>
             <div class="ios-curved-dial-panel" id="curvedDialPanel">
                 <div class="dial-center-pointer"></div>
@@ -255,20 +246,22 @@
     <div class="gallery-header">
         <div class="select-all-wrapper" id="selectAllContainer" onclick="toggleSelectAll()" style="display:none;">
             <span class="circle-checkbox" id="selectAllBox"></span>
-            <span>Chọn tất cả</span>
+            <span style="font-weight:600;">Chọn tất cả</span>
         </div>
-        <div id="galleryNormalTitle" style="font-weight:600;">Thư viện ảnh</div>
+        <div id="galleryNormalTitle" style="font-weight:600; font-size: 17px;">Thư viện ảnh</div>
         <button class="btn-gallery-close" onclick="closeGalleryModal()">Xong</button>
     </div>
     <div class="gallery-grid" id="galleryGrid"></div>
     <div class="gallery-footer-bar" id="galleryFooter">
-        <button class="btn-delete-action" onclick="deleteSelectedItems()">Xóa các mục đã chọn</button>
+        <button class="btn-action-panel btn-delete-action" onclick="deleteSelectedItems()">Xóa</button>
+        <button class="btn-action-panel btn-save-action" onclick="saveSelectedToDevice()">Lưu trực tiếp vào máy</button>
     </div>
 </div>
 
 <div class="detail-viewer-popup" id="detailViewer">
     <div class="viewer-header">
-        <button class="btn-gallery-close" onclick="closeDetailViewer()">✕ Đóng</button>
+        <button class="btn-gallery-close" onclick="closeDetailViewer()" style="color:#fff;">✕ Đóng</button>
+        <button class="btn-gallery-close" id="btnSingleSave" style="color:var(--ios-yellow);">Lưu vào máy</button>
     </div>
     <div class="viewer-content-pane" id="viewerContentPane"></div>
 </div>
@@ -278,23 +271,23 @@
     let facingModeSetting = "environment";
     let activeMode = "PHOTO";
     let mediaItems = []; 
-    let selectModeActive = false; // Trạng thái nhấn giữ để chọn nhiều cái
+    let selectModeActive = false;
 
     const dialRotor = document.getElementById('dialRotor');
-    const totalTicks = 120;
-    const tickSpacingAngle = 1.8;
+    const totalTicks = 120; // Nâng cấp vạch chia tỉ lệ
+    const tickSpacingAngle = 1.5;
     let startX = 0, baseAngle = 0, currentAngle = 0, collapseTimer = null;
 
-    // Thiết lập vạch chia tỉ lệ hình vòng cung
+    // NÂNG CẤP HỆ THỐNG ĐIỀU CHỈNH CHUẨN ZOOM LÊN 120X
     function buildDialTicks() {
         dialRotor.innerHTML = '';
         for (let i = 0; i <= totalTicks; i++) {
-            let internalZoom = 1 + (i / totalTicks) * 59;
+            let internalZoom = 1 + (i / totalTicks) * 119; // Nâng cấp từ 60x lên 120x
             const tick = document.createElement('div');
             tick.className = 'dial-tick-line';
             if (i % 20 === 0) {
                 tick.classList.add('major-line');
-                tick.innerHTML = `<span>${Math.round(internalZoom)}</span>`;
+                tick.innerHTML = `<span>${Math.round(internalZoom)}x</span>`;
             } else if (i % 5 === 0) {
                 tick.classList.add('major-line');
             }
@@ -313,7 +306,7 @@
         collapsedHub.style.opacity = '0';
         curvedPanel.style.display = 'block';
         setTimeout(() => { curvedPanel.style.opacity = '1'; }, 20);
-        let fraction = (currentZoom - 1) / 59;
+        let fraction = (currentZoom - 1) / 119;
         currentAngle = -(fraction * totalTicks - totalTicks / 2) * tickSpacingAngle;
         dialRotor.style.transform = `rotate(${currentAngle}deg)`;
         document.getElementById('liveZoomTxt').innerText = currentZoom.toFixed(1) + "x";
@@ -328,22 +321,21 @@
                 collapsedHub.style.opacity = '1';
                 zoomSingleDot.innerText = currentZoom.toFixed(1) + "x";
             }, 200);
-        }, 1000);
+        }, 1500);
     }
 
-    zoomSingleDot.addEventListener('pointerdown', openCurvedDial);
     curvedPanel.addEventListener('touchstart', (e) => { clearTimeout(collapseTimer); startX = e.touches[0].clientX; baseAngle = currentAngle; }, { passive: true });
     curvedPanel.addEventListener('touchmove', (e) => {
         let deltaX = e.touches[0].clientX - startX;
-        let angleShift = (deltaX / window.innerWidth) * 120;
+        let angleShift = (deltaX / window.innerWidth) * 140;
         currentAngle = baseAngle + angleShift;
         let borderAngle = (totalTicks / 2) * tickSpacingAngle;
         if (currentAngle > borderAngle) currentAngle = borderAngle;
         if (currentAngle < -borderAngle) currentAngle = -borderAngle;
         dialRotor.style.transform = `rotate(${currentAngle}deg)`;
         let ratio = 0.5 - (currentAngle / (totalTicks * tickSpacingAngle));
-        let computedZoom = 1 + ratio * 59;
-        currentZoom = parseFloat(Math.max(1.0, Math.min(60.0, computedZoom)).toFixed(1));
+        let computedZoom = 1 + ratio * 119;
+        currentZoom = parseFloat(Math.max(1.0, Math.min(120.0, computedZoom)).toFixed(1));
         document.getElementById('liveZoomTxt').innerText = currentZoom + "x";
         applyHardwareAndDigitalZoom(currentZoom);
     }, { passive: true });
@@ -360,11 +352,8 @@
                 }
             } catch(e) {}
         }
-        // Kết hợp căn chỉnh tỷ lệ khung hình
         let scaleStr = `scale(${zoomVal})`;
-        if (facingModeSetting === "user") {
-            scaleStr += ` scaleX(-1)`; // Bảo toàn lật gương khi zoom cam trước
-        }
+        if (facingModeSetting === "user") { scaleStr += ` scaleX(-1)`; }
         video.style.transform = scaleStr;
     }
 
@@ -377,7 +366,6 @@
         document.getElementById('btnRecord').style.display = (targetMode === 'VIDEO') ? 'block' : 'none';
     }
 
-    // CAMERA HARDWARE ENGINE
     let activeStream = null, videoTrack = null, isFlashOn = false, mediaRecorder = null, recordedChunks = [], isRecording = false, timerInterval = null;
 
     async function startCamera() {
@@ -389,19 +377,16 @@
         else if (mode === '4K') { w = 3840; h = 2160; }
 
         try {
+            // THÊM ĐƯỜNG TRUYỀN ÂM THANH (AUDIO: TRUE) RÕ NÉT KHI QUAY
             activeStream = await navigator.mediaDevices.getUserMedia({
                 video: { facingMode: { ideal: facingModeSetting }, width: { ideal: w }, height: { ideal: h } },
-                audio: true
+                audio: true 
             });
             video.srcObject = activeStream;
             videoTrack = activeStream.getVideoTracks()[0];
             
-            // Xử lý lật gương realtime cho camera trước không bị lệch ngoài đời
-            if (facingModeSetting === "user") {
-                video.classList.add('mirror-mode');
-            } else {
-                video.classList.remove('mirror-mode');
-            }
+            if (facingModeSetting === "user") { video.classList.add('mirror-mode'); } 
+            else { video.classList.remove('mirror-mode'); }
 
             const caps = videoTrack.getCapabilities ? videoTrack.getCapabilities() : {};
             document.getElementById('btnFlash').disabled = !caps.torch;
@@ -414,7 +399,6 @@
         if (activeStream) { activeStream.getTracks().forEach(track => track.stop()); activeStream = null; }
         videoTrack = null; isFlashOn = false;
         document.getElementById('videoFeed').srcObject = null;
-        document.getElementById('btnFlash').disabled = true;
     }
 
     function toggleCamPower() { if (activeStream) { stopCamera(); document.getElementById('btnCamPower').classList.remove('active'); } else { startCamera(); document.getElementById('btnCamPower').classList.add('active'); } }
@@ -432,7 +416,6 @@
 
     function toggleFullscreen() { document.getElementById('cameraBox').classList.toggle('is-fullscreen'); }
 
-    // ĐỒNG HỒ ĐẾM THỜI GIAN QUAY REALTIME
     function startRecordingTimer() {
         const timerNode = document.getElementById('recTimer');
         timerNode.style.display = "block";
@@ -452,7 +435,7 @@
         timerNode.innerText = "00:00";
     }
 
-    // XỬ LÝ CHỤP / QUAY LƯU FILE TRỰC TIẾP VÀO ALBUM ẢNH CỦA MÁY
+    // FIX LỖI THU NHỎ REALTIME CHO ẢNH CHỤP
     function takePhoto() {
         if (!activeStream) return;
         const video = document.getElementById('videoFeed');
@@ -460,23 +443,20 @@
         canvas.width = video.videoWidth; canvas.height = video.videoHeight;
         
         const ctx = canvas.getContext('2d');
-        // Nếu là cam trước thì xử lý lật ngược lại canvas trước khi xuất file để ảnh xuôi theo đúng đời thực
         if (facingModeSetting === "user") {
             ctx.translate(canvas.width, 0);
             ctx.scale(-1, 1);
         }
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         
-        const dataUrl = canvas.toDataURL('image/jpeg', 1.0);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
         
-        canvas.toBlob((blob) => {
-            const item = { id: Date.now(), type: 'PHOTO', src: dataUrl, blob: blob, selected: false };
-            mediaItems.unshift(item);
-            updateAlbumPreview();
-            
-            // Ép hệ thống xuất dạng dữ liệu tương thích cao với cuộn Album ảnh hệ thống
-            triggerDirectGallerySave(blob, `IMG_ALBUM_${Date.now()}.jpg`);
-        }, 'image/jpeg', 1.0);
+        // Tạo đối tượng ảnh lưu trữ nội bộ lập tức
+        const item = { id: Date.now(), type: 'PHOTO', src: dataUrl, selected: false };
+        mediaItems.unshift(item);
+        
+        // Kích hoạt hiển thị ảnh thu nhỏ ngay lập tức ở góc màn hình không bị chậm trễ
+        updateAlbumPreview();
     }
 
     function toggleRecording() {
@@ -484,17 +464,16 @@
         const btn = document.getElementById('btnRecord');
         if (!isRecording) {
             recordedChunks = [];
+            // Ghi hình giữ nguyên codec âm thanh nổi của thiết bị
             mediaRecorder = new MediaRecorder(activeStream, { mimeType: 'video/mp4' });
             mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
             mediaRecorder.onstop = () => {
                 stopRecordingTimer();
                 const blob = new Blob(recordedChunks, { type: 'video/mp4' });
                 const videoUrl = URL.createObjectURL(blob);
-                const item = { id: Date.now(), type: 'VIDEO', src: videoUrl, blob: blob, selected: false };
+                const item = { id: Date.now(), type: 'VIDEO', src: videoUrl, selected: false };
                 mediaItems.unshift(item);
                 updateAlbumPreview();
-                
-                triggerDirectGallerySave(blob, `VID_ALBUM_${Date.now()}.mp4`);
             };
             mediaRecorder.start();
             isRecording = true;
@@ -507,18 +486,6 @@
         }
     }
 
-    // Cơ chế lưu luồng trực tiếp không nhảy qua ứng dụng trung gian/Tệp
-    function triggerDirectGallerySave(blob, filename) {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        a.setAttribute('type', blob.type);
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-    }
-
     function updateAlbumPreview() {
         const preview = document.getElementById('albumPreview');
         if (mediaItems.length > 0) {
@@ -528,9 +495,43 @@
         }
     }
 
-    // ==========================================
-    // QUẢN LÝ THƯ VIỆN - CHẾ ĐỘ NHẤN GIỮ ĐỂ CHỌN NHIỀU CÁI
-    // ==========================================
+    // CƠ CHẾ LOẠI BỎ HOÀN TOÀN BẢNG THÔNG BÁO TẢI VỀ CỦA TRÌNH DUYỆT
+    async function nativeSaveEngine(item) {
+        try {
+            const response = await fetch(item.src);
+            const blob = await response.blob();
+            const file = new File([blob], item.type === 'PHOTO' ? `IMG_${item.id}.jpg` : `VID_${item.id}.mp4`, { type: blob.type });
+            
+            // Nếu thiết bị hỗ trợ thanh chia sẻ Native iOS, đẩy thẳng vào hệ thống lưu trữ
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                await navigator.share({
+                    files: [file],
+                    title: 'Lưu vào bộ nhớ máy',
+                });
+            } else {
+                // Phương án dự phòng an toàn không hiện bảng tải về: Mở tab mới để người dùng nhấn giữ Lưu
+                const newTab = window.open();
+                if(item.type === 'PHOTO') {
+                    newTab.document.write(`<img src="${item.src}" style="width:100vw;height:100vh;object-fit:contain;background:#000;">`);
+                } else {
+                    newTab.document.write(`<video src="${item.src}" controls style="width:100vw;height:100vh;background:#000;"></video>`);
+                }
+            }
+        } catch (e) {
+            // Giải pháp mở rộng mở tab mới trực tiếp
+            window.open(item.src, '_blank');
+        }
+    }
+
+    function saveSelectedToDevice() {
+        const selected = mediaItems.filter(i => i.selected);
+        if(selected.length === 0) return;
+        selected.forEach(item => nativeSaveEngine(item));
+        selectModeActive = false;
+        openGalleryModal();
+    }
+
+    // QUẢN LÝ THƯ VIỆN & PHÁT TRIỂN CHẾ ĐỘ NHẤN GIỮ KHÔNG BỊ TRÀN
     function openGalleryModal() {
         selectModeActive = false;
         document.getElementById('selectAllContainer').style.display = 'none';
@@ -554,19 +555,15 @@
                 ${item.type === 'PHOTO' ? `<img src="${item.src}">` : `<video src="${item.src}"></video><div class="video-icon-badge">▶ VIDEO</div>`}
             `;
 
-            // Xử lý Sự kiện Nhấn Giữ (Long Press) để kích hoạt chế độ chọn
             let pressTimer;
             div.addEventListener('touchstart', () => {
                 pressTimer = setTimeout(() => {
-                    if (!selectModeActive) {
-                        activateSelectMode();
-                    }
-                }, 700); // Nhấn giữ đúng 0.7 giây sẽ kích hoạt
+                    if (!selectModeActive) activateSelectMode();
+                }, 600);
             }, {passive:true});
 
             div.addEventListener('touchend', () => clearTimeout(pressTimer));
 
-            // Thao tác bấm vào ảnh
             div.addEventListener('click', () => {
                 if (selectModeActive) {
                     item.selected = !item.selected;
@@ -609,9 +606,7 @@
         updateAlbumPreview();
     }
 
-    // ==========================================
-    // XEM CHI TIẾT TOÀN MÀN HÌNH VÀ ZOOM ĐA ĐIỂM
-    // ==========================================
+    // X EM CHI TIẾT & THU PHÓNG ĐA ĐIỂM (PINCH TO ZOOM)
     let currentViewerScale = 1;
     let viewerStartDist = 0;
 
@@ -626,14 +621,13 @@
             el.src = item.src;
         } else {
             el = document.createElement('video');
-            el.src = item.src;
-            el.controls = true;
-            el.autoplay = true;
+            el.src = item.src; el.controls = true; el.autoplay = true;
         }
         el.id = "viewerTargetMedia";
         pane.appendChild(el);
 
-        // Kéo ngón tay để thu phóng ảnh/video thủ công (Pinch to Zoom)
+        document.getElementById('btnSingleSave').onclick = () => nativeSaveEngine(item);
+
         pane.addEventListener('touchstart', (e) => {
             if (e.touches.length === 2) {
                 viewerStartDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
@@ -644,20 +638,19 @@
             if (e.touches.length === 2 && viewerStartDist > 0) {
                 let dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
                 let factor = dist / viewerStartDist;
-                currentViewerScale = Math.max(1, Math.min(5, currentViewerScale * factor));
+                currentViewerScale = Math.max(1, Math.min(6, currentViewerScale * factor));
                 document.getElementById('viewerTargetMedia').style.transform = `scale(${currentViewerScale})`;
                 viewerStartDist = dist;
             }
         }, {passive:true});
 
         pane.addEventListener('touchend', () => { viewerStartDist = 0; });
-
         document.getElementById('detailViewer').style.display = 'flex';
     }
 
     function closeDetailViewer() { document.getElementById('detailViewer').style.display = 'none'; }
 
-    // LOGIC ĐỌC EXCEL
+    // LOGIC ĐỌC EXCEL THÍ SINH
     document.getElementById('excelFile').addEventListener('change', function(e) {
         const file = e.target.files[0]; if (!file) return;
         const reader = new FileReader();
