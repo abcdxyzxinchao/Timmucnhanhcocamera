@@ -21,19 +21,19 @@
             -webkit-tap-highlight-color: transparent; user-select: none;
         }
 
-        /* Khung chứa chính chia tỉ lệ chuẩn để tránh đè giao diện */
+        /* CONTAINER CHÍNH: CHIA TỈ LỆ ĐỂ KHÔNG BAO GIỜ BỊ ĐÈ */
         .app-container {
             width: 100vw; height: 100vh; display: flex; flex-direction: column; box-sizing: border-box;
-            padding-bottom: env(safe-area-inset-bottom);
+            padding-bottom: env(safe-area-inset-bottom); background: #000;
         }
 
-        /* Vùng Camera cố định tỷ lệ hợp lý */
+        /* VÙNG CAMERA: ĐỂ CHIỀU CAO CỐ ĐỊNH PHÙ HỢP TRÊN IPHONE */
         .camera-viewport-wrapper {
             position: relative; width: 100%; background: #000;
-            aspect-ratio: 4/5; overflow: hidden; touch-action: none; flex-shrink: 0;
+            height: 42vh; overflow: hidden; touch-action: none; flex-shrink: 0;
         }
         .camera-viewport-wrapper.is-fullscreen {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999; aspect-ratio: auto;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999; height: 100vh;
         }
 
         video {
@@ -43,22 +43,21 @@
         video.mirror-mode { transform: scaleX(-1); }
 
         .video-recording-timer {
-            position: absolute; top: 60px; left: 50%; transform: translateX(-50%);
+            position: absolute; top: 50px; left: 50%; transform: translateX(-50%);
             background: rgba(255, 59, 48, 0.9); padding: 4px 14px; font-weight: 700;
             font-size: 14px; border-radius: 8px; display: none; z-index: 10005;
-            letter-spacing: 1px; box-shadow: 0 2px 10px rgba(0,0,0,0.5);
         }
 
         .top-settings-bar {
-            position: absolute; top: 16px; left: 0; width: 100%;
+            position: absolute; top: 12px; left: 0; width: 100%;
             display: flex; justify-content: space-between; align-items: center;
             padding: 0 16px; box-sizing: border-box; z-index: 10000;
         }
-        .left-controls, .right-controls { display: flex; align-items: center; gap: 10px; }
+        .left-controls, .right-controls { display: flex; align-items: center; gap: 8px; }
 
         .res-badge-select {
             background: rgba(0, 0, 0, 0.6); color: var(--ios-yellow); border: 1px solid rgba(255,255,255,0.2);
-            padding: 6px 12px; font-size: 11px; font-weight: 600; border-radius: 14px; outline: none;
+            padding: 5px 10px; font-size: 11px; font-weight: 600; border-radius: 12px; outline: none;
         }
         .btn-icon-top {
             background: rgba(0, 0, 0, 0.6); border: none; color: #fff;
@@ -67,15 +66,15 @@
         }
         .btn-icon-top.active { background: var(--ios-yellow); color: #000; }
 
-        /* Vùng điều khiển Zoom */
+        /* ĐIỀU KHIỂN ZOOM 120X */
         .zoom-control-layer {
-            position: absolute; bottom: 15px; left: 0; width: 100%;
+            position: absolute; bottom: 10px; left: 0; width: 100%;
             display: flex; flex-direction: column; align-items: center; z-index: 10000; pointer-events: none;
         }
         .collapsed-zoom-hub { pointer-events: auto; display: flex; justify-content: center; align-items: center; }
         .zoom-single-dot {
             background: rgba(28, 28, 30, 0.85); border: 1px solid rgba(255,255,255,0.2);
-            color: var(--ios-yellow); width: 42px; height: 42px; border-radius: 50%;
+            color: var(--ios-yellow); width: 40px; height: 40px; border-radius: 50%;
             font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;
         }
 
@@ -87,104 +86,90 @@
         .dial-tick-line.major-line { height: 16px; background: rgba(255,255,255,0.85); width: 2px; }
         .dial-tick-line span { position: absolute; top: 22px; left: 50%; transform: translateX(-50%); font-size: 9px; font-weight: 600; color: rgba(255,255,255,0.7); }
 
-        /* Khu vực quản lý dữ liệu bảng Excel */
+        /* MÀN HÌNH QUẢN LÝ FILE VÀ BẢNG EXCEL ĐƯỢC TÍNH CHIỀU CAO CÒN LẠI TỰ ĐỘNG */
         .data-management-panel { 
             flex: 1; 
             background: #ffffff; 
             color: #1c1c1e; 
-            padding: 10px 12px;
+            padding: 8px 12px;
             border-top-left-radius: 16px; 
             border-top-right-radius: 16px; 
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            overflow: hidden; /* Không cho panel tổng bung tràn làm mất nút chụp ảnh */
             box-sizing: border-box;
         }
-        .upload-dashed-box { border: 2px dashed #c7c7cc; padding: 20px; text-align: center; border-radius: 12px; background: #f2f2f7; cursor: pointer; }
+        .upload-dashed-box { border: 2px dashed #c7c7cc; padding: 16px; text-align: center; border-radius: 12px; background: #f2f2f7; cursor: pointer; }
         
-        /* Khung cuộn dữ liệu bảng (Cố định tiêu đề khi cuộn dọc) */
+        /* MỤC TÌM KIẾM ẤN HIỆN TRỰC TIẾP TRONG PANEL */
+        .search-embed-container {
+            display: none; /* Mặc định ẩn, ấn nút 🔍 cạnh nút mắt để toggle */
+            flex-direction: column;
+            gap: 6px;
+            background: #f2f2f7;
+            padding: 8px;
+            border-radius: 10px;
+            margin-bottom: 6px;
+        }
+        .search-row-top { display: flex; gap: 6px; align-items: center; }
+        .ios-search-input {
+            flex: 1; background: #ffffff; border: 1px solid #d1d1d6; padding: 8px 12px;
+            border-radius: 8px; font-size: 13px; color: #000; outline: none;
+        }
+        .btn-close-search { background: none; border: none; color: #ff3b30; font-size: 16px; font-weight: bold; padding: 0 4px; }
+        
+        .filter-buttons-group { display: flex; gap: 6px; }
+        .btn-toggle-action {
+            flex: 1; border: none; padding: 8px; font-size: 12px; font-weight: 600;
+            border-radius: 8px; background: #ffffff; color: #007aff; border: 1px solid #d1d1d6;
+        }
+        .btn-toggle-action.active { background: #007aff; color: #ffffff; border-color: #007aff; }
+
+        /* KHUNG CUỘN BẢNG EXCEL - TỰ CO GIÃN ĐÚNG PHẦN CÒN LẠI */
         .grid-table-scroll { 
             flex: 1; 
             overflow: auto; 
             border: 1px solid #e5e5ea; 
-            border-radius: 10px; 
+            border-radius: 8px; 
             width: 100%;
             -webkit-overflow-scrolling: touch;
         }
         table { width: 100%; border-collapse: separate; border-spacing: 0; background: #fff; }
         
-        /* Cố định tiêu đề khi cuộn file */
+        /* CỐ ĐỊNH TIÊU ĐỀ TUYỆT ĐỐI KHI CUỘN FILE CHUẨN 100% */
         th { 
-            background: #f2f2f7; color: #000; font-size: 12px; padding: 10px; 
-            position: sticky; top: 0; border-bottom: 1px solid #d1d1d6; z-index: 5; 
+            background: #f2f2f7; color: #000; font-size: 11px; padding: 8px; 
+            position: sticky; top: 0; border-bottom: 1px solid #d1d1d6; z-index: 10; 
         }
-        td { padding: 10px; border-bottom: 1px solid #f2f2f7; font-size: 12px; text-align: center; color: #000; }
+        td { padding: 8px; border-bottom: 1px solid #e5e5ea; font-size: 11px; text-align: center; color: #000; white-space: nowrap; }
 
-        /* Thanh điều khiển chụp/quay ở dưới cùng - Tuyệt đối không đè lên bảng */
-        .ios-bottom-dashboard { background: #000000; padding: 12px 0; display: flex; flex-direction: column; align-items: center; gap: 8px; flex-shrink: 0; }
+        /* THANH ĐÁY ĐIỀU KHIỂN CHỤP ẢNH - CỐ ĐỊNH Ở ĐÁY KHÔNG BAO GIỜ ĐÈ LÊN EXCEL */
+        .ios-bottom-dashboard { background: #000000; padding: 10px 0; display: flex; flex-direction: column; align-items: center; gap: 6px; flex-shrink: 0; }
         .camera-viewport-wrapper.is-fullscreen ~ .ios-bottom-dashboard { position: absolute; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.6); }
-        .camera-mode-scroller { display: flex; gap: 24px; justify-content: center; width: 100%; }
-        .mode-item { font-size: 13px; font-weight: 700; color: #8e8e93; letter-spacing: 0.5px; text-transform: uppercase; }
+        .camera-mode-scroller { display: flex; gap: 20px; justify-content: center; width: 100%; }
+        .mode-item { font-size: 12px; font-weight: 700; color: #8e8e93; letter-spacing: 0.5px; text-transform: uppercase; }
         .mode-item.active { color: var(--ios-yellow); }
         
-        .shutter-row { width: 100%; display: flex; justify-content: space-around; align-items: center; padding: 0 32px; box-sizing: border-box; }
-        
-        .album-preview-placeholder {
-            width: 44px; height: 44px; border-radius: 10px; background: #1c1c1e; 
-            border: 2px solid #fff; overflow: hidden; background-size: cover; background-position: center;
-        }
+        .shutter-row { width: 100%; display: flex; justify-content: space-around; align-items: center; padding: 0 24px; box-sizing: border-box; }
+        .album-preview-placeholder { width: 42px; height: 42px; border-radius: 8px; background: #1c1c1e; border: 2px solid #fff; background-size: cover; background-position: center; }
 
         .shutter-trigger-btn { border-radius: 50%; border: none; display: none; }
-        .btn-photo-snap { width: 58px; height: 58px; background: #ffffff; border: 4px solid #000; box-shadow: 0 0 0 2px #fff; }
-        .btn-video-rec { width: 54px; height: 54px; background: #ff3b30; border: 4px solid #000; box-shadow: 0 0 0 2px #fff; }
-        .btn-video-rec.recording { border-radius: 12px; transform: scale(0.85); background: #ff3b30; }
-        .btn-camera-flip { width: 40px; height: 40px; border-radius: 50%; background: #1c1c1e; border: none; display: flex; align-items: center; justify-content: center; }
-        .btn-camera-flip svg { width: 20px; height: 20px; fill: #ffffff; }
+        .btn-photo-snap { width: 56px; height: 56px; background: #ffffff; border: 4px solid #000; box-shadow: 0 0 0 2px #fff; }
+        .btn-video-rec { width: 52px; height: 52px; background: #ff3b30; border: 4px solid #000; box-shadow: 0 0 0 2px #fff; }
+        .btn-video-rec.recording { border-radius: 10px; transform: scale(0.85); background: #ff3b30; }
+        .btn-camera-flip { width: 38px; height: 38px; border-radius: 50%; background: #1c1c1e; border: none; display: flex; align-items: center; justify-content: center; }
+        .btn-camera-flip svg { width: 18px; height: 18px; fill: #ffffff; }
 
-        /* POPUP TÌM KIẾM/BỘ LỌC KIỂU TRƯỢT LÊN (IOS BOTTOM SHEET) */
-        .search-bottom-sheet {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0, 0, 0, 0.4); z-index: 15000;
-            display: none; flex-direction: column; justify-content: flex-end;
-        }
-        .sheet-content {
-            background: #ffffff; color: #000000; border-top-left-radius: 16px; border-top-right-radius: 16px;
-            padding: 16px 16px calc(20px + env(safe-area-inset-bottom)) 16px;
-            box-sizing: border-box; width: 100%; max-height: 80%;
-            display: flex; flex-direction: column; gap: 12px;
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
-            animation: slideUp 0.25s ease-out;
-        }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        
-        .sheet-drag-bar { width: 40px; height: 5px; background: #c7c7cc; border-radius: 3px; align-self: center; margin-bottom: 4px; cursor: pointer; }
-        .sheet-header { display: flex; justify-content: space-between; align-items: center; }
-        .sheet-title { font-size: 16px; font-weight: 700; color: #1c1c1e; }
-        
-        .search-box-wrapper { display: flex; gap: 8px; align-items: center; width: 100%; }
-        .ios-search-input {
-            flex: 1; background: #e5e5ea; border: none; padding: 10px 14px;
-            border-radius: 10px; font-size: 14px; color: #000; outline: none;
-        }
-        
-        /* Hàng nút chức năng STT và Nhóm trùng */
-        .filter-controls-row { display: flex; gap: 10px; width: 100%; }
-        .btn-filter-toggle {
-            flex: 1; border: none; padding: 10px; font-size: 13px; font-weight: 600;
-            border-radius: 10px; background: #f2f2f7; color: #007aff; transition: all 0.2s;
-        }
-        .btn-filter-toggle.active { background: #007aff; color: #ffffff; }
-
-        /* THƯ VIỆN & XEM CHI TIẾT */
+        /* MODAL THƯ VIỆN KHÔNG ĐỔI */
         .gallery-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.98); z-index: 20000; display: none; flex-direction: column; padding-bottom: env(safe-area-inset-bottom); box-sizing: border-box; }
-        .gallery-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 16px 12px 16px; border-bottom: 1px solid #2c2c2e; }
+        .gallery-header { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid #2c2c2e; }
         .btn-gallery-close { background: none; border: none; color: var(--ios-blue); font-size: 16px; font-weight: bold; }
         .gallery-grid { flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; overflow-y: auto; }
         .gallery-item { position: relative; aspect-ratio: 1; background: #1c1c1e; overflow: hidden; }
         .gallery-item img, .gallery-item video { width: 100%; height: 100%; object-fit: cover; }
         
         .detail-viewer-popup { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 30000; display: none; flex-direction: column; }
-        .viewer-header { display: flex; justify-content: space-between; padding: 20px 16px; z-index: 10; }
+        .viewer-header { display: flex; justify-content: space-between; padding: 16px; z-index: 10; }
         .viewer-content-pane { flex: 1; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .viewer-content-pane img, .viewer-content-pane video { max-width: 100%; max-height: 100%; object-fit: contain; }
         
@@ -193,7 +178,7 @@
 </head>
 <body>
 
-<div class="app-container">
+<div class="app-container" onclick="handleBlankClick(event)">
     <div class="camera-viewport-wrapper" id="cameraBox">
         <div class="top-settings-bar">
             <div class="left-controls">
@@ -204,7 +189,7 @@
                 </select>
             </div>
             <div class="right-controls">
-                <button class="btn-icon-top" id="btnSearchSheet" onclick="toggleSearchSheet(true)">🔍</button>
+                <button class="btn-icon-top" id="btnToggleSearch" onclick="event.stopPropagation(); toggleSearchContainer()">🔍</button>
                 <button class="btn-icon-top active" id="btnCamPower" onclick="toggleCamPower()">👁‍🗨</button>
                 <button class="btn-icon-top" id="btnFlash" onclick="toggleFlash()" disabled>⚡</button>
                 <button class="btn-icon-top" onclick="toggleFullscreen()">⛶</button>
@@ -226,13 +211,24 @@
         </div>
     </div>
 
-    <div class="data-management-panel">
+    <div class="data-management-panel" id="dataPanel" onclick="event.stopPropagation()">
         <div class="upload-dashed-box" id="uploadBox" onclick="document.getElementById('excelFile').click()">
             <span style="font-size: 13px; font-weight: 600;">📊 Nạp tập tin dữ liệu phòng thi Excel</span>
             <input type="file" id="excelFile" class="hidden" accept=".xlsx, .xls, .csv">
         </div>
         
-        <div class="grid-table-scroll" id="searchSection" style="display: none;">
+        <div class="search-embed-container" id="searchContainer">
+            <div class="search-row-top">
+                <input type="text" id="searchInput" class="ios-search-input" placeholder="Nhập từ khóa tìm kiếm dữ liệu..." oninput="filterData()">
+                <button class="btn-close-search" onclick="closeSearchContainer()">✕</button>
+            </div>
+            <div class="filter-buttons-group">
+                <button class="btn-toggle-action" id="btnSTT" onclick="toggleSTTMode()">Bật STT liên tiếp</button>
+                <button class="btn-toggle-action" id="btnGroup" onclick="toggleGroupMode()">Nhóm trùng chung</button>
+            </div>
+        </div>
+        
+        <div class="grid-table-scroll" id="tableSection" style="display: none;">
             <table id="dataTable">
                 <thead id="tHead"></thead>
                 <tbody id="tBody"></tbody>
@@ -240,7 +236,7 @@
         </div>
     </div>
 
-    <div class="ios-bottom-dashboard">
+    <div class="ios-bottom-dashboard" onclick="event.stopPropagation()">
         <div class="camera-mode-scroller">
             <div class="mode-item" id="mode-video" onclick="switchCameraMode('VIDEO')">Video</div>
             <div class="mode-item active" id="mode-photo" onclick="switchCameraMode('PHOTO')">Ảnh</div>
@@ -257,28 +253,9 @@
     </div>
 </div>
 
-<div class="search-bottom-sheet" id="searchSheet" onclick="toggleSearchSheet(false)">
-    <div class="sheet-content" onclick="event.stopPropagation()">
-        <div class="sheet-drag-bar" onclick="toggleSearchSheet(false)"></div>
-        <div class="sheet-header">
-            <div class="sheet-title">Bộ Tìm Kiếm & Lọc Dữ Liệu</div>
-            <button class="btn-gallery-close" style="font-size: 20px; padding: 0;" onclick="toggleSearchSheet(false)">✕</button>
-        </div>
-        
-        <div class="search-box-wrapper">
-            <input type="text" id="searchInput" class="ios-search-input" placeholder="Nhập từ khóa tìm kiếm..." oninput="filterData()">
-        </div>
-        
-        <div class="filter-controls-row">
-            <button class="btn-filter-toggle" id="btnToggleSTT" onclick="toggleSTTMode()">Bật Số Thứ Tự (Tắt: File Gốc)</button>
-            <button class="btn-filter-toggle" id="btnGroupTrung" onclick="toggleGroupTrungMode()">Nhóm Trùng Nhau</button>
-        </div>
-    </div>
-</div>
-
 <div class="gallery-modal" id="galleryModal">
     <div class="gallery-header">
-        <div style="font-weight:600; font-size: 17px;">Thư viện ảnh</div>
+        <div style="font-weight:600; font-size: 16px;">Thư viện ảnh</div>
         <button class="btn-gallery-close" onclick="closeGalleryModal()">Xong</button>
     </div>
     <div class="gallery-grid" id="galleryGrid"></div>
@@ -297,13 +274,13 @@
     let activeMode = "PHOTO";
     let mediaItems = []; 
     
-    // Lưu trữ dữ liệu Excel gốc
+    // Lưu trữ gốc từ file Excel
     let originalExcelHeaders = [];
     let originalExcelRows = [];
     
-    // Trạng thái cấu hình bộ lọc
-    let isSTTEnabled = false;
-    let isGroupTrungEnabled = false;
+    // Biến trạng thái logic cũ
+    let isSTTActive = false;
+    let isGroupActive = false;
 
     const dialRotor = document.getElementById('dialRotor');
     const totalTicks = 120; 
@@ -414,15 +391,12 @@
             });
             video.srcObject = activeStream;
             videoTrack = activeStream.getVideoTracks()[0];
-            
-            if (facingModeSetting === "user") { video.classList.add('mirror-mode'); } 
-            else { video.classList.remove('mirror-mode'); }
-
+            if (facingModeSetting === "user") { video.classList.add('mirror-mode'); } else { video.classList.remove('mirror-mode'); }
             const caps = videoTrack.getCapabilities ? videoTrack.getCapabilities() : {};
             document.getElementById('btnFlash').disabled = !caps.torch;
             switchCameraMode(activeMode);
             applyHardwareAndDigitalZoom(currentZoom);
-        } catch (err) { alert("Không mở được camera: " + err.message); }
+        } catch (err) {}
     }
 
     function stopCamera() {
@@ -446,38 +420,14 @@
 
     function toggleFullscreen() { document.getElementById('cameraBox').classList.toggle('is-fullscreen'); }
 
-    function startRecordingTimer() {
-        const timerNode = document.getElementById('recTimer');
-        timerNode.style.display = "block";
-        let seconds = 0;
-        timerInterval = setInterval(() => {
-            seconds++;
-            let mins = Math.floor(seconds / 60).toString().padStart(2, '0');
-            let secs = (seconds % 60).toString().padStart(2, '0');
-            timerNode.innerText = `${mins}:${secs}`;
-        }, 1000);
-    }
-
-    function stopRecordingTimer() {
-        clearInterval(timerInterval);
-        const timerNode = document.getElementById('recTimer');
-        timerNode.style.display = "none";
-        timerNode.innerText = "00:00";
-    }
-
     function takePhoto() {
         if (!activeStream) return;
         const video = document.getElementById('videoFeed');
         const canvas = document.createElement('canvas');
         canvas.width = video.videoWidth; canvas.height = video.videoHeight;
-        
         const ctx = canvas.getContext('2d');
-        if (facingModeSetting === "user") {
-            ctx.translate(canvas.width, 0);
-            ctx.scale(-1, 1);
-        }
+        if (facingModeSetting === "user") { ctx.translate(canvas.width, 0); ctx.scale(-1, 1); }
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        
         const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
         mediaItems.unshift({ id: Date.now(), type: 'PHOTO', src: dataUrl });
         updateAlbumPreview();
@@ -491,20 +441,14 @@
             mediaRecorder = new MediaRecorder(activeStream, { mimeType: 'video/mp4' });
             mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
             mediaRecorder.onstop = () => {
-                stopRecordingTimer();
                 const blob = new Blob(recordedChunks, { type: 'video/mp4' });
                 const videoUrl = URL.createObjectURL(blob);
                 mediaItems.unshift({ id: Date.now(), type: 'VIDEO', src: videoUrl });
                 updateAlbumPreview();
             };
-            mediaRecorder.start();
-            isRecording = true;
-            btn.classList.add('recording');
-            startRecordingTimer();
+            mediaRecorder.start(); isRecording = true; btn.classList.add('recording');
         } else {
-            mediaRecorder.stop();
-            isRecording = false;
-            btn.classList.remove('recording');
+            mediaRecorder.stop(); isRecording = false; btn.classList.remove('recording');
         }
     }
 
@@ -515,30 +459,39 @@
 
     function openGalleryModal() { renderGalleryGrid(); document.getElementById('galleryModal').style.display = 'flex'; }
     function closeGalleryModal() { document.getElementById('galleryModal').style.display = 'none'; }
-
     function renderGalleryGrid() {
         const grid = document.getElementById('galleryGrid'); grid.innerHTML = '';
         mediaItems.forEach(item => {
             const div = document.createElement('div'); div.className = 'gallery-item';
             div.innerHTML = item.type === 'PHOTO' ? `<img src="${item.src}">` : `<video src="${item.src}"></video>`;
-            div.onclick = () => {
-                const pane = document.getElementById('viewerContentPane'); pane.innerHTML = '';
-                let el = item.type === 'PHOTO' ? document.createElement('img') : document.createElement('video');
-                el.src = item.src; if (item.type === 'VIDEO') el.controls = true;
-                pane.appendChild(el);
-                document.getElementById('detailViewer').style.display = 'flex';
-            };
             grid.appendChild(div);
         });
     }
-    function closeDetailViewer() { document.getElementById('detailViewer').style.display = 'none'; }
 
-    // ĐIỀU KHIỂN ĐÓNG MỞ POPUP TÌM KIẾM CẠNH NÚT MẮT
-    function toggleSearchSheet(show) {
-        document.getElementById('searchSheet').style.display = show ? 'flex' : 'none';
+    // ==========================================
+    // LOGIC ĐIỀU KHIỂN MỤC TÌM KIẾM ĐÚNG Ý BẠN
+    // ==========================================
+    function toggleSearchContainer() {
+        const box = document.getElementById('searchContainer');
+        if (box.style.display === 'flex') {
+            closeSearchContainer();
+        } else {
+            box.style.display = 'flex';
+            document.getElementById('btnToggleSearch').classList.add('active');
+        }
     }
 
-    // XỬ LÝ ĐỌC FILE EXCEL GỐC 100% NHẬN DIỆN MỌI TIÊU ĐỀ FILE
+    function closeSearchContainer() {
+        document.getElementById('searchContainer').style.display = 'none';
+        document.getElementById('btnToggleSearch').classList.remove('active');
+    }
+
+    // Ấn vào vùng trống bất kỳ trên màn hình để ẩn hộp tìm kiếm đi (Cố định vuốt X)
+    function handleBlankClick(event) {
+        closeSearchContainer();
+    }
+
+    // ĐỌC VÀ NHẬN DIỆN MỌI TIÊU ĐỀ FILE EXCEL ĐÚNG 100%
     document.getElementById('excelFile').addEventListener('change', function(e) {
         const file = e.target.files[0]; if (!file) return;
         const reader = new FileReader();
@@ -551,71 +504,65 @@
                 originalExcelHeaders = json[0].map(h => h || '');
                 originalExcelRows = json.slice(1).filter(row => row.length > 0);
                 
-                // Hiển thị khung chứa bảng dữ liệu
                 document.getElementById('uploadBox').classList.add('hidden');
-                document.getElementById('searchSection').style.display = 'block';
-                filterData(); // Kết xuất giao diện lần đầu
+                document.getElementById('tableSection').style.display = 'block';
+                filterData(); // Đổ dữ liệu lần đầu
             }
         };
         reader.readAsArrayBuffer(file);
     });
 
-    // CHUYỂN ĐỔI CHẾ ĐỘ SỐ THỨ TỰ (BẬT: 1,2,3... / TẮT: FILE GỐC)
+    // BẬT / TẮT SỐ THỨ TỰ THEO LOGIC TỰ NHIÊN LIÊN TIẾP
     function toggleSTTMode() {
-        isSTTEnabled = !isSTTEnabled;
-        const btn = document.getElementById('btnToggleSTT');
-        btn.classList.toggle('active', isSTTEnabled);
-        btn.innerText = isSTTEnabled ? "Số Thứ Tự: ĐANG BẬT" : "Bật Số Thứ Tự (Tắt: File Gốc)";
+        isSTTActive = !isSTTActive;
+        document.getElementById('btnSTT').classList.toggle('active', isSTTActive);
         filterData();
     }
 
-    // CHUYỂN ĐỔI CHẾ ĐỘ NHÓM TRÙNG NHAU GIỮ NGUYÊN LOGIC CŨ
-    function toggleGroupTrungMode() {
-        isGroupTrungEnabled = !isGroupTrungEnabled;
-        document.getElementById('btnGroupTrung').classList.toggle('active', isGroupTrungEnabled);
+    // BẬT / TẮT NHÓM TRÙNG NHAU LOGIC CŨ
+    function toggleGroupMode() {
+        isGroupActive = !isGroupActive;
+        document.getElementById('btnGroup').classList.toggle('active', isGroupActive);
         filterData();
     }
 
-    // HÀM XỬ LÝ LOGIC TÌM KIẾM, ĐÁNH SỐ VÀ NHÓM CHUNG CHÍNH XÁC 100%
+    // BỘ XỬ LÝ LỌC VÀ KẾT XUẤT 
     function filterData() {
         const keyword = document.getElementById('searchInput').value.trim().toLowerCase();
-        let processedRows = [...originalExcelRows];
+        let rows = [...originalExcelRows];
 
-        // 1. Thực hiện Lọc tìm kiếm nếu có từ khóa
+        // 1. Lọc theo từ khóa tìm kiếm
         if (keyword !== '') {
-            processedRows = processedRows.filter(row => {
+            rows = rows.filter(row => {
                 return row.some(cell => String(cell || '').toLowerCase().includes(keyword));
             });
         }
 
-        // 2. Logic Nhóm Trùng Nhau (Nếu bật sẽ gộp các hàng giống hệt nhau)
-        if (isGroupTrungEnabled) {
-            let uniqueMap = new Map();
-            processedRows.forEach(row => {
+        // 2. Gom nhóm các dòng trùng lặp hoàn toàn nếu bật Nhóm chung
+        if (isGroupActive) {
+            let map = new Map();
+            rows.forEach(row => {
                 let key = row.map(c => String(c || '').trim()).join('|');
-                if (!uniqueMap.has(key)) {
-                    uniqueMap.set(key, row);
-                }
+                if (!map.has(key)) map.set(key, row);
             });
-            processedRows = Array.from(uniqueMap.values());
+            rows = Array.from(map.values());
         }
 
-        renderExcelTable(processedRows);
+        renderExcelTable(rows);
     }
 
-    // RENDER LẠI BẢNG DỮ LIỆU - LUÔN CỐ ĐỊNH TIÊU ĐỀ KHI CUỘN
+    // TÁI LẬP BẢNG DỮ LIỆU - TIÊU ĐỀ FILE CỐ ĐỊNH KHI CUỘN 100%
     function renderExcelTable(rows) {
         const head = document.getElementById('tHead'); 
         const body = document.getElementById('tBody');
-        head.innerHTML = ''; 
-        body.innerHTML = '';
+        head.innerHTML = ''; body.innerHTML = '';
 
         if (originalExcelHeaders.length === 0) return;
 
-        // Xây dựng Header tiêu đề (Nếu bật STT thì tự chèn cột STT vào đầu bảng)
+        // Xử lý Hàng Tiêu Đề
         let hRow = '<tr>';
-        if (isSTTEnabled) {
-            hRow += '<th>STT</th>';
+        if (isSTTActive) {
+            hRow += '<th>STT</th>'; // Chèn thêm cột STT tự sinh vào đầu bảng
         }
         originalExcelHeaders.forEach(h => {
             hRow += `<th>${h}</th>`;
@@ -623,15 +570,15 @@
         hRow += '</tr>';
         head.innerHTML = hRow;
 
-        // Xây dựng nội dung các hàng dữ liệu
+        // Xử lý Các Hàng Dữ Liệu
         rows.forEach((row, index) => {
             let bRow = '<tr>';
-            if (isSTTEnabled) {
-                // Đánh số thứ tự tự nhiên liên tiếp bắt đầu từ 1
-                bRow += `<td style="font-weight: bold; color: var(--ios-blue);">${index + 1}</td>`;
+            if (isSTTActive) {
+                // Đánh số tự nhiên tăng dần liên tiếp bắt đầu từ 1
+                bRow += `<td style="font-weight: bold; color: var(--ios-blue); background: #f9f9f9;">${index + 1}</td>`;
             }
             
-            // Đảm bảo đổ đúng số lượng cột theo file gốc 100%
+            // Đổ chính xác 100% theo các cột dữ liệu file gốc
             for(let i = 0; i < originalExcelHeaders.length; i++) {
                 bRow += `<td>${row[i] !== undefined ? row[i] : ''}</td>`;
             }
