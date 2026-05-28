@@ -12,6 +12,7 @@
             --ios-blue: #007aff;
             --ios-gray: #1c1c1e;
             --ios-green: #34c759;
+            --ios-red: #ff3b30;
         }
 
         html, body {
@@ -24,13 +25,14 @@
 
         .app-container {
             width: 100vw; height: 100dvh; display: flex; flex-direction: column; box-sizing: border-box;
-            padding-bottom: env(safe-area-inset-bottom); background: #000;
+            background: #000; position: relative;
         }
 
-        /* VÙNG CAMERA 42DVH VÀ LOGIC FULLSCREEN NỔI BẬT NÚT */
+        /* CAMERA CHUẨN ĐỊNH DẠNG - FULLSCREEN KHÔNG LỖI */
         .camera-viewport-wrapper {
             position: relative; width: 100%; background: #000;
             height: 42dvh; overflow: hidden; touch-action: none; flex-shrink: 0;
+            z-index: 10;
         }
         .camera-viewport-wrapper.is-fullscreen {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; z-index: 9999;
@@ -42,16 +44,17 @@
         }
         video.mirror-mode { transform: scaleX(-1); }
 
+        /* BỘ ĐẾM THỜI GIAN QUAY VIDEO */
         .video-recording-timer {
-            position: absolute; top: 50px; left: 50%; transform: translateX(-50%);
+            position: absolute; top: 60px; left: 50%; transform: translateX(-50%);
             background: rgba(255, 59, 48, 0.9); padding: 4px 14px; font-weight: 700;
-            font-size: 14px; border-radius: 8px; display: none; z-index: 10005;
+            font-size: 14px; border-radius: 8px; display: none; z-index: 10005; color: #fff;
         }
 
         .top-settings-bar {
-            position: absolute; top: 12px; left: 0; width: 100%;
+            position: absolute; top: 16px; left: 0; width: 100%;
             display: flex; justify-content: space-between; align-items: center;
-            padding: 0 16px; box-sizing: border-box; z-index: 10000;
+            padding: 0 16px; box-sizing: border-box; z-index: 10005;
         }
         .left-controls, .right-controls { display: flex; align-items: center; gap: 8px; }
 
@@ -66,35 +69,37 @@
         }
         .btn-icon-top.active { background: var(--ios-yellow); color: #000; }
 
-        /* ĐIỀU KHIỂN ZOOM CHỮA FULLSCREEN VẪN HIỂN THỊ */
+        /* VÒNG XOAY ZOOM LUÔN NỔI KHI FULLSCREEN */
         .zoom-control-layer {
-            position: absolute; bottom: 10px; left: 0; width: 100%;
-            display: flex; flex-direction: column; align-items: center; z-index: 10000; pointer-events: none;
+            position: absolute; bottom: 15px; left: 0; width: 100%;
+            display: flex; flex-direction: column; align-items: center; z-index: 10005; pointer-events: none;
         }
         .collapsed-zoom-hub { pointer-events: auto; display: flex; justify-content: center; align-items: center; }
         .zoom-single-dot {
-            background: rgba(28, 28, 30, 0.85); border: 1px solid rgba(255,255,255,0.2);
-            color: var(--ios-yellow); width: 40px; height: 40px; border-radius: 50%;
-            font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;
+            background: rgba(28, 28, 30, 0.9); border: 1px solid rgba(255,255,255,0.25);
+            color: var(--ios-yellow); width: 42px; height: 42px; border-radius: 50%;
+            font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
         }
 
         .ios-curved-dial-panel { position: absolute; bottom: -10px; width: 320px; height: 130px; pointer-events: auto; display: none; opacity: 0; }
         .dial-center-pointer { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 8px solid var(--ios-yellow); z-index: 150; }
-        .dial-live-text-hub { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); color: var(--ios-yellow); font-size: 14px; font-weight: 700; z-index: 150; background: rgba(0,0,0,0.7); padding: 3px 10px; border-radius: 12px; }
+        .dial-live-text-hub { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); color: var(--ios-yellow); font-size: 14px; font-weight: 700; z-index: 150; background: rgba(0,0,0,0.8); padding: 3px 10px; border-radius: 12px; }
         .dial-wheel-rotor { position: absolute; top: 40px; left: 50%; width: 640px; height: 640px; margin-left: -320px; border-radius: 50%; will-change: transform; }
         .dial-tick-line { position: absolute; top: 0; left: 50%; width: 1.5px; height: 10px; background: rgba(255,255,255,0.3); transform-origin: 50% 320px; }
         .dial-tick-line.major-line { height: 16px; background: rgba(255,255,255,0.85); width: 2px; }
         .dial-tick-line span { position: absolute; top: 22px; left: 50%; transform: translateX(-50%); font-size: 9px; font-weight: 600; color: rgba(255,255,255,0.7); }
 
-        /* PANEL QUẢN LÝ EXCEL DƯỚI CAMERA */
+        /* BẢNG DỮ LIỆU EXCEL */
         .data-management-panel { 
             flex: 1; background: #ffffff; color: #1c1c1e; padding: 8px 12px;
             border-top-left-radius: 16px; border-top-right-radius: 16px; 
             display: flex; flex-direction: column; overflow: hidden; box-sizing: border-box;
+            margin-bottom: calc(80px + env(safe-area-inset-bottom)); /* Tránh bị thanh đáy đè */
         }
-        .upload-dashed-box { border: 2px dashed #c7c7cc; padding: 16px; text-align: center; border-radius: 12px; background: #f2f2f7; cursor: pointer; }
+        .upload-dashed-box { border: 2px dashed #c7c7cc; padding: 14px; text-align: center; border-radius: 12px; background: #f2f2f7; cursor: pointer; }
         
-        /* HỘP KÍNH LÚP TÌM KIẾM BAO GỒM CẢ PHẦN CHỌN TẤT CẢ */
+        /* KÍNH LÚP VÀ ĐIỀU KHIỂN CHỌN HÀNG LOẠT */
         .search-embed-container {
             display: none; flex-direction: column; gap: 6px; background: #f2f2f7;
             padding: 8px; border-radius: 10px; margin-bottom: 6px;
@@ -108,7 +113,7 @@
         
         .filter-buttons-group { display: flex; gap: 4px; flex-wrap: wrap; }
         .btn-toggle-action {
-            flex: 1; min-width: 70px; border: none; padding: 6px; font-size: 11px; font-weight: 600;
+            flex: 1; min-width: 65px; border: none; padding: 6px; font-size: 11px; font-weight: 600;
             border-radius: 6px; background: #ffffff; color: #007aff; border: 1px solid #d1d1d6;
         }
         .btn-toggle-action.active { background: #007aff; color: #ffffff; border-color: #007aff; }
@@ -125,16 +130,17 @@
             position: sticky; top: 0; border-bottom: 1px solid #d1d1d6; z-index: 10; 
         }
         td { padding: 8px; border-bottom: 1px solid #e5e5ea; font-size: 11px; text-align: center; color: #000; white-space: nowrap; }
-        
-        /* Checkbox style */
         .row-checkbox { width: 16px; height: 16px; }
 
-        /* ĐÁY THIẾT BỊ ĐIỀU KHIỂN CHỤP ẢNH CHỐNG SAFARI ĐÈ */
+        /* THANH ĐÁY ĐIỀU KHIỂN CỐ ĐỊNH TUYỆT ĐỐI - KHÔNG BỊ PHÒNG TO HAY SAFARI ĐÈ */
         .ios-bottom-dashboard { 
-            background: #000000; padding: 10px 0 calc(10px + env(safe-area-inset-bottom)) 0; 
-            display: flex; flex-direction: column; align-items: center; gap: 6px; flex-shrink: 0; box-sizing: border-box;
+            position: fixed; bottom: 0; left: 0; width: 100vw;
+            background: #000000; padding: 8px 0 calc(8px + env(safe-area-inset-bottom)) 0; 
+            display: flex; flex-direction: column; align-items: center; gap: 6px; 
+            box-sizing: border-box; z-index: 10010;
         }
-        .camera-viewport-wrapper.is-fullscreen ~ .ios-bottom-dashboard { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.6); z-index: 10001; }
+        .camera-viewport-wrapper.is-fullscreen ~ .ios-bottom-dashboard { background: rgba(0,0,0,0.75); }
+        
         .camera-mode-scroller { display: flex; gap: 20px; justify-content: center; width: 100%; }
         .mode-item { font-size: 12px; font-weight: 700; color: #8e8e93; letter-spacing: 0.5px; text-transform: uppercase; }
         .mode-item.active { color: var(--ios-yellow); }
@@ -149,16 +155,29 @@
         .btn-camera-flip { width: 38px; height: 38px; border-radius: 50%; background: #1c1c1e; border: none; display: flex; align-items: center; justify-content: center; }
         .btn-camera-flip svg { width: 18px; height: 18px; fill: #ffffff; }
 
-        /* MODAL THƯ VIỆN & XEM CHI TIẾT TÍCH HỢP NÚT LƯU */
+        /* MODAL THƯ VIỆN & CHẾ ĐỘ NHẤN GIỮ CHỌN */
         .gallery-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: rgba(0,0,0,0.98); z-index: 20000; display: none; flex-direction: column; padding-bottom: env(safe-area-inset-bottom); box-sizing: border-box; }
         .gallery-header { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid #2c2c2e; }
         .btn-gallery-close { background: none; border: none; color: var(--ios-blue); font-size: 16px; font-weight: bold; }
         .gallery-grid { flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; overflow-y: auto; }
+        
         .gallery-item { position: relative; aspect-ratio: 1; background: #1c1c1e; overflow: hidden; }
         .gallery-item img, .gallery-item video { width: 100%; height: 100%; object-fit: cover; }
         
+        /* Vòng Checkbox khi nhấn giữ ảnh giống App lớn */
+        .gallery-item-checkbox {
+            position: absolute; top: 6px; right: 6px; width: 20px; height: 20px;
+            border-radius: 50%; border: 2px solid #fff; background: rgba(0,0,0,0.4);
+            display: none; z-index: 10;
+        }
+        .gallery-item.select-mode .gallery-item-checkbox { display: block; }
+        .gallery-item.selected .gallery-item-checkbox { background: var(--ios-blue); border-color: var(--ios-blue); }
+
+        .gallery-footer-actions { display: none; background: #1c1c1e; padding: 12px; justify-content: space-between; border-top: 1px solid #2c2c2e; }
+        
+        /* POPUP XEM CHI TIẾT */
         .detail-viewer-popup { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: #000; z-index: 30000; display: none; flex-direction: column; }
-        .viewer-header { display: flex; justify-content: space-between; padding: 16px; z-index: 30001; }
+        .viewer-header { display: flex; justify-content: space-between; align-items: center; padding: 16px; z-index: 30001; }
         .viewer-content-pane { flex: 1; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .viewer-content-pane img, .viewer-content-pane video { max-width: 100%; max-height: 100%; object-fit: contain; }
         .btn-save-media { background: var(--ios-green); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: 14px; }
@@ -247,10 +266,15 @@
 
 <div class="gallery-modal" id="galleryModal">
     <div class="gallery-header">
-        <div style="font-weight:600; font-size: 16px;">Thư viện ảnh</div>
-        <button class="btn-gallery-close" onclick="closeGalleryModal()">Xong</button>
+        <button class="btn-gallery-close" id="btnCancelSelect" onclick="exitSelectMode()" style="display:none; color:var(--ios-red);">Huỷ chọn</button>
+        <div id="galleryTitle" style="font-weight:600; font-size: 16px;">Thư viện ảnh</div>
+        <button class="btn-gallery-close" id="btnCloseGal" onclick="closeGalleryModal()">Xong</button>
     </div>
     <div class="gallery-grid" id="galleryGrid"></div>
+    <div class="gallery-footer-actions" id="galleryFooter">
+        <span id="selectCountTxt" style="font-size:14px; color:#8e8e93; align-self:center;">Đã chọn 0 mục</span>
+        <button class="btn-save-media" style="background:var(--ios-red);" onclick="deleteSelectedMedia()">🗑 Xóa đã chọn</button>
+    </div>
 </div>
 
 <div class="detail-viewer-popup" id="detailViewer">
@@ -270,10 +294,14 @@
     
     let originalExcelHeaders = [];
     let originalExcelRows = [];
-    let selectedRowsState = []; // Lưu trạng thái checkbox
+    let selectedRowsState = []; 
     
     let isSTTActive = false;
     let isGroupActive = false;
+
+    // Quản lý trạng thái chọn ảnh bằng Nhấn giữ
+    let isGallerySelectMode = false;
+    let selectedMediaIds = new Set();
 
     const dialRotor = document.getElementById('dialRotor');
     const totalTicks = 120; 
@@ -367,7 +395,7 @@
         document.getElementById('btnRecord').style.display = (targetMode === 'VIDEO') ? 'block' : 'none';
     }
 
-    let activeStream = null, videoTrack = null, isFlashOn = false, mediaRecorder = null, recordedChunks = [], isRecording = false;
+    let activeStream = null, videoTrack = null, isFlashOn = false, mediaRecorder = null, recordedChunks = [], isRecording = false, recTimerInterval = null;
 
     async function startCamera() {
         if (activeStream) { stopCamera(); }
@@ -428,12 +456,14 @@
         let item = { id: Date.now(), type: 'PHOTO', src: dataUrl };
         mediaItems.unshift(item);
         updateAlbumPreview();
-        openDetailViewer(item); // Chụp xong hiển thị xem luôn kèm nút lưu
     }
 
+    // SỬA CHUẨN ĐÚNG LOGIC QUAY VIDEO KHÔNG TỰ MỞ POPUP + HIỆN TIMER ĐÚNG LÚC
     function toggleRecording() {
         if (!activeStream) return;
         const btn = document.getElementById('btnRecord');
+        const timerEl = document.getElementById('recTimer');
+        
         if (!isRecording) {
             recordedChunks = [];
             mediaRecorder = new MediaRecorder(activeStream, { mimeType: 'video/mp4' });
@@ -443,30 +473,120 @@
                 const videoUrl = URL.createObjectURL(blob);
                 let item = { id: Date.now(), type: 'VIDEO', src: videoUrl };
                 mediaItems.unshift(item);
-                updateAlbumPreview();
-                openDetailViewer(item);
+                updateAlbumPreview(); // Chỉ lưu âm thầm vào ô album góc dưới
             };
-            mediaRecorder.start(); isRecording = true; btn.classList.add('recording');
+            
+            mediaRecorder.start(); 
+            isRecording = true; 
+            btn.classList.add('recording');
+            
+            // Chạy bộ đếm thời gian thực
+            timerEl.style.display = 'block';
+            let seconds = 0;
+            timerEl.innerText = "00:00";
+            recTimerInterval = setInterval(() => {
+                seconds++;
+                let m = Math.floor(seconds / 60).toString().padStart(2, '0');
+                let s = (seconds % 60).toString().padStart(2, '0');
+                timerEl.innerText = `${m}:${s}`;
+            }, 1000);
         } else {
-            mediaRecorder.stop(); isRecording = false; btn.classList.remove('recording');
+            mediaRecorder.stop(); 
+            isRecording = false; 
+            btn.classList.remove('recording');
+            
+            // Tắt bộ đếm thời gian
+            clearInterval(recTimerInterval);
+            timerEl.style.display = 'none';
         }
     }
 
     function updateAlbumPreview() {
         const preview = document.getElementById('albumPreview');
-        if (mediaItems.length > 0) preview.style.backgroundImage = `url('${mediaItems[0].src}')`;
+        if (mediaItems.length > 0) {
+            preview.style.backgroundImage = `url('${mediaItems[0].src}')`;
+        } else {
+            preview.style.backgroundImage = 'none';
+        }
     }
 
     function openGalleryModal() { renderGalleryGrid(); document.getElementById('galleryModal').style.display = 'flex'; }
-    function closeGalleryModal() { document.getElementById('galleryModal').style.display = 'none'; }
+    function closeGalleryModal() { exitSelectMode(); document.getElementById('galleryModal').style.display = 'none'; }
+    
+    // LOGIC NHẤN GIỮ ĐỂ CHỌN ẢNH NHƯ APP LỚN
     function renderGalleryGrid() {
         const grid = document.getElementById('galleryGrid'); grid.innerHTML = '';
         mediaItems.forEach(item => {
-            const div = document.createElement('div'); div.className = 'gallery-item';
+            const div = document.createElement('div'); 
+            div.className = `gallery-item ${isGallerySelectMode ? 'select-mode' : ''} ${selectedMediaIds.has(item.id) ? 'selected' : ''}`;
             div.innerHTML = item.type === 'PHOTO' ? `<img src="${item.src}">` : `<video src="${item.src}"></video>`;
-            div.onclick = () => openDetailViewer(item);
+            
+            // Thêm vòng tròn checkbox ẩn/hiển thị
+            const chk = document.createElement('div');
+            chk.className = 'gallery-item-checkbox';
+            div.appendChild(chk);
+
+            let pressTimer;
+            // Xử lý sự kiện nhấn giữ (Long Press) 1 giây để bật chế độ chọn
+            div.addEventListener('touchstart', () => {
+                pressTimer = setTimeout(() => {
+                    if (!isGallerySelectMode) {
+                        isGallerySelectMode = true;
+                        enterSelectMode();
+                    }
+                    toggleSelectMediaItem(item.id, div);
+                }, 1000);
+            }, {passive: true});
+
+            div.addEventListener('touchend', () => { clearTimeout(pressTimer); });
+
+            // Nhấn một lần bình thường
+            div.onclick = () => {
+                if (isGallerySelectMode) {
+                    toggleSelectMediaItem(item.id, div);
+                } else {
+                    openDetailViewer(item);
+                }
+            };
+
             grid.appendChild(div);
         });
+    }
+
+    function enterSelectMode() {
+        document.getElementById('btnCancelSelect').style.display = 'block';
+        document.getElementById('btnCloseGal').style.display = 'none';
+        document.getElementById('galleryTitle').style.display = 'none';
+        document.getElementById('galleryFooter').style.display = 'flex';
+        renderGalleryGrid();
+    }
+
+    function exitSelectMode() {
+        isGallerySelectMode = false;
+        selectedMediaIds.clear();
+        document.getElementById('btnCancelSelect').style.display = 'none';
+        document.getElementById('btnCloseGal').style.display = 'block';
+        document.getElementById('galleryTitle').style.display = 'block';
+        document.getElementById('galleryFooter').style.display = 'none';
+        renderGalleryGrid();
+    }
+
+    function toggleSelectMediaItem(id, element) {
+        if (selectedMediaIds.has(id)) {
+            selectedMediaIds.delete(id);
+            element.classList.remove('selected');
+        } else {
+            selectedMediaIds.add(id);
+            element.classList.add('selected');
+        }
+        document.getElementById('selectCountTxt').innerText = `Đã chọn ${selectedMediaIds.size} mục`;
+    }
+
+    function deleteSelectedMedia() {
+        if (selectedMediaIds.size === 0) return;
+        mediaItems = mediaItems.filter(item => !selectedMediaIds.has(item.id));
+        exitSelectMode();
+        updateAlbumPreview();
     }
 
     function openDetailViewer(item) {
@@ -476,9 +596,7 @@
         document.getElementById('detailViewer').style.display = 'flex';
     }
 
-    function closeDetailViewer() {
-        document.getElementById('detailViewer').style.display = 'none';
-    }
+    function closeDetailViewer() { document.getElementById('detailViewer').style.display = 'none'; }
 
     function downloadCurrentMedia() {
         if (!currentViewingItem) return;
@@ -491,7 +609,7 @@
     }
 
     // ==========================================
-    // LOGIC KÍNH LÚP & ĐIỀU KHIỂN CHỌN HÀNG LOẠT
+    // LOGIC KÍNH LÚP & EXCEL
     // ==========================================
     function toggleSearchContainer() {
         const box = document.getElementById('searchContainer');
@@ -508,9 +626,7 @@
         document.getElementById('btnToggleSearch').classList.remove('active');
     }
 
-    function handleBlankClick(event) {
-        closeSearchContainer();
-    }
+    function handleBlankClick(event) { closeSearchContainer(); }
 
     document.getElementById('excelFile').addEventListener('change', function(e) {
         const file = e.target.files[0]; if (!file) return;
@@ -523,8 +639,6 @@
             if (json.length > 0) {
                 originalExcelHeaders = json[0].map(h => h || '');
                 originalExcelRows = json.slice(1).filter(row => row.length > 0);
-                
-                // Khởi tạo mảng trạng thái check cho tất cả các hàng
                 selectedRowsState = new Array(originalExcelRows.length).fill(false);
                 
                 document.getElementById('uploadBox').classList.add('hidden');
@@ -547,22 +661,16 @@
         filterData();
     }
 
-    // Chọn / Hủy chọn tất cả (Áp dụng cho toàn bộ dữ liệu gốc)
     function selectAllRows(status) {
         selectedRowsState.fill(status);
-        // Cập nhật lại giao diện
         const checkboxes = document.querySelectorAll('.row-checkbox');
         checkboxes.forEach(cb => cb.checked = status);
     }
 
-    function updateRowState(originalIndex, checked) {
-        selectedRowsState[originalIndex] = checked;
-    }
+    function updateRowState(originalIndex, checked) { selectedRowsState[originalIndex] = checked; }
 
     function filterData() {
         const keyword = document.getElementById('searchInput').value.trim().toLowerCase();
-        
-        // Tạo danh sách cặp dữ liệu kèm index gốc để quản lý checkbox chính xác
         let indexedRows = originalExcelRows.map((row, idx) => ({ originalIndex: idx, data: row }));
 
         if (keyword !== '') {
@@ -590,22 +698,14 @@
 
         if (originalExcelHeaders.length === 0) return;
 
-        // Header luôn có cột Checkbox đầu tiên
         let hRow = '<tr><th>Chọn</th>';
-        if (isSTTActive) {
-            hRow += '<th>STT</th>';
-        }
-        originalExcelHeaders.forEach(h => {
-            hRow += `<th>${h}</th>`;
-        });
+        if (isSTTActive) { hRow += '<th>STT</th>'; }
+        originalExcelHeaders.forEach(h => { hRow += `<th>${h}</th>`; });
         hRow += '</tr>';
         head.innerHTML = hRow;
 
-        // Đổ dữ liệu hàng
         indexedRows.forEach((item, index) => {
             let bRow = '<tr>';
-            
-            // Cột checkbox giữ nguyên logic lưu trạng thái
             let isChecked = selectedRowsState[item.originalIndex] ? 'checked' : '';
             bRow += `<td><input type="checkbox" class="row-checkbox" ${isChecked} onchange="updateRowState(${item.originalIndex}, this.checked)"></td>`;
             
