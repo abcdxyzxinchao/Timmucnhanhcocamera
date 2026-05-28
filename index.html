@@ -19,7 +19,8 @@
             background-color: var(--ios-dark-bg); color: #ffffff;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             overflow: hidden; position: fixed;
-            -webkit-tap-highlight-color: transparent; user-select: none;
+            -webkit-tap-highlight-color: transparent; 
+            user-select: none; -webkit-user-select: none;
             touch-action: none;
         }
 
@@ -127,7 +128,6 @@
         
         .shutter-row { width: 100%; display: flex; justify-content: space-around; align-items: center; padding: 0 36px; box-sizing: border-box; }
         .album-preview-placeholder { width: 48px; height: 48px; border-radius: 12px; background: #1c1c1e; border: 2px solid rgba(255,255,255,0.9); background-size: cover; background-position: center; box-shadow: 0 2px 8px rgba(0,0,0,0.4); transition: transform 0.1s; }
-        .album-preview-placeholder:active { transform: scale(0.92); }
 
         .shutter-trigger-btn { border-radius: 50%; border: none; display: none; outline: none; transition: transform 0.1s; }
         .shutter-trigger-btn:active { transform: scale(0.9); }
@@ -138,7 +138,7 @@
         .btn-camera-flip { width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.2); border: none; display: flex; align-items: center; justify-content: center; }
         .btn-camera-flip svg { width: 22px; height: 22px; fill: #ffffff; }
 
-        /* THƯ VIỆN ẢNH */
+        /* THƯ VIỆN */
         .gallery-modal { 
             position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; 
             background: #000000; z-index: 20000; display: none; flex-direction: column; 
@@ -167,25 +167,26 @@
             display: flex; align-items: center; gap: 3px;
         }
 
-        /* CHI TIẾT ẢNH - CHO PHÉP ĐÈ GIỮ ĐỂ LƯU GỐC */
+        /* CHI TIẾT XEM LỚN - FIX ĐỂ GIỮ LÀ LƯU */
         .detail-viewer-popup { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: #000; z-index: 30000; display: none; flex-direction: column; }
         .viewer-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; z-index: 30001; background: rgba(0,0,0,0.8); }
-        .viewer-content-pane { flex: 1; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         
-        /* Bật menu tương tác hệ thống khi người dùng nhấn giữ (Lưu trực tiếp vào Album máy) */
+        /* Mở mọi quyền hạn cảm ứng cho vùng này */
+        .viewer-content-pane { 
+            flex: 1; display: flex; align-items: center; justify-content: center; overflow: hidden;
+            pointer-events: auto !important;
+        }
+        
+        /* Kích hoạt chọn, menu và cảm ứng gốc của hệ điều hành trên thẻ ảnh */
         .viewer-content-pane img { 
             max-width: 100%; max-height: 100%; object-fit: contain; 
             user-select: auto !important; -webkit-user-select: auto !important;
             pointer-events: auto !important;
         }
-        .viewer-content-pane video { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .viewer-content-pane video { max-width: 100%; max-height: 100%; object-fit: contain; pointer-events: auto !important; }
         
-        .tip-save-text {
-            color: rgba(255,255,255,0.6); font-size: 13px; font-weight: 400; text-align: center;
-        }
-        .btn-action-vid {
-            background: var(--ios-blue); color: white; border: none; padding: 8px 16px; border-radius: 10px; font-weight: 600; font-size: 13px;
-        }
+        .tip-save-text { color: rgba(255,255,255,0.7); font-size: 13px; font-weight: 500; text-align: center; }
+        .btn-action-vid { background: var(--ios-blue); color: white; border: none; padding: 8px 16px; border-radius: 10px; font-weight: 600; font-size: 13px; }
     </style>
 </head>
 <body>
@@ -250,7 +251,7 @@
 <div class="detail-viewer-popup" id="detailViewer">
     <div class="viewer-header">
         <button class="btn-gallery-close" onclick="closeDetailViewer()" style="color:#fff; font-size:16px;">✕ Đóng</button>
-        <div class="tip-save-text" id="viewerTip">Nhấn giữ ảnh để chọn "Thêm vào Ảnh"</div>
+        <div class="tip-save-text" id="viewerTip">Nhấn giữ để lưu vào thiết bị</div>
         <button class="btn-action-vid" id="btnVidDownload" onclick="downloadCurrentMedia()" style="display:none;">Tải về</button>
     </div>
     <div class="viewer-content-pane" id="viewerContentPane"></div>
@@ -269,18 +270,19 @@
     const tickSpacingAngle = 1.5;
     let startX = 0, baseAngle = 0, currentAngle = 0, collapseTimer = null;
 
-    // Cho phép tương tác menu trên toàn ứng dụng trừ một số thành phần camera gốc
+    // LOGIC CHẶN MỞ MENU CHỈ ÁP DỤNG TRÊN CÁC THÀNH PHẦN CAMERA, BỎ QUA POPUP XEM ẢNH LỚN
     window.addEventListener('contextmenu', function(e) {
-        if (e.target.tagName === 'IMG' && e.target.closest('#viewerContentPane')) {
-            return true; // Cho phép giữ ảnh để lưu gốc trên iOS
+        if (e.target.closest('#viewerContentPane')) {
+            return true; // Để trình duyệt mở menu Nhấn giữ cứu ảnh/video gốc
         }
         e.preventDefault();
         return false;
     }, { capture: false });
 
-    // Chặn Double-tap zoom của trình duyệt
+    // Chặn Double-tap zoom của trình duyệt (chỉ chặn trên các vùng thao tác camera)
     let lastTouchEnd = 0;
     document.addEventListener('touchend', function (e) {
+        if (e.target.closest('#viewerContentPane')) return; // Bỏ qua vùng xem ảnh lớn để không lỗi cảm ứng nhấn giữ
         let now = (new Date()).getTime();
         if (now - lastTouchEnd <= 300) {
             e.preventDefault();
@@ -530,11 +532,11 @@
 
         if(item.type === 'PHOTO') {
             pane.innerHTML = `<img src="${item.src}">`;
-            tip.innerText = "Nhấn giữ trực tiếp vào ảnh -> chọn 'Thêm vào Ảnh'";
+            tip.innerText = "Nhấn giữ trực tiếp vào ảnh -> Chọn 'Thêm vào Ảnh'";
             btnVid.style.display = 'none';
         } else {
             pane.innerHTML = `<video src="${item.src}" controls autoplay></video>`;
-            tip.innerText = "Bấm Tải về để đưa video vào thiết bị";
+            tip.innerText = "Bấm nút Tải về góc trên để lưu video";
             btnVid.style.display = 'block';
         }
         document.getElementById('detailViewer').style.display = 'flex';
