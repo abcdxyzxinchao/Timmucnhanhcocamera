@@ -90,7 +90,7 @@
             box-shadow: inset 1px 1px 2px rgba(255,255,255,0.6), 0 4px 12px rgba(255, 204, 0, 0.4);
         }
 
-        /* KHU VỰC ĐIỀU KHIỂN ZOOM - ĐÃ LOẠI BỎ KHỐI NỀN ĐEN */
+        /* KHU VỰC ĐIỀU KHIỂN ZOOM TRONG SUỐT */
         .zoom-control-layer {
             position: absolute; bottom: calc(195px + env(safe-area-inset-bottom)); left: 0; width: 100%;
             display: flex; flex-direction: column; align-items: center; z-index: 10005; pointer-events: none;
@@ -108,11 +108,11 @@
         }
         .zoom-single-dot:active { transform: scale(0.9); }
 
-        /* THƯỚC XOAY CONG TRONG SUỐT HOÀN TOÀN - KHÔNG NỀN ĐEN */
+        /* THƯỚC XOAY CONG 120X TRONG SUỐT HOÀN TOÀN */
         .ios-curved-dial-panel { 
             position: absolute; bottom: -10px; width: 100vw; height: 110px; pointer-events: auto; 
             display: none; opacity: 0; transition: opacity 0.2s;
-            background: transparent; /* Loại bỏ màu nền tối */
+            background: transparent;
         }
         .dial-center-pointer { position: absolute; top: -4px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 7px solid var(--ios-yellow); z-index: 150; }
         .dial-live-text-hub { 
@@ -120,10 +120,10 @@
             background: rgba(0,0,0,0.7); padding: 4px 10px; border-radius: 10px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.5);
         }
-        .dial-wheel-rotor { position: absolute; top: 25px; left: 50%; width: 640px; height: 640px; margin-left: -320px; border-radius: 50%; will-change: transform; }
-        .dial-tick-line { position: absolute; top: 0; left: 50%; width: 1.5px; height: 9px; background: rgba(255,255,255,0.4); transform-origin: 50% 320px; }
+        .dial-wheel-rotor { position: absolute; top: 25px; left: 50%; width: 720px; height: 720px; margin-left: -360px; border-radius: 50%; will-change: transform; }
+        .dial-tick-line { position: absolute; top: 0; left: 50%; width: 1.5px; height: 9px; background: rgba(255,255,255,0.4); transform-origin: 50% 360px; }
         .dial-tick-line.major-line { height: 15px; background: rgba(255,255,255,0.9); width: 2px; }
-        .dial-tick-line span { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.9); }
+        .dial-tick-line span { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.9); white-space: nowrap; }
 
         .ios-bottom-dashboard { 
             position: absolute; bottom: 0; left: 0; width: 100vw;
@@ -165,11 +165,17 @@
         .btn-video-rec { width: 64px; height: 64px; background: var(--ios-red); border: 4px solid #000; box-shadow: 0 0 0 2.5px #fff, 0 6px 15px rgba(0,0,0,0.4); }
         .btn-video-rec.recording { border-radius: 16px; transform: scale(0.82); background: var(--ios-red); box-shadow: 0 0 0 3px #fff; }
         
+        /* ĐIỀU CHỈNH NÚT LẬT CAMERA KHÔNG BỊ BIẾN THÀNH CHẤM ĐEN */
         .btn-camera-flip { 
-            width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.15); 
-            border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center;
+            width: 48px; height: 48px; border-radius: 50%; 
+            background: rgba(255,255,255,0.2); 
+            border: 1px solid rgba(255,255,255,0.3); 
+            display: flex; align-items: center; justify-content: center;
             box-shadow: var(--glass-bevel), var(--glass-shadow);
+            transition: transform 0.1s;
         }
+        .btn-camera-flip:active { transform: scale(0.9); }
+        .btn-camera-flip svg { width: 26px; height: 26px; fill: #ffffff; }
 
         /* THƯ VIỆN ẢNH */
         .gallery-modal { 
@@ -218,13 +224,12 @@
             flex: 1; border: none; padding: 12px; font-size: 14px; font-weight: 600; border-radius: 14px; color: white; text-align: center;
         }
 
-        /* CHI TIẾT ẢNH */
+        /* CHI TIẾT ẢNH VÀ HIỆU ỨNG LÀM NÉT */
         .detail-viewer-popup { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: #000; z-index: 30000; display: none; flex-direction: column; }
         .viewer-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; z-index: 30001; background: rgba(0,0,0,0.8); gap: 10px; }
         .viewer-content-pane { flex: 1; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
         .viewer-content-pane img, .viewer-content-pane video { max-width: 100%; max-height: 100%; object-fit: contain; }
         
-        /* HIỆU ỨNG LÀM NÉT CHUYÊN NGHIỆP */
         .enhanced-mode {
             filter: contrast(1.15) saturate(1.05) brightness(1.02);
             image-rendering: -webkit-optimize-contrast;
@@ -233,7 +238,6 @@
 
         .viewer-header-right { display: flex; gap: 10px; align-items: center; }
 
-        /* ĐỔI TÊN NÚT THÀNH LÀM NÉT ẢNH */
         .btn-ai-enhance {
             background: rgba(10, 132, 255, 0.2); color: var(--ios-blue);
             border: 1.5px solid var(--ios-blue); padding: 10px 14px; border-radius: 12px; font-weight: 700; font-size: 13px;
@@ -295,8 +299,11 @@
             <div class="album-preview-placeholder" id="albumPreview" onclick="openGalleryModal()"></div>
             <button class="shutter-trigger-btn btn-photo-snap" id="btnCapture" onclick="takePhoto()"></button>
             <button class="shutter-trigger-btn btn-video-rec" id="btnRecord" onclick="toggleRecording()"></button>
+            
             <button class="btn-camera-flip" onclick="flipCameraFacing()">
-                <svg viewBox="0 0 24 24"><path d="M19 8l-4 4h3c0 3.31-2.69 6-6 6-1.01 0-1.97-.25-2.8-.7l-1.46 1.46C8.97 19.54 10.43 20 12 20c4.42 0 8-3.58 8-8h3l-4-4zM6 12c0-3.31 2.69-6 6-6 1.01 0 1.97.25 2.8.7l1.46-1.46C15.03 4.46 13.57 4 12 4c-4.42 0-8 3.58-8 8H1l4 4 4-4H6z"/></svg>
+                <svg viewBox="0 0 24 24">
+                    <path d="M16 17.01V11c0-.55-.45-1-1-1s-1 .45-1 1v6.01h-2.51c-.45 0-.67.54-.35.86l3.51 3.51c.2.2.51.2.71 0l3.51-3.51c.32-.32.1-.86-.35-.86H16zM9 3L5.49 6.51c-.32.32-.1.86.35.86H8.35V13c0 .55.45 1 1 1s1-.45 1-1V7.36h2.51c.45 0 .67-.54.35-.86L9.71 3c-.2-.2-.51-.2-.71 0z"/>
+                </svg>
             </button>
         </div>
     </div>
@@ -344,8 +351,8 @@
     let videoSecondsCounter = 0;
 
     const dialRotor = document.getElementById('dialRotor');
-    const totalTicks = 120; 
-    const tickSpacingAngle = 1.5;
+    const totalTicks = 120; // CHUẨN 120 VẠCH TƯƠNG ỨNG 120X
+    const tickSpacingAngle = 1.4; // Góc giãn cách tối ưu cho thước 120 vạch
     let startX = 0, baseAngle = 0, currentAngle = 0, collapseTimer = null;
 
     window.addEventListener('contextmenu', function(e) { e.preventDefault(); return false; }, { capture: true });
@@ -357,18 +364,29 @@
         lastTouchEnd = now;
     }, false);
 
+    // THIẾT LẬP THƯỚC ĐO TỪ 1X ĐẾN 120X
     function buildDialTicks() {
         dialRotor.innerHTML = '';
         for (let i = 0; i <= totalTicks; i++) {
-            let internalZoom = 1 + (i / totalTicks) * 20; // Khớp tối đa 21x như hình chụp thiết bị thật
+            let internalZoom = 1 + i; // 1 vạch ứng với 1 đơn vị zoom -> tối đa 121 -> giới hạn chuẩn 120x
             const tick = document.createElement('div');
             tick.className = 'dial-tick-line';
+            
             if (i === 0) {
                 tick.classList.add('major-line');
                 tick.innerHTML = `<span>1x</span>`;
+            } else if (i === 20) {
+                tick.classList.add('major-line');
+                tick.innerHTML = `<span>20x</span>`;
+            } else if (i === 50) {
+                tick.classList.add('major-line');
+                tick.innerHTML = `<span>50x</span>`;
+            } else if (i === 80) {
+                tick.classList.add('major-line');
+                tick.innerHTML = `<span>80x</span>`;
             } else if (i === totalTicks) {
                 tick.classList.add('major-line');
-                tick.innerHTML = `<span>21x</span>`;
+                tick.innerHTML = `<span>120x</span>`;
             } else if (i % 10 === 0) {
                 tick.classList.add('major-line');
             }
@@ -387,7 +405,7 @@
         collapsedHub.style.opacity = '0';
         curvedPanel.style.display = 'block';
         setTimeout(() => { curvedPanel.style.opacity = '1'; }, 20);
-        let fraction = (currentZoom - 1) / 20;
+        let fraction = (currentZoom - 1) / 119;
         currentAngle = -(fraction * totalTicks - totalTicks / 2) * tickSpacingAngle;
         dialRotor.style.transform = `rotate(${currentAngle}deg)`;
         document.getElementById('liveZoomTxt').innerText = currentZoom.toFixed(1) + "x";
@@ -408,15 +426,15 @@
     curvedPanel.addEventListener('touchstart', (e) => { clearTimeout(collapseTimer); startX = e.touches[0].clientX; baseAngle = currentAngle; }, { passive: true });
     curvedPanel.addEventListener('touchmove', (e) => {
         let deltaX = e.touches[0].clientX - startX;
-        let angleShift = (deltaX / window.innerWidth) * 140;
+        let angleShift = (deltaX / window.innerWidth) * 150; 
         currentAngle = baseAngle + angleShift;
         let borderAngle = (totalTicks / 2) * tickSpacingAngle;
         if (currentAngle > borderAngle) currentAngle = borderAngle;
         if (currentAngle < -borderAngle) currentAngle = -borderAngle;
         dialRotor.style.transform = `rotate(${currentAngle}deg)`;
         let ratio = 0.5 - (currentAngle / (totalTicks * tickSpacingAngle));
-        let computedZoom = 1 + ratio * 20;
-        currentZoom = parseFloat(Math.max(1.0, Math.min(21.0, computedZoom)).toFixed(1));
+        let computedZoom = 1 + ratio * 119;
+        currentZoom = parseFloat(Math.max(1.0, Math.min(120.0, computedZoom)).toFixed(1));
         document.getElementById('liveZoomTxt').innerText = currentZoom + "x";
         applyHardwareAndDigitalZoom(currentZoom);
     }, { passive: true });
@@ -491,7 +509,6 @@
 
     function toggleFullscreen() { document.getElementById('mainAppStructure').classList.toggle('is-fullscreen'); }
 
-    // MA TRẬN CONVOLUTION ĐIỂM ẢNH ĐỂ KHÔI PHỤC CHI TIẾT ĐỘ NÉT CAO (SHARPEN MATRIX)
     function sharpenBase64Image(base64Str, callback) {
         const img = new Image();
         img.src = base64Str;
@@ -629,9 +646,7 @@
     function toggleSelectMediaItem(id, element) { if (selectedMediaIds.has(id)) { selectedMediaIds.delete(id); element.classList.remove('selected'); } else { selectedMediaIds.add(id); element.classList.add('selected'); } }
     function selectAllMediaItems(status) { selectedMediaIds.clear(); if(status) mediaItems.forEach(item => selectedMediaIds.add(item.id)); renderGalleryGrid(); }
 
-    // LOGIC TRÍCH XUẤT CHUẨN ĐỂ ĐIỆN THOẠI NHẬN DIỆN LƯU VÀO THƯ VIỆN HỆ ĐIỀU HÀNH
     function triggerSystemPhotoSave(srcUrl, isVideo = false) {
-        // Tạo một cửa sổ sạch chứa file ảnh/video để kích hoạt trình xem mặc định của iOS/Android
         const newWindow = window.open();
         if (newWindow) {
             newWindow.document.write(`
@@ -647,7 +662,6 @@
             `);
             newWindow.document.close();
         } else {
-            // Fallback nếu bị chặn popup: Chuyển hướng trực tiếp tab hiện tại sang blob dữ liệu để lưu
             alert("Vui lòng nhấn giữ im trên file vừa mở để chọn 'Lưu vào Ảnh'!");
             window.location.href = srcUrl;
         }
