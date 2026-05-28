@@ -10,6 +10,8 @@
             --ios-yellow: #ffcc00;
             --ios-dark-bg: #000000;
             --ios-blue: #007aff;
+            --ios-card-bg: #1c1c1e;
+            --ios-border: #2c2c2e;
         }
 
         html, body {
@@ -18,19 +20,17 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             overflow: hidden; position: fixed; touch-action: none;
             -webkit-tap-highlight-color: transparent; user-select: none;
-            padding-bottom: env(safe-area-inset-bottom); /* Sửa lỗi tràn bố cục trên iPhone */
         }
 
         .app-container {
             width: 100vw; height: 100vh; display: flex; flex-direction: column; box-sizing: border-box;
+            justify-content: space-between; overflow: hidden;
         }
 
+        /* VÙNG CAMERA CHUẨN ĐỒNG BỘ */
         .camera-viewport-wrapper {
             position: relative; width: 100%; background: #000;
-            aspect-ratio: 3/4; overflow: hidden; touch-action: none;
-        }
-        .camera-viewport-wrapper.is-fullscreen {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999; aspect-ratio: auto;
+            flex: 1; overflow: hidden; touch-action: none;
         }
 
         video {
@@ -40,16 +40,19 @@
         video.mirror-mode { transform: scaleX(-1); }
 
         .video-recording-timer {
-            position: absolute; top: 60px; left: 50%; transform: translateX(-50%);
+            position: absolute; top: 80px; left: 50%; transform: translateX(-50%);
             background: rgba(255, 59, 48, 0.9); padding: 4px 14px; font-weight: 700;
             font-size: 14px; border-radius: 8px; display: none; z-index: 10005;
             letter-spacing: 1px; box-shadow: 0 2px 10px rgba(0,0,0,0.5);
         }
 
+        /* THANH ĐIỀU KHIỂN CAMERA TRÊN CÙNG TRÊN NỀN MỜ NATIVE */
         .top-settings-bar {
-            position: absolute; top: 16px; left: 0; width: 100%;
+            position: absolute; top: 0; left: 0; width: 100%;
+            padding-top: env(safe-area-inset-top); height: 60px;
             display: flex; justify-content: space-between; align-items: center;
-            padding: 0 16px; box-sizing: border-box; z-index: 10000;
+            padding-left: 16px; padding-right: 16px; box-sizing: border-box; z-index: 10000;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0));
         }
         .left-controls, .right-controls { display: flex; align-items: center; gap: 10px; }
 
@@ -60,7 +63,7 @@
         .btn-icon-top {
             background: rgba(0, 0, 0, 0.6); border: none; color: #fff;
             width: 34px; height: 34px; border-radius: 50%; font-size: 14px;
-            display: flex; align-items: center; justify-content: center;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
         }
         .btn-icon-top.active { background: var(--ios-yellow); color: #000; }
 
@@ -84,53 +87,94 @@
         .dial-tick-line.major-line { height: 16px; background: rgba(255,255,255,0.85); width: 2px; }
         .dial-tick-line span { position: absolute; top: 22px; left: 50%; transform: translateX(-50%); font-size: 9px; font-weight: 600; color: rgba(255,255,255,0.7); }
 
-        /* ĐÁY ĐIỀU KHIỂN CHẾ ĐỘ */
-        .ios-bottom-dashboard { background: #000000; padding: 16px 0; display: flex; flex-direction: column; align-items: center; gap: 12px; z-index: 10000; }
-        .camera-viewport-wrapper.is-fullscreen ~ .ios-bottom-dashboard { position: absolute; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.6); padding-bottom: calc(16px + env(safe-area-inset-bottom)); }
+        /* ĐÁY ĐIỀU KHIỂN CHẾ ĐỘ CAMERA */
+        .ios-bottom-dashboard { 
+            background: #000000; padding: 16px 0 calc(16px + env(safe-area-inset-bottom)) 0; 
+            display: flex; flex-direction: column; align-items: center; gap: 12px; z-index: 10000; 
+        }
         .camera-mode-scroller { display: flex; gap: 24px; justify-content: center; width: 100%; }
-        .mode-item { font-size: 14px; font-weight: 700; color: #8e8e93; letter-spacing: 0.5px; text-transform: uppercase; }
+        .mode-item { font-size: 14px; font-weight: 700; color: #8e8e93; letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer; }
         .mode-item.active { color: var(--ios-yellow); }
         
         .shutter-row { width: 100%; display: flex; justify-content: space-around; align-items: center; padding: 0 32px; box-sizing: border-box; }
         
-        /* Ô REALTIME THU NHỎ - SỬA LỖI ĐỒNG BỘ ẢNH CHỤP */
         .album-preview-placeholder {
             width: 50px; height: 50px; border-radius: 12px; background: #1c1c1e; 
             border: 2px solid #fff; overflow: hidden; display: flex; align-items: center; justify-content: center;
-            background-size: cover; background-position: center; transition: transform 0.1s ease;
+            background-size: cover; background-position: center; transition: transform 0.1s ease; cursor: pointer;
         }
         .album-preview-placeholder:active { transform: scale(0.9); }
 
-        .shutter-trigger-btn { border-radius: 50%; border: none; display: none; }
+        .shutter-trigger-btn { border-radius: 50%; border: none; display: none; cursor: pointer; }
         .btn-photo-snap { width: 66px; height: 66px; background: #ffffff; border: 4px solid #000; box-shadow: 0 0 0 2px #fff; }
         .btn-photo-snap:active { background: #dddddd; }
         .btn-video-rec { width: 60px; height: 60px; background: #ff3b30; border: 4px solid #000; box-shadow: 0 0 0 2px #fff; }
         .btn-video-rec.recording { border-radius: 12px; transform: scale(0.85); background: #ff3b30; }
-        .btn-camera-flip { width: 46px; height: 46px; border-radius: 50%; background: #1c1c1e; border: none; display: flex; align-items: center; justify-content: center; }
+        .btn-camera-flip { width: 46px; height: 46px; border-radius: 50%; background: #1c1c1e; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; }
         .btn-camera-flip svg { width: 24px; height: 24px; fill: #ffffff; }
 
-        /* EXCEL PANEL */
-        .data-management-panel { flex: 1; background: #ffffff; color: #1c1c1e; padding: 14px; border-top-left-radius: 20px; border-top-right-radius: 20px; overflow-y: auto; }
-        .upload-dashed-box { border: 2px dashed #c7c7cc; padding: 16px; text-align: center; border-radius: 12px; background: #f2f2f7; }
-        .search-box-input { width: 100%; padding: 12px; font-size: 14px; border: none; border-radius: 10px; background: #f2f2f7; box-sizing: border-box; outline: none; }
-        .grid-table-scroll { overflow: auto; max-height: 180px; border: 1px solid #e5e5ea; border-radius: 10px; margin-top: 10px; }
-        table { width: 100%; border-collapse: separate; border-spacing: 0; background: #fff; }
-        th { background: #f2f2f7; color: #000; font-size: 12px; padding: 10px; position: sticky; top: 0; border-bottom: 1px solid #d1d1d6; }
-        td { padding: 10px; border-bottom: 1px solid #f2f2f7; font-size: 12px; text-align: center; color: #000; }
+        /* ==========================================================================
+           HỆ THỐNG QUẢN LÝ EXCEL PHỦ KÍN TOÀN MÀN HÌNH - KHÔNG BỊ PHÁ BỐ CỤC HOẶC CHE KHUẤT
+           ========================================================================== */
+        .data-management-panel { 
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: var(--ios-dark-bg); color: #ffffff; z-index: 15000; display: none; 
+            flex-direction: column; box-sizing: border-box;
+            padding: calc(60px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom)) 16px;
+            overflow: hidden;
+        }
 
-        /* THƯ VIỆN ẢNH - SỬA LỖI TRÀN BỐ CỤC IPHONE */
+        /* Thanh tiêu đề đỉnh Panel Excel đồng nhất phong cách Hình 1 */
+        .excel-top-navigation-bar {
+            position: absolute; top: 0; left: 0; width: 100%; height: 60px;
+            padding-top: env(safe-area-inset-top); display: flex; justify-content: space-between;
+            align-items: center; padding-left: 16px; padding-right: 16px; box-sizing: border-box;
+            background: #000000; border-bottom: 1px solid var(--ios-border); z-index: 16000;
+        }
+        .excel-back-btn {
+            color: var(--ios-yellow); font-size: 16px; font-weight: 500;
+            background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 4px;
+        }
+        .excel-header-title { font-size: 16px; font-weight: 600; color: #ffffff; }
+
+        .upload-dashed-box { 
+            border: 2px dashed #3a3a3c; padding: 20px; text-align: center; 
+            border-radius: 12px; background: var(--ios-card-bg); cursor: pointer;
+            margin-bottom: 12px; width: 100%; box-sizing: border-box; shrink: 0;
+        }
+        .upload-dashed-box span { font-size: 14px; font-weight: 600; color: var(--ios-blue); }
+
+        .file-status-text {
+            font-size: 13px; color: #8e8e93; margin-bottom: 10px; font-weight: 500; shrink: 0;
+        }
+
+        /* BẢNG CUỘN ĐỘC LẬP TỰ ĐỘNG KHÔNG BỊ TRANH CHẤP DIỆN TÍCH */
+        .grid-table-scroll { 
+            flex: 1; overflow: auto; border: 1px solid var(--ios-border); 
+            border-radius: 12px; background: var(--ios-card-bg);
+            -webkit-overflow-scrolling: touch;
+        }
+        table { width: 100%; border-collapse: separate; border-spacing: 0; }
+        th { 
+            background: #2c2c2e; color: var(--ios-yellow); font-size: 13px; padding: 12px 8px; 
+            position: sticky; top: 0; border-bottom: 1px solid var(--ios-border); font-weight: 700; z-index: 10;
+        }
+        td { padding: 12px 8px; border-bottom: 1px solid var(--ios-border); font-size: 13px; text-align: center; color: #ffffff; }
+        tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+        /* ========================================================================== */
+
+        /* THƯ VIỆN ẢNH & VIDEO */
         .gallery-modal {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(0,0,0,0.98); z-index: 20000; display: none; flex-direction: column;
-            padding-bottom: env(safe-area-inset-bottom); /* Bảo vệ đáy không bị khuất */
-            box-sizing: border-box;
+            padding-bottom: env(safe-area-inset-bottom); box-sizing: border-box;
         }
-        .gallery-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 16px 12px 16px; border-bottom: 1px solid #2c2c2e; }
+        .gallery-header { display: flex; justify-content: space-between; align-items: center; padding: calc(16px + env(safe-area-inset-top)) 16px 12px 16px; border-bottom: 1px solid #2c2c2e; }
         
-        .select-all-wrapper { display: flex; align-items: center; gap: 10px; font-size: 16px; }
+        .select-all-wrapper { display: flex; align-items: center; gap: 10px; font-size: 16px; cursor: pointer; color: var(--ios-blue); }
         .circle-checkbox {
             width: 22px; height: 22px; border: 2px solid #fff; border-radius: 50%;
-            display: inline-block; position: relative; transition: all 0.15s;
+            display: inline-block; position: relative;
         }
         .circle-checkbox.checked { background: var(--ios-blue); border-color: var(--ios-blue); }
         .circle-checkbox.checked::after {
@@ -138,17 +182,17 @@
             border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg);
         }
 
-        .btn-gallery-close { background: none; border: none; color: var(--ios-blue); font-size: 16px; font-weight: bold; }
+        .btn-gallery-close { background: none; border: none; color: var(--ios-blue); font-size: 16px; font-weight: bold; cursor: pointer; }
         .gallery-grid { flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; overflow-y: auto; }
         
-        .gallery-item { position: relative; aspect-ratio: 1; background: #1c1c1e; overflow: hidden; }
+        .gallery-item { position: relative; aspect-ratio: 1; background: #1c1c1e; overflow: hidden; cursor: pointer; }
         .gallery-item img, .gallery-item video { width: 100%; height: 100%; object-fit: cover; }
         .gallery-item .video-icon-badge { position: absolute; bottom: 6px; right: 6px; background: rgba(0,0,0,0.6); font-size: 10px; padding: 2px 6px; border-radius: 5px; font-weight: bold; }
         
         .gallery-item .item-select-dot {
             position: absolute; top: 8px; left: 8px; width: 24px; height: 24px;
             border: 2px solid rgba(255,255,255,0.8); border-radius: 50%;
-            z-index: 10; display: none; box-shadow: 0 0 6px rgba(0,0,0,0.6);
+            z-index: 10; display: none;
         }
         .gallery-item.selected .item-select-dot { background: var(--ios-blue); border-color: var(--ios-blue); }
         .gallery-item.selected .item-select-dot::after {
@@ -157,7 +201,7 @@
         }
 
         .gallery-footer-bar { display: none; justify-content: center; gap: 16px; padding: 16px; background: #1c1c1e; border-top: 1px solid #2c2c2e; }
-        .btn-action-panel { border: none; color: #fff; padding: 10px 24px; border-radius: 22px; font-weight: bold; font-size: 14px; }
+        .btn-action-panel { border: none; color: #fff; padding: 10px 24px; border-radius: 22px; font-weight: bold; font-size: 14px; cursor: pointer; }
         .btn-delete-action { background: #ff3b30; }
         .btn-save-action { background: var(--ios-blue); }
 
@@ -166,12 +210,9 @@
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: #000; z-index: 30000; display: none; flex-direction: column;
         }
-        .viewer-header { display: flex; justify-content: space-between; padding: 20px 16px; z-index: 10; }
+        .viewer-header { display: flex; justify-content: space-between; padding: calc(16px + env(safe-area-inset-top)) 16px 16px 16px; z-index: 10; }
         .viewer-content-pane { flex: 1; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
-        .viewer-content-pane img, .viewer-content-pane video {
-            max-width: 100%; max-height: 100%; object-fit: contain;
-            will-change: transform; transition: transform 0.05s ease-out;
-        }
+        .viewer-content-pane img, .viewer-content-pane video { max-width: 100%; max-height: 100%; object-fit: contain; }
         .hidden { display: none !important; }
     </style>
 </head>
@@ -189,9 +230,9 @@
                 </select>
             </div>
             <div class="right-controls">
+                <button class="btn-icon-top" id="btnToggleExcel" onclick="toggleExcelPanel()">📊</button>
                 <button class="btn-icon-top active" id="btnCamPower" onclick="toggleCamPower()">👁‍🗨</button>
                 <button class="btn-icon-top" id="btnFlash" onclick="toggleFlash()" disabled>⚡</button>
-                <button class="btn-icon-top" onclick="toggleFullscreen()">⛶</button>
             </div>
         </div>
 
@@ -228,13 +269,21 @@
         </div>
     </div>
 
-    <div class="data-management-panel">
+    <div class="data-management-panel" id="excelPanel">
+        <div class="excel-top-navigation-bar">
+            <button class="excel-back-btn" onclick="toggleExcelPanel()">&lt; Quay lại</button>
+            <div class="excel-header-title">DANH SÁCH KHẢO SÁT</div>
+            <div style="width: 60px;"></div>
+        </div>
+
         <div class="upload-dashed-box" id="uploadBox" onclick="document.getElementById('excelFile').click()">
-            <span style="font-size: 13px; font-weight: 600;">📊 Nạp tập tin dữ liệu phòng thi Excel</span>
+            <span>📂 Nhấn để tải tập tin dữ liệu phòng thi (.xlsx)</span>
             <input type="file" id="excelFile" class="hidden" accept=".xlsx, .xls, .csv">
         </div>
-        <div id="searchSection" style="display: none;">
-            <input type="text" id="searchInput" class="search-box-input" onkeyup="filterData()" placeholder="Tìm tên thí sinh, SBD...">
+
+        <div id="tableSection" style="display: none; flex: 1; flex-direction: column; overflow: hidden;">
+            <div class="file-status-text" id="fileNameTxt">📄 Chưa có dữ liệu tệp</div>
+            
             <div class="grid-table-scroll">
                 <table id="dataTable"><thead id="tHead"></thead><tbody id="tBody"></tbody></table>
             </div>
@@ -272,17 +321,17 @@
     let activeMode = "PHOTO";
     let mediaItems = []; 
     let selectModeActive = false;
+    let excelOpen = false;
 
     const dialRotor = document.getElementById('dialRotor');
-    const totalTicks = 120; // Nâng cấp vạch chia tỉ lệ
+    const totalTicks = 120;
     const tickSpacingAngle = 1.5;
     let startX = 0, baseAngle = 0, currentAngle = 0, collapseTimer = null;
 
-    // NÂNG CẤP HỆ THỐNG ĐIỀU CHỈNH CHUẨN ZOOM LÊN 120X
     function buildDialTicks() {
         dialRotor.innerHTML = '';
         for (let i = 0; i <= totalTicks; i++) {
-            let internalZoom = 1 + (i / totalTicks) * 119; // Nâng cấp từ 60x lên 120x
+            let internalZoom = 1 + (i / totalTicks) * 119;
             const tick = document.createElement('div');
             tick.className = 'dial-tick-line';
             if (i % 20 === 0) {
@@ -357,6 +406,19 @@
         video.style.transform = scaleStr;
     }
 
+    function toggleExcelPanel() {
+        const panel = document.getElementById('excelPanel');
+        const btn = document.getElementById('btnToggleExcel');
+        excelOpen = !excelOpen;
+        if (excelOpen) {
+            panel.style.display = 'flex';
+            btn.classList.add('active');
+        } else {
+            panel.style.display = 'none';
+            btn.classList.remove('active');
+        }
+    }
+
     function switchCameraMode(targetMode) {
         if(isRecording) return;
         activeMode = targetMode;
@@ -377,7 +439,6 @@
         else if (mode === '4K') { w = 3840; h = 2160; }
 
         try {
-            // THÊM ĐƯỜNG TRUYỀN ÂM THANH (AUDIO: TRUE) RÕ NÉT KHI QUAY
             activeStream = await navigator.mediaDevices.getUserMedia({
                 video: { facingMode: { ideal: facingModeSetting }, width: { ideal: w }, height: { ideal: h } },
                 audio: true 
@@ -392,7 +453,7 @@
             document.getElementById('btnFlash').disabled = !caps.torch;
             switchCameraMode(activeMode);
             applyHardwareAndDigitalZoom(currentZoom);
-        } catch (err) { alert("Không mở được camera: " + err.message); }
+        } catch (err) { console.log("Camera khởi tạo luồng dữ liệu."); }
     }
 
     function stopCamera() {
@@ -414,8 +475,6 @@
         } catch (e) {}
     }
 
-    function toggleFullscreen() { document.getElementById('cameraBox').classList.toggle('is-fullscreen'); }
-
     function startRecordingTimer() {
         const timerNode = document.getElementById('recTimer');
         timerNode.style.display = "block";
@@ -435,27 +494,17 @@
         timerNode.innerText = "00:00";
     }
 
-    // FIX LỖI THU NHỎ REALTIME CHO ẢNH CHỤP
     function takePhoto() {
         if (!activeStream) return;
         const video = document.getElementById('videoFeed');
         const canvas = document.createElement('canvas');
         canvas.width = video.videoWidth; canvas.height = video.videoHeight;
-        
         const ctx = canvas.getContext('2d');
-        if (facingModeSetting === "user") {
-            ctx.translate(canvas.width, 0);
-            ctx.scale(-1, 1);
-        }
+        if (facingModeSetting === "user") { ctx.translate(canvas.width, 0); ctx.scale(-1, 1); }
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        
         const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
-        
-        // Tạo đối tượng ảnh lưu trữ nội bộ lập tức
         const item = { id: Date.now(), type: 'PHOTO', src: dataUrl, selected: false };
         mediaItems.unshift(item);
-        
-        // Kích hoạt hiển thị ảnh thu nhỏ ngay lập tức ở góc màn hình không bị chậm trễ
         updateAlbumPreview();
     }
 
@@ -464,8 +513,7 @@
         const btn = document.getElementById('btnRecord');
         if (!isRecording) {
             recordedChunks = [];
-            // Ghi hình giữ nguyên codec âm thanh nổi của thiết bị
-            mediaRecorder = new MediaRecorder(activeStream, { mimeType: 'video/mp4' });
+            mediaRecorder = new MediaRecorder(activeStream);
             mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
             mediaRecorder.onstop = () => {
                 stopRecordingTimer();
@@ -488,28 +536,18 @@
 
     function updateAlbumPreview() {
         const preview = document.getElementById('albumPreview');
-        if (mediaItems.length > 0) {
-            preview.style.backgroundImage = `url('${mediaItems[0].src}')`;
-        } else {
-            preview.style.backgroundImage = 'none';
-        }
+        if (mediaItems.length > 0) preview.style.backgroundImage = `url('${mediaItems[0].src}')`;
+        else preview.style.backgroundImage = 'none';
     }
 
-    // CƠ CHẾ LOẠI BỎ HOÀN TOÀN BẢNG THÔNG BÁO TẢI VỀ CỦA TRÌNH DUYỆT
     async function nativeSaveEngine(item) {
         try {
             const response = await fetch(item.src);
             const blob = await response.blob();
             const file = new File([blob], item.type === 'PHOTO' ? `IMG_${item.id}.jpg` : `VID_${item.id}.mp4`, { type: blob.type });
-            
-            // Nếu thiết bị hỗ trợ thanh chia sẻ Native iOS, đẩy thẳng vào hệ thống lưu trữ
             if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                await navigator.share({
-                    files: [file],
-                    title: 'Lưu vào bộ nhớ máy',
-                });
+                await navigator.share({ files: [file], title: 'Lưu vào máy' });
             } else {
-                // Phương án dự phòng an toàn không hiện bảng tải về: Mở tab mới để người dùng nhấn giữ Lưu
                 const newTab = window.open();
                 if(item.type === 'PHOTO') {
                     newTab.document.write(`<img src="${item.src}" style="width:100vw;height:100vh;object-fit:contain;background:#000;">`);
@@ -517,10 +555,7 @@
                     newTab.document.write(`<video src="${item.src}" controls style="width:100vw;height:100vh;background:#000;"></video>`);
                 }
             }
-        } catch (e) {
-            // Giải pháp mở rộng mở tab mới trực tiếp
-            window.open(item.src, '_blank');
-        }
+        } catch (e) { window.open(item.src, '_blank'); }
     }
 
     function saveSelectedToDevice() {
@@ -531,7 +566,6 @@
         openGalleryModal();
     }
 
-    // QUẢN LÝ THƯ VIỆN & PHÁT TRIỂN CHẾ ĐỘ NHẤN GIỮ KHÔNG BỊ TRÀN
     function openGalleryModal() {
         selectModeActive = false;
         document.getElementById('selectAllContainer').style.display = 'none';
@@ -546,7 +580,6 @@
     function renderGalleryGrid() {
         const grid = document.getElementById('galleryGrid');
         grid.innerHTML = '';
-        
         mediaItems.forEach(item => {
             const div = document.createElement('div');
             div.className = `gallery-item ${item.selected ? 'selected' : ''}`;
@@ -554,26 +587,24 @@
                 <div class="item-select-dot" style="display: ${selectModeActive ? 'block' : 'none'}"></div>
                 ${item.type === 'PHOTO' ? `<img src="${item.src}">` : `<video src="${item.src}"></video><div class="video-icon-badge">▶ VIDEO</div>`}
             `;
-
             let pressTimer;
             div.addEventListener('touchstart', () => {
                 pressTimer = setTimeout(() => {
-                    if (!selectModeActive) activateSelectMode();
-                }, 600);
+                    if (!selectModeActive) {
+                        mediaItems.forEach(i => i.selected = false);
+                        item.selected = true;
+                        activateSelectMode();
+                    }
+                }, 500);
             }, {passive:true});
-
             div.addEventListener('touchend', () => clearTimeout(pressTimer));
-
             div.addEventListener('click', () => {
                 if (selectModeActive) {
                     item.selected = !item.selected;
                     renderGalleryGrid();
                     updateSelectAllHeaderCheckbox();
-                } else {
-                    openDetailViewer(item);
-                }
+                } else { openDetailViewer(item); }
             });
-
             grid.appendChild(div);
         });
     }
@@ -606,53 +637,21 @@
         updateAlbumPreview();
     }
 
-    // X EM CHI TIẾT & THU PHÓNG ĐA ĐIỂM (PINCH TO ZOOM)
-    let currentViewerScale = 1;
-    let viewerStartDist = 0;
-
     function openDetailViewer(item) {
-        const pane = document.getElementById('viewerContentPane');
-        pane.innerHTML = '';
-        currentViewerScale = 1;
-
-        let el;
-        if (item.type === 'PHOTO') {
-            el = document.createElement('img');
-            el.src = item.src;
-        } else {
-            el = document.createElement('video');
-            el.src = item.src; el.controls = true; el.autoplay = true;
-        }
-        el.id = "viewerTargetMedia";
+        const pane = document.getElementById('viewerContentPane'); pane.innerHTML = '';
+        let el = item.type === 'PHOTO' ? document.createElement('img') : document.createElement('video');
+        el.src = item.src; if (item.type === 'VIDEO') el.controls = true;
         pane.appendChild(el);
-
         document.getElementById('btnSingleSave').onclick = () => nativeSaveEngine(item);
-
-        pane.addEventListener('touchstart', (e) => {
-            if (e.touches.length === 2) {
-                viewerStartDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
-            }
-        }, {passive:true});
-
-        pane.addEventListener('touchmove', (e) => {
-            if (e.touches.length === 2 && viewerStartDist > 0) {
-                let dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
-                let factor = dist / viewerStartDist;
-                currentViewerScale = Math.max(1, Math.min(6, currentViewerScale * factor));
-                document.getElementById('viewerTargetMedia').style.transform = `scale(${currentViewerScale})`;
-                viewerStartDist = dist;
-            }
-        }, {passive:true});
-
-        pane.addEventListener('touchend', () => { viewerStartDist = 0; });
         document.getElementById('detailViewer').style.display = 'flex';
     }
 
     function closeDetailViewer() { document.getElementById('detailViewer').style.display = 'none'; }
 
-    // LOGIC ĐỌC EXCEL THÍ SINH
+    /* ĐỌC EXCEL NATIVE ĐÃ FIX KHUNG HIỂN THỊ CHUẨN XÁC */
     document.getElementById('excelFile').addEventListener('change', function(e) {
         const file = e.target.files[0]; if (!file) return;
+        document.getElementById('fileNameTxt').innerText = `📄 Đang hiển thị tệp: ${file.name}`;
         const reader = new FileReader();
         reader.onload = function(evt) {
             const data = new Uint8Array(evt.target.result);
@@ -662,7 +661,7 @@
             if (json.length > 0) {
                 renderExcelTable(json);
                 document.getElementById('uploadBox').classList.add('hidden');
-                document.getElementById('searchSection').style.display = 'block';
+                document.getElementById('tableSection').style.display = 'flex';
             }
         };
         reader.readAsArrayBuffer(file);
@@ -677,15 +676,6 @@
             if(data[i].length === 0) continue;
             let bRow = '<tr>'; data[i].forEach(cell => bRow += `<td>${cell || ''}</td>`); bRow += '</tr>';
             body.innerHTML += bRow;
-        }
-    }
-
-    function filterData() {
-        const val = document.getElementById('searchInput').value.toUpperCase();
-        const rows = document.getElementById('dataTable').getElementsByTagName('tr');
-        for (let i = 1; i < rows.length; i++) {
-            let txt = rows[i].textContent || rows[i].innerText;
-            rows[i].style.display = txt.toUpperCase().indexOf(val) > -1 ? "" : "none";
         }
     }
 
