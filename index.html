@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Hệ Thống Giám Sát Chuyên Nghiệp 120X</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         :root {
             --ios-yellow: #ffcc00;
@@ -28,10 +27,10 @@
             background: #000; position: relative;
         }
 
-        /* CAMERA CHUẨN ĐỊNH DẠNG - FULLSCREEN KHÔNG LỖI */
+        /* KHU VỰC CAMERA CHIẾM TRỌN MÀN HÌNH CHUẨN HIỆN ĐẠI */
         .camera-viewport-wrapper {
             position: relative; width: 100%; background: #000;
-            height: 42dvh; overflow: hidden; touch-action: none; flex-shrink: 0;
+            flex: 1; height: 100%; overflow: hidden; touch-action: none;
             z-index: 10;
         }
         .camera-viewport-wrapper.is-fullscreen {
@@ -51,6 +50,7 @@
             font-size: 14px; border-radius: 8px; display: none; z-index: 10005; color: #fff;
         }
 
+        /* THANH ĐIỀU KHIỂN TRÊN - LUÔN NỔI KHI PHÓNG TO */
         .top-settings-bar {
             position: absolute; top: 16px; left: 0; width: 100%;
             display: flex; justify-content: space-between; align-items: center;
@@ -69,9 +69,9 @@
         }
         .btn-icon-top.active { background: var(--ios-yellow); color: #000; }
 
-        /* VÒNG XOAY ZOOM LUÔN NỔI KHI FULLSCREEN */
+        /* VÒNG XOAY ZOOM LUÔN NỔI LÊN TRÊN CAMERA */
         .zoom-control-layer {
-            position: absolute; bottom: 15px; left: 0; width: 100%;
+            position: absolute; bottom: 110px; left: 0; width: 100%;
             display: flex; flex-direction: column; align-items: center; z-index: 10005; pointer-events: none;
         }
         .collapsed-zoom-hub { pointer-events: auto; display: flex; justify-content: center; align-items: center; }
@@ -90,72 +90,30 @@
         .dial-tick-line.major-line { height: 16px; background: rgba(255,255,255,0.85); width: 2px; }
         .dial-tick-line span { position: absolute; top: 22px; left: 50%; transform: translateX(-50%); font-size: 9px; font-weight: 600; color: rgba(255,255,255,0.7); }
 
-        /* BẢNG DỮ LIỆU EXCEL */
-        .data-management-panel { 
-            flex: 1; background: #ffffff; color: #1c1c1e; padding: 8px 12px;
-            border-top-left-radius: 16px; border-top-right-radius: 16px; 
-            display: flex; flex-direction: column; overflow: hidden; box-sizing: border-box;
-            margin-bottom: calc(80px + env(safe-area-inset-bottom)); /* Tránh bị thanh đáy đè */
-        }
-        .upload-dashed-box { border: 2px dashed #c7c7cc; padding: 14px; text-align: center; border-radius: 12px; background: #f2f2f7; cursor: pointer; }
-        
-        /* KÍNH LÚP VÀ ĐIỀU KHIỂN CHỌN HÀNG LOẠT */
-        .search-embed-container {
-            display: none; flex-direction: column; gap: 6px; background: #f2f2f7;
-            padding: 8px; border-radius: 10px; margin-bottom: 6px;
-        }
-        .search-row-top { display: flex; gap: 6px; align-items: center; }
-        .ios-search-input {
-            flex: 1; background: #ffffff; border: 1px solid #d1d1d6; padding: 8px 12px;
-            border-radius: 8px; font-size: 13px; color: #000; outline: none;
-        }
-        .btn-close-search { background: none; border: none; color: #ff3b30; font-size: 16px; font-weight: bold; padding: 0 4px; }
-        
-        .filter-buttons-group { display: flex; gap: 4px; flex-wrap: wrap; }
-        .btn-toggle-action {
-            flex: 1; min-width: 65px; border: none; padding: 6px; font-size: 11px; font-weight: 600;
-            border-radius: 6px; background: #ffffff; color: #007aff; border: 1px solid #d1d1d6;
-        }
-        .btn-toggle-action.active { background: #007aff; color: #ffffff; border-color: #007aff; }
-        .btn-batch-action { background: #e5e5ea; color: #1c1c1e; }
-
-        /* BẢNG EXCEL CUỘN */
-        .grid-table-scroll { 
-            flex: 1; overflow: auto; border: 1px solid #e5e5ea; 
-            border-radius: 8px; width: 100%; -webkit-overflow-scrolling: touch;
-        }
-        table { width: 100%; border-collapse: separate; border-spacing: 0; background: #fff; }
-        th { 
-            background: #f2f2f7; color: #000; font-size: 11px; padding: 8px; 
-            position: sticky; top: 0; border-bottom: 1px solid #d1d1d6; z-index: 10; 
-        }
-        td { padding: 8px; border-bottom: 1px solid #e5e5ea; font-size: 11px; text-align: center; color: #000; white-space: nowrap; }
-        .row-checkbox { width: 16px; height: 16px; }
-
-        /* THANH ĐÁY ĐIỀU KHIỂN CỐ ĐỊNH TUYỆT ĐỐI - KHÔNG BỊ PHÒNG TO HAY SAFARI ĐÈ */
+        /* THANH ĐÁY ĐIỀU KHIỂN CỐ ĐỊNH CHỐNG SAFARI ĐÈ ĐẨY LỆCH */
         .ios-bottom-dashboard { 
-            position: fixed; bottom: 0; left: 0; width: 100vw;
-            background: #000000; padding: 8px 0 calc(8px + env(safe-area-inset-bottom)) 0; 
-            display: flex; flex-direction: column; align-items: center; gap: 6px; 
-            box-sizing: border-box; z-index: 10010;
+            position: absolute; bottom: 0; left: 0; width: 100vw;
+            background: rgba(0, 0, 0, 0.8); padding: 12px 0 calc(12px + env(safe-area-inset-bottom)) 0; 
+            display: flex; flex-direction: column; align-items: center; gap: 10px; 
+            box-sizing: border-box; z-index: 10010; backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
-        .camera-viewport-wrapper.is-fullscreen ~ .ios-bottom-dashboard { background: rgba(0,0,0,0.75); }
         
-        .camera-mode-scroller { display: flex; gap: 20px; justify-content: center; width: 100%; }
-        .mode-item { font-size: 12px; font-weight: 700; color: #8e8e93; letter-spacing: 0.5px; text-transform: uppercase; }
+        .camera-mode-scroller { display: flex; gap: 24px; justify-content: center; width: 100%; }
+        .mode-item { font-size: 13px; font-weight: 700; color: #8e8e93; letter-spacing: 0.5px; text-transform: uppercase; }
         .mode-item.active { color: var(--ios-yellow); }
         
-        .shutter-row { width: 100%; display: flex; justify-content: space-around; align-items: center; padding: 0 24px; box-sizing: border-box; }
-        .album-preview-placeholder { width: 42px; height: 42px; border-radius: 8px; background: #1c1c1e; border: 2px solid #fff; background-size: cover; background-position: center; }
+        .shutter-row { width: 100%; display: flex; justify-content: space-around; align-items: center; padding: 0 32px; box-sizing: border-box; }
+        .album-preview-placeholder { width: 44px; height: 44px; border-radius: 8px; background: #1c1c1e; border: 2px solid #fff; background-size: cover; background-position: center; }
 
         .shutter-trigger-btn { border-radius: 50%; border: none; display: none; }
-        .btn-photo-snap { width: 56px; height: 56px; background: #ffffff; border: 4px solid #000; box-shadow: 0 0 0 2px #fff; }
-        .btn-video-rec { width: 52px; height: 52px; background: #ff3b30; border: 4px solid #000; box-shadow: 0 0 0 2px #fff; }
+        .btn-photo-snap { width: 58px; height: 58px; background: #ffffff; border: 4px solid #000; box-shadow: 0 0 0 2px #fff; }
+        .btn-video-rec { width: 54px; height: 54px; background: #ff3b30; border: 4px solid #000; box-shadow: 0 0 0 2px #fff; }
         .btn-video-rec.recording { border-radius: 10px; transform: scale(0.85); background: #ff3b30; }
-        .btn-camera-flip { width: 38px; height: 38px; border-radius: 50%; background: #1c1c1e; border: none; display: flex; align-items: center; justify-content: center; }
-        .btn-camera-flip svg { width: 18px; height: 18px; fill: #ffffff; }
+        .btn-camera-flip { width: 40px; height: 40px; border-radius: 50%; background: #1c1c1e; border: none; display: flex; align-items: center; justify-content: center; }
+        .btn-camera-flip svg { width: 20px; height: 20px; fill: #ffffff; }
 
-        /* MODAL THƯ VIỆN & CHẾ ĐỘ NHẤN GIỮ CHỌN */
+        /* MODAL THƯ VIỆN & CHẾ ĐỘ NHẤN GIỮ CHỌN NHƯ APP LỚN */
         .gallery-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: rgba(0,0,0,0.98); z-index: 20000; display: none; flex-direction: column; padding-bottom: env(safe-area-inset-bottom); box-sizing: border-box; }
         .gallery-header { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid #2c2c2e; }
         .btn-gallery-close { background: none; border: none; color: var(--ios-blue); font-size: 16px; font-weight: bold; }
@@ -164,7 +122,7 @@
         .gallery-item { position: relative; aspect-ratio: 1; background: #1c1c1e; overflow: hidden; }
         .gallery-item img, .gallery-item video { width: 100%; height: 100%; object-fit: cover; }
         
-        /* Vòng Checkbox khi nhấn giữ ảnh giống App lớn */
+        /* Checkbox tròn hiện lên khi nhấn giữ ảnh */
         .gallery-item-checkbox {
             position: absolute; top: 6px; right: 6px; width: 20px; height: 20px;
             border-radius: 50%; border: 2px solid #fff; background: rgba(0,0,0,0.4);
@@ -175,7 +133,7 @@
 
         .gallery-footer-actions { display: none; background: #1c1c1e; padding: 12px; justify-content: space-between; border-top: 1px solid #2c2c2e; }
         
-        /* POPUP XEM CHI TIẾT */
+        /* POPUP XEM CHI TIẾT KÈM NÚT LƯU */
         .detail-viewer-popup { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: #000; z-index: 30000; display: none; flex-direction: column; }
         .viewer-header { display: flex; justify-content: space-between; align-items: center; padding: 16px; z-index: 30001; }
         .viewer-content-pane { flex: 1; display: flex; align-items: center; justify-content: center; overflow: hidden; }
@@ -187,7 +145,7 @@
 </head>
 <body>
 
-<div class="app-container" onclick="handleBlankClick(event)">
+<div class="app-container">
     <div class="camera-viewport-wrapper" id="cameraBox">
         <div class="top-settings-bar">
             <div class="left-controls">
@@ -198,7 +156,6 @@
                 </select>
             </div>
             <div class="right-controls">
-                <button class="btn-icon-top" id="btnToggleSearch" onclick="event.stopPropagation(); toggleSearchContainer()">🔍</button>
                 <button class="btn-icon-top active" id="btnCamPower" onclick="toggleCamPower()">👁‍🗨</button>
                 <button class="btn-icon-top" id="btnFlash" onclick="toggleFlash()" disabled>⚡</button>
                 <button class="btn-icon-top" onclick="toggleFullscreen()">⛶</button>
@@ -220,34 +177,7 @@
         </div>
     </div>
 
-    <div class="data-management-panel" id="dataPanel" onclick="event.stopPropagation()">
-        <div class="upload-dashed-box" id="uploadBox" onclick="document.getElementById('excelFile').click()">
-            <span style="font-size: 13px; font-weight: 600;">📊 Nạp tập tin dữ liệu phòng thi Excel</span>
-            <input type="file" id="excelFile" class="hidden" accept=".xlsx, .xls, .csv">
-        </div>
-        
-        <div class="search-embed-container" id="searchContainer">
-            <div class="search-row-top">
-                <input type="text" id="searchInput" class="ios-search-input" placeholder="Nhập từ khóa tìm kiếm dữ liệu..." oninput="filterData()">
-                <button class="btn-close-search" onclick="closeSearchContainer()">✕</button>
-            </div>
-            <div class="filter-buttons-group">
-                <button class="btn-toggle-action" id="btnSTT" onclick="toggleSTTMode()">Bật STT liên tiếp</button>
-                <button class="btn-toggle-action" id="btnGroup" onclick="toggleGroupMode()">Nhóm trùng chung</button>
-                <button class="btn-toggle-action btn-batch-action" onclick="selectAllRows(true)">Chọn tất cả</button>
-                <button class="btn-toggle-action btn-batch-action" onclick="selectAllRows(false)">Huỷ chọn tất cả</button>
-            </div>
-        </div>
-        
-        <div class="grid-table-scroll" id="tableSection" style="display: none;">
-            <table id="dataTable">
-                <thead id="tHead"></thead>
-                <tbody id="tBody"></tbody>
-            </table>
-        </div>
-    </div>
-
-    <div class="ios-bottom-dashboard" id="bottomDashboard" onclick="event.stopPropagation()">
+    <div class="ios-bottom-dashboard" id="bottomDashboard">
         <div class="camera-mode-scroller">
             <div class="mode-item" id="mode-video" onclick="switchCameraMode('VIDEO')">Video</div>
             <div class="mode-item active" id="mode-photo" onclick="switchCameraMode('PHOTO')">Ảnh</div>
@@ -292,14 +222,6 @@
     let mediaItems = []; 
     let currentViewingItem = null;
     
-    let originalExcelHeaders = [];
-    let originalExcelRows = [];
-    let selectedRowsState = []; 
-    
-    let isSTTActive = false;
-    let isGroupActive = false;
-
-    // Quản lý trạng thái chọn ảnh bằng Nhấn giữ
     let isGallerySelectMode = false;
     let selectedMediaIds = new Set();
 
@@ -458,7 +380,7 @@
         updateAlbumPreview();
     }
 
-    // SỬA CHUẨN ĐÚNG LOGIC QUAY VIDEO KHÔNG TỰ MỞ POPUP + HIỆN TIMER ĐÚNG LÚC
+    // LOGIC QUAY VIDEO LƯU ÂM THẦM VÀO THƯ VIỆN + BỘ ĐẾM GIÂY CHUẨN ĐÚNG Ý BẠN
     function toggleRecording() {
         if (!activeStream) return;
         const btn = document.getElementById('btnRecord');
@@ -473,14 +395,14 @@
                 const videoUrl = URL.createObjectURL(blob);
                 let item = { id: Date.now(), type: 'VIDEO', src: videoUrl };
                 mediaItems.unshift(item);
-                updateAlbumPreview(); // Chỉ lưu âm thầm vào ô album góc dưới
+                updateAlbumPreview(); // Chỉ update vào ô xem trước, không bung mở tự động bậy bạ nữa
             };
             
             mediaRecorder.start(); 
             isRecording = true; 
             btn.classList.add('recording');
             
-            // Chạy bộ đếm thời gian thực
+            // Kích hoạt bộ đếm thời gian thực chữ đỏ ở giữa màn hình camera
             timerEl.style.display = 'block';
             let seconds = 0;
             timerEl.innerText = "00:00";
@@ -495,7 +417,7 @@
             isRecording = false; 
             btn.classList.remove('recording');
             
-            // Tắt bộ đếm thời gian
+            // Tắt bộ đếm thời gian thực
             clearInterval(recTimerInterval);
             timerEl.style.display = 'none';
         }
@@ -513,7 +435,7 @@
     function openGalleryModal() { renderGalleryGrid(); document.getElementById('galleryModal').style.display = 'flex'; }
     function closeGalleryModal() { exitSelectMode(); document.getElementById('galleryModal').style.display = 'none'; }
     
-    // LOGIC NHẤN GIỮ ĐỂ CHỌN ẢNH NHƯ APP LỚN
+    // LOGIC NHẤN GIỮ ĐỂ CHỌN ẢNH HÀNG LOẠT
     function renderGalleryGrid() {
         const grid = document.getElementById('galleryGrid'); grid.innerHTML = '';
         mediaItems.forEach(item => {
@@ -521,13 +443,12 @@
             div.className = `gallery-item ${isGallerySelectMode ? 'select-mode' : ''} ${selectedMediaIds.has(item.id) ? 'selected' : ''}`;
             div.innerHTML = item.type === 'PHOTO' ? `<img src="${item.src}">` : `<video src="${item.src}"></video>`;
             
-            // Thêm vòng tròn checkbox ẩn/hiển thị
             const chk = document.createElement('div');
             chk.className = 'gallery-item-checkbox';
             div.appendChild(chk);
 
             let pressTimer;
-            // Xử lý sự kiện nhấn giữ (Long Press) 1 giây để bật chế độ chọn
+            // Nhấn giữ (Long Press) chuẩn 1 giây để vào chế độ chọn
             div.addEventListener('touchstart', () => {
                 pressTimer = setTimeout(() => {
                     if (!isGallerySelectMode) {
@@ -540,7 +461,7 @@
 
             div.addEventListener('touchend', () => { clearTimeout(pressTimer); });
 
-            // Nhấn một lần bình thường
+            // Nhấn một lần
             div.onclick = () => {
                 if (isGallerySelectMode) {
                     toggleSelectMediaItem(item.id, div);
@@ -606,118 +527,6 @@
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
-    }
-
-    // ==========================================
-    // LOGIC KÍNH LÚP & EXCEL
-    // ==========================================
-    function toggleSearchContainer() {
-        const box = document.getElementById('searchContainer');
-        if (box.style.display === 'flex') {
-            closeSearchContainer();
-        } else {
-            box.style.display = 'flex';
-            document.getElementById('btnToggleSearch').classList.add('active');
-        }
-    }
-
-    function closeSearchContainer() {
-        document.getElementById('searchContainer').style.display = 'none';
-        document.getElementById('btnToggleSearch').classList.remove('active');
-    }
-
-    function handleBlankClick(event) { closeSearchContainer(); }
-
-    document.getElementById('excelFile').addEventListener('change', function(e) {
-        const file = e.target.files[0]; if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function(evt) {
-            const data = new Uint8Array(evt.target.result);
-            const wb = XLSX.read(data, { type: 'array' });
-            const ws = wb.Sheets[wb.SheetNames[0]];
-            const json = XLSX.utils.sheet_to_json(ws, { header: 1 });
-            if (json.length > 0) {
-                originalExcelHeaders = json[0].map(h => h || '');
-                originalExcelRows = json.slice(1).filter(row => row.length > 0);
-                selectedRowsState = new Array(originalExcelRows.length).fill(false);
-                
-                document.getElementById('uploadBox').classList.add('hidden');
-                document.getElementById('tableSection').style.display = 'block';
-                filterData();
-            }
-        };
-        reader.readAsArrayBuffer(file);
-    });
-
-    function toggleSTTMode() {
-        isSTTActive = !isSTTActive;
-        document.getElementById('btnSTT').classList.toggle('active', isSTTActive);
-        filterData();
-    }
-
-    function toggleGroupMode() {
-        isGroupActive = !isGroupActive;
-        document.getElementById('btnGroup').classList.toggle('active', isGroupActive);
-        filterData();
-    }
-
-    function selectAllRows(status) {
-        selectedRowsState.fill(status);
-        const checkboxes = document.querySelectorAll('.row-checkbox');
-        checkboxes.forEach(cb => cb.checked = status);
-    }
-
-    function updateRowState(originalIndex, checked) { selectedRowsState[originalIndex] = checked; }
-
-    function filterData() {
-        const keyword = document.getElementById('searchInput').value.trim().toLowerCase();
-        let indexedRows = originalExcelRows.map((row, idx) => ({ originalIndex: idx, data: row }));
-
-        if (keyword !== '') {
-            indexedRows = indexedRows.filter(item => {
-                return item.data.some(cell => String(cell || '').toLowerCase().includes(keyword));
-            });
-        }
-
-        if (isGroupActive) {
-            let map = new Map();
-            indexedRows.forEach(item => {
-                let key = item.data.map(c => String(c || '').trim()).join('|');
-                if (!map.has(key)) map.set(key, item);
-            });
-            indexedRows = Array.from(map.values());
-        }
-
-        renderExcelTable(indexedRows);
-    }
-
-    function renderExcelTable(indexedRows) {
-        const head = document.getElementById('tHead'); 
-        const body = document.getElementById('tBody');
-        head.innerHTML = ''; body.innerHTML = '';
-
-        if (originalExcelHeaders.length === 0) return;
-
-        let hRow = '<tr><th>Chọn</th>';
-        if (isSTTActive) { hRow += '<th>STT</th>'; }
-        originalExcelHeaders.forEach(h => { hRow += `<th>${h}</th>`; });
-        hRow += '</tr>';
-        head.innerHTML = hRow;
-
-        indexedRows.forEach((item, index) => {
-            let bRow = '<tr>';
-            let isChecked = selectedRowsState[item.originalIndex] ? 'checked' : '';
-            bRow += `<td><input type="checkbox" class="row-checkbox" ${isChecked} onchange="updateRowState(${item.originalIndex}, this.checked)"></td>`;
-            
-            if (isSTTActive) {
-                bRow += `<td style="font-weight: bold; color: var(--ios-blue); background: #f9f9f9;">${index + 1}</td>`;
-            }
-            for(let i = 0; i < originalExcelHeaders.length; i++) {
-                bRow += `<td>${item.data[i] !== undefined ? item.data[i] : ''}</td>`;
-            }
-            bRow += '</tr>';
-            body.innerHTML += bRow;
-        });
     }
 
     window.onload = () => { buildDialTicks(); startCamera(); };
