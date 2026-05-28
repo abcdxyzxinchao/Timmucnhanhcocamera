@@ -20,12 +20,7 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             overflow: hidden; position: fixed;
             -webkit-tap-highlight-color: transparent; user-select: none;
-            /* Chặn phóng to thu nhỏ mặc định của trình duyệt */
             touch-action: none;
-        }
-
-        * {
-            -webkit-touch-callout: none !important;
         }
 
         .app-container {
@@ -76,14 +71,12 @@
         }
         .btn-icon-top.active { background: var(--ios-yellow); color: #000; border-color: var(--ios-yellow); }
 
-        /* KHOẢNG CÁCH CỤM ZOOM XA NÚT CHỤP */
         .zoom-control-layer {
             position: absolute; bottom: calc(185px + env(safe-area-inset-bottom)); left: 0; width: 100%;
             display: flex; flex-direction: column; align-items: center; z-index: 10005; pointer-events: none;
         }
         .collapsed-zoom-hub { pointer-events: auto; display: flex; justify-content: center; align-items: center; transition: opacity 0.2s; }
         
-        /* NÚT ZOOM GIỌT NƯỚC: BÌNH THƯỜNG CÓ NỀN ĐEN MỜ, KHI FULL SCREEN THÌ TRONG SUỐT HOÀN TOÀN */
         .zoom-single-dot {
             background: rgba(0, 0, 0, 0.5);
             border: 1px solid rgba(255, 255, 255, 0.3);
@@ -94,7 +87,7 @@
         }
         .app-container.is-fullscreen .zoom-single-dot {
             background: transparent;
-            border: 2.5px solid rgba(255, 255, 255, 0.75); /* Viền dày hơn rõ nét */
+            border: 2.5px solid rgba(255, 255, 255, 0.75);
             text-shadow: 0px 1px 4px rgba(0, 0, 0, 0.8);
             box-shadow: inset 0 0 6px rgba(255,255,255,0.3), 0 4px 12px rgba(0,0,0,0.4);
         }
@@ -107,22 +100,21 @@
         .dial-tick-line.major-line { height: 16px; background: rgba(255,255,255,0.9); width: 2px; }
         .dial-tick-line span { position: absolute; top: 22px; left: 50%; transform: translateX(-50%); font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.9); }
 
-        /* THANH ĐIỀU KHIỂN DƯỚI CHẾ ĐỘ MẶC ĐỊNH: NỀN ĐEN CHUẨN IOS */
+        /* THANH ĐIỀU KHIỂN DƯỚI */
         .ios-bottom-dashboard { 
             position: absolute; bottom: 0; left: 0; width: 100vw;
-            background: var(--ios-dark-bg); /* Đen hoàn toàn chuẩn ứng dụng Camera gốc */
+            background: var(--ios-dark-bg);
             border-top: 1px solid rgba(255, 255, 255, 0.05);
             padding: 16px 0 calc(20px + env(safe-area-inset-bottom)) 0; 
             display: flex; flex-direction: column; align-items: center; gap: 16px; 
             box-sizing: border-box; z-index: 10010; transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
         }
         
-        /* KHI BẤM FULL MÀN HÌNH: BIẾN THÀNH GIỌT NƯỚC TRONG SUỐT 100% VIỀN DÀY SẮC NÉT */
         .app-container.is-fullscreen .ios-bottom-dashboard {
             position: fixed; bottom: calc(16px + env(safe-area-inset-bottom)); left: 5%; width: 90vw;
-            background: transparent; /* Trong suốt hoàn toàn */
+            background: transparent;
             border-radius: 28px; 
-            border: 2.5px solid rgba(255, 255, 255, 0.75); /* Đường viền giọt nước dày dặn hơn */
+            border: 2.5px solid rgba(255, 255, 255, 0.75);
             padding: 20px 0; 
             box-shadow: inset 0 0 10px rgba(255,255,255,0.2), 0 12px 36px rgba(0, 0, 0, 0.5);
             z-index: 100010;
@@ -146,7 +138,7 @@
         .btn-camera-flip { width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.2); border: none; display: flex; align-items: center; justify-content: center; }
         .btn-camera-flip svg { width: 22px; height: 22px; fill: #ffffff; }
 
-        /* THƯ VIỆN ẢNH ĐƯỢC FIX LƯỚI TRÀN KHÔNG BỊ CHÈN */
+        /* THƯ VIỆN ẢNH */
         .gallery-modal { 
             position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; 
             background: #000000; z-index: 20000; display: none; flex-direction: column; 
@@ -157,7 +149,6 @@
             padding: 16px 20px; border-bottom: 1px solid #1c1c1e; background: #000;
             z-index: 20002;
         }
-        .gallery-header-buttons { display: flex; gap: 12px; }
         .btn-gallery-close { background: none; border: none; color: var(--ios-blue); font-size: 16px; font-weight: 600; padding: 4px 8px; }
         
         .gallery-grid { 
@@ -169,42 +160,32 @@
         .gallery-item { position: relative; width: 100%; aspect-ratio: 1; background: #121212; overflow: hidden; }
         .gallery-item img, .gallery-item video { width: 100%; height: 100%; object-fit: cover; }
         
-        .gallery-item-checkbox {
-            position: absolute; top: 8px; right: 8px; width: 24px; height: 24px;
-            border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.9); background: rgba(0,0,0,0.2);
-            display: none; z-index: 10; box-sizing: border-box;
-        }
-        .gallery-item.select-mode .gallery-item-checkbox { display: block; }
-        .gallery-item.selected .gallery-item-checkbox { 
-            background: var(--ios-blue); border-color: var(--ios-blue);
-        }
-        .gallery-item.selected .gallery-item-checkbox::after {
-            content: ''; position: absolute; left: 7px; top: 3px; width: 5px; height: 10px;
-            border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg);
-        }
-
         .video-duration-badge {
             position: absolute; bottom: 8px; left: 8px;
             background: rgba(0, 0, 0, 0.65); color: #fff; font-size: 11px;
             font-weight: 600; padding: 3px 6px; border-radius: 6px; z-index: 5;
-            letter-spacing: 0.3px; display: flex; align-items: center; gap: 3px;
+            display: flex; align-items: center; gap: 3px;
         }
 
-        .gallery-footer-actions { 
-            display: none; background: #1c1c1e; 
-            padding: 16px 20px calc(16px + env(safe-area-inset-bottom)) 20px; 
-            justify-content: space-between; border-top: 1px solid #2c2c2e; gap: 12px;
-            z-index: 20002;
-        }
-        .btn-footer-action { flex: 1; border: none; padding: 12px; font-size: 14px; font-weight: 600; border-radius: 12px; color: white; text-align: center; }
-
+        /* CHI TIẾT ẢNH - CHO PHÉP ĐÈ GIỮ ĐỂ LƯU GỐC */
         .detail-viewer-popup { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: #000; z-index: 30000; display: none; flex-direction: column; }
         .viewer-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; z-index: 30001; background: rgba(0,0,0,0.8); }
         .viewer-content-pane { flex: 1; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .viewer-content-pane img, .viewer-content-pane video { max-width: 100%; max-height: 100%; object-fit: contain; }
-        .btn-save-media { background: var(--ios-green); color: white; border: none; padding: 10px 18px; border-radius: 10px; font-weight: 600; font-size: 14px; }
-
-        .hidden { display: none !important; }
+        
+        /* Bật menu tương tác hệ thống khi người dùng nhấn giữ (Lưu trực tiếp vào Album máy) */
+        .viewer-content-pane img { 
+            max-width: 100%; max-height: 100%; object-fit: contain; 
+            user-select: auto !important; -webkit-user-select: auto !important;
+            pointer-events: auto !important;
+        }
+        .viewer-content-pane video { max-width: 100%; max-height: 100%; object-fit: contain; }
+        
+        .tip-save-text {
+            color: rgba(255,255,255,0.6); font-size: 13px; font-weight: 400; text-align: center;
+        }
+        .btn-action-vid {
+            background: var(--ios-blue); color: white; border: none; padding: 8px 16px; border-radius: 10px; font-weight: 600; font-size: 13px;
+        }
     </style>
 </head>
 <body>
@@ -260,26 +241,17 @@
 
 <div class="gallery-modal" id="galleryModal">
     <div class="gallery-header">
-        <button class="btn-gallery-close" id="btnCancelSelect" onclick="exitSelectMode()" style="display:none; color:var(--ios-red);">Huỷ chọn</button>
-        <div id="galleryTitle" style="font-weight:600; font-size: 16px;">Thư viện ảnh</div>
-        <div class="gallery-header-buttons" id="batchToggleActionButtons" style="display: none;">
-            <button class="btn-gallery-close" onclick="selectAllMediaItems(true)">Chọn hết</button>
-            <button class="btn-gallery-close" onclick="selectAllMediaItems(false)" style="color:#8e8e93;">Bỏ chọn hết</button>
-        </div>
-        <button class="btn-gallery-close" id="btnCloseGal" onclick="closeGalleryModal()">Xong</button>
+        <div style="font-weight:600; font-size: 16px;">Thư viện ảnh</div>
+        <button class="btn-gallery-close" onclick="closeGalleryModal()">Xong</button>
     </div>
     <div class="gallery-grid" id="galleryGrid"></div>
-    
-    <div class="gallery-footer-actions" id="galleryFooter">
-        <button class="btn-footer-action" style="background:var(--ios-blue);" onclick="downloadSelectedMediaBatch()">📥 Lưu mục đã chọn</button>
-        <button class="btn-footer-action" style="background:var(--ios-red);" onclick="deleteSelectedMedia()">🗑 Xóa đã chọn</button>
-    </div>
 </div>
 
 <div class="detail-viewer-popup" id="detailViewer">
     <div class="viewer-header">
-        <button class="btn-gallery-close" onclick="closeDetailViewer()" style="color:#fff; font-size:18px;">✕ Đóng</button>
-        <button class="btn-save-media" id="btnSaveMedia" onclick="downloadCurrentMedia()">📥 Lưu về máy</button>
+        <button class="btn-gallery-close" onclick="closeDetailViewer()" style="color:#fff; font-size:16px;">✕ Đóng</button>
+        <div class="tip-save-text" id="viewerTip">Nhấn giữ ảnh để chọn "Thêm vào Ảnh"</div>
+        <button class="btn-action-vid" id="btnVidDownload" onclick="downloadCurrentMedia()" style="display:none;">Tải về</button>
     </div>
     <div class="viewer-content-pane" id="viewerContentPane"></div>
 </div>
@@ -290,9 +262,6 @@
     let activeMode = "PHOTO";
     let mediaItems = []; 
     let currentViewingItem = null;
-    
-    let isGallerySelectMode = false;
-    let selectedMediaIds = new Set();
     let videoSecondsCounter = 0;
 
     const dialRotor = document.getElementById('dialRotor');
@@ -300,13 +269,16 @@
     const tickSpacingAngle = 1.5;
     let startX = 0, baseAngle = 0, currentAngle = 0, collapseTimer = null;
 
-    // Chặn menu ngữ cảnh đè giữ
+    // Cho phép tương tác menu trên toàn ứng dụng trừ một số thành phần camera gốc
     window.addEventListener('contextmenu', function(e) {
+        if (e.target.tagName === 'IMG' && e.target.closest('#viewerContentPane')) {
+            return true; // Cho phép giữ ảnh để lưu gốc trên iOS
+        }
         e.preventDefault();
         return false;
-    }, { capture: true });
+    }, { capture: false });
 
-    // CHẶN HOÀN TOÀN BẤM NHIỀU LẦN TỰ PHÓNG TO TRÊN TRÌNH DUYỆT
+    // Chặn Double-tap zoom của trình duyệt
     let lastTouchEnd = 0;
     document.addEventListener('touchend', function (e) {
         let now = (new Date()).getTime();
@@ -519,16 +491,13 @@
         }
     }
 
-    // ẨN HOÀN TOÀN KHU VỰC CAMERA KHI MỞ THƯ VIỆN ĐỂ TRÁNH CHE MÀN HÌNH LƯỚI ẢNH
     function openGalleryModal() { 
         document.getElementById('bottomDashboard').style.display = 'none';
         renderGalleryGrid(); 
         document.getElementById('galleryModal').style.display = 'flex'; 
     }
     
-    // HIỆN LẠI GIAO DIỆN CHỤP ẢNH KHI ĐÓNG THƯ VIỆN
     function closeGalleryModal() { 
-        exitSelectMode(); 
         document.getElementById('galleryModal').style.display = 'none'; 
         document.getElementById('bottomDashboard').style.display = 'flex';
     }
@@ -537,7 +506,7 @@
         const grid = document.getElementById('galleryGrid'); grid.innerHTML = '';
         mediaItems.forEach(item => {
             const div = document.createElement('div'); 
-            div.className = `gallery-item ${isGallerySelectMode ? 'select-mode' : ''} ${selectedMediaIds.has(item.id) ? 'selected' : ''}`;
+            div.className = 'gallery-item';
             
             if(item.type === 'PHOTO') {
                 div.innerHTML = `<img src="${item.src}">`;
@@ -547,100 +516,27 @@
                     <div class="video-duration-badge">📹 ${item.duration}</div>
                 `;
             }
-            
-            const chk = document.createElement('div');
-            chk.className = 'gallery-item-checkbox';
-            div.appendChild(chk);
 
-            let pressTimer;
-            div.addEventListener('touchstart', (e) => {
-                pressTimer = setTimeout(() => {
-                    if (!isGallerySelectMode) {
-                        isGallerySelectMode = true;
-                        enterSelectMode();
-                    }
-                    toggleSelectMediaItem(item.id, div);
-                }, 1000);
-            }, {passive: true});
-
-            div.addEventListener('touchend', () => { clearTimeout(pressTimer); });
-
-            div.onclick = () => {
-                if (isGallerySelectMode) {
-                    toggleSelectMediaItem(item.id, div);
-                } else {
-                    openDetailViewer(item);
-                }
-            };
-
+            div.onclick = () => { openDetailViewer(item); };
             grid.appendChild(div);
         });
-    }
-
-    function enterSelectMode() {
-        document.getElementById('btnCancelSelect').style.display = 'block';
-        document.getElementById('btnCloseGal').style.display = 'none';
-        document.getElementById('galleryTitle').style.display = 'none';
-        document.getElementById('batchToggleActionButtons').style.display = 'flex';
-        document.getElementById('galleryFooter').style.display = 'flex';
-        renderGalleryGrid();
-    }
-
-    function exitSelectMode() {
-        isGallerySelectMode = false;
-        selectedMediaIds.clear();
-        document.getElementById('btnCancelSelect').style.display = 'none';
-        document.getElementById('btnCloseGal').style.display = 'block';
-        document.getElementById('galleryTitle').style.display = 'block';
-        document.getElementById('batchToggleActionButtons').style.display = 'none';
-        document.getElementById('galleryFooter').style.display = 'none';
-        renderGalleryGrid();
-    }
-
-    function toggleSelectMediaItem(id, element) {
-        if (selectedMediaIds.has(id)) {
-            selectedMediaIds.delete(id);
-            element.classList.remove('selected');
-        } else {
-            selectedMediaIds.add(id);
-            element.classList.add('selected');
-        }
-    }
-
-    function selectAllMediaItems(status) {
-        selectedMediaIds.clear();
-        if(status) {
-            mediaItems.forEach(item => selectedMediaIds.add(item.id));
-        }
-        renderGalleryGrid();
-    }
-
-    function downloadSelectedMediaBatch() {
-        if (selectedMediaIds.size === 0) return;
-        mediaItems.forEach(item => {
-            if(selectedMediaIds.has(item.id)) {
-                const a = document.createElement('a');
-                a.href = item.src;
-                a.download = item.type === 'PHOTO' ? `IMG_${item.id}.jpg` : `VID_${item.id}.mp4`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-            }
-        });
-        exitSelectMode();
-    }
-
-    function deleteSelectedMedia() {
-        if (selectedMediaIds.size === 0) return;
-        mediaItems = mediaItems.filter(item => !selectedMediaIds.has(item.id));
-        exitSelectMode();
-        updateAlbumPreview();
     }
 
     function openDetailViewer(item) {
         currentViewingItem = item;
         const pane = document.getElementById('viewerContentPane');
-        pane.innerHTML = item.type === 'PHOTO' ? `<img src="${item.src}">` : `<video src="${item.src}" controls autoplay></video>`;
+        const tip = document.getElementById('viewerTip');
+        const btnVid = document.getElementById('btnVidDownload');
+
+        if(item.type === 'PHOTO') {
+            pane.innerHTML = `<img src="${item.src}">`;
+            tip.innerText = "Nhấn giữ trực tiếp vào ảnh -> chọn 'Thêm vào Ảnh'";
+            btnVid.style.display = 'none';
+        } else {
+            pane.innerHTML = `<video src="${item.src}" controls autoplay></video>`;
+            tip.innerText = "Bấm Tải về để đưa video vào thiết bị";
+            btnVid.style.display = 'block';
+        }
         document.getElementById('detailViewer').style.display = 'flex';
     }
 
