@@ -20,9 +20,10 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             overflow: hidden; position: fixed;
             -webkit-tap-highlight-color: transparent; user-select: none;
+            /* Chặn hành vi phóng to thu nhỏ mặc định của trình duyệt */
+            touch-action: none;
         }
 
-        /* VÔ HIỆU HÓA MENU NGỮ CẢNH HỆ THỐNG TRÊN TOÀN APP (SỬA LỖI ẢNH 1) */
         * {
             -webkit-touch-callout: none !important;
         }
@@ -32,14 +33,12 @@
             background: #000; position: relative;
         }
 
-        /* KHU VỰC CAMERA CHUẨN - CHIẾM TOÀN MÀN HÌNH ĐỂ THẤY KÍNH TRONG SUỐT HOÀN HẢO */
         .camera-viewport-wrapper {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden; touch-action: none;
+            background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden;
             z-index: 10; transition: all 0.3s ease;
         }
 
-        /* LOGIC FULL MÀN HÌNH */
         .app-container.is-fullscreen .camera-viewport-wrapper {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; z-index: 9999;
         }
@@ -50,15 +49,13 @@
         }
         video.mirror-mode { transform: scaleX(-1); }
 
-        /* BỘ ĐẾM THỜI GIAN QUAY VIDEO */
         .video-recording-timer {
             position: absolute; top: calc(20px + env(safe-area-inset-top)); left: 50%; transform: translateX(-50%);
-            background: rgba(255, 69, 58, 0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            background: rgba(255, 69, 58, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             padding: 6px 16px; font-weight: 700; font-size: 14px; border-radius: 20px; display: none; z-index: 10005; color: #fff;
             letter-spacing: 0.5px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
 
-        /* THANH ĐIỀU KHIỂN TRÊN */
         .top-settings-bar {
             position: absolute; top: calc(16px + env(safe-area-inset-top)); left: 0; width: 100%;
             display: flex; justify-content: space-between; align-items: center;
@@ -67,56 +64,57 @@
         .left-controls, .right-controls { display: flex; align-items: center; gap: 10px; }
 
         .res-badge-select {
-            background: rgba(28, 28, 30, 0.4); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            background: rgba(0, 0, 0, 0.25); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             color: var(--ios-yellow); border: 1px solid rgba(255,255,255,0.15);
             padding: 6px 12px; font-size: 12px; font-weight: 600; border-radius: 14px; outline: none;
         }
         .btn-icon-top {
-            background: rgba(28, 28, 30, 0.4); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            background: rgba(0, 0, 0, 0.25); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255,255,255,0.1); color: #fff;
             width: 38px; height: 38px; border-radius: 50%; font-size: 16px;
             display: flex; align-items: center; justify-content: center;
         }
         .btn-icon-top.active { background: var(--ios-yellow); color: #000; border-color: var(--ios-yellow); }
 
-        /* VÒNG XOAY ZOOM ĐƯỢC CÂN CHỈNH TỈ LỆ HIỆN ĐẠI (SỬA LỖI ẢNH 3 & 4) */
+        /* ĐẨY KHU VỰC ĐIỀU KHIỂN ZOOM XA NÚT CHỤP HƠN (ĐÃ ĐIỀU CHỈNH XA RA ĐỂ THỰC TẾ HƠN) */
         .zoom-control-layer {
-            position: absolute; bottom: calc(150px + env(safe-area-inset-bottom)); left: 0; width: 100%;
+            position: absolute; bottom: calc(185px + env(safe-area-inset-bottom)); left: 0; width: 100%;
             display: flex; flex-direction: column; align-items: center; z-index: 10005; pointer-events: none;
         }
         .collapsed-zoom-hub { pointer-events: auto; display: flex; justify-content: center; align-items: center; transition: opacity 0.2s; }
+        
+        /* HIỆU ỨNG KÍNH GIỌT NƯỚC TRONG SUỐT CHO NÚT ZOOM GIỮA MÀN HÌNH */
         .zoom-single-dot {
-            background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(25px) saturate(180%); -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border: 1px solid rgba(255,255,255,0.25);
             color: var(--ios-yellow); width: 46px; height: 46px; border-radius: 50%;
             font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
         }
 
         .ios-curved-dial-panel { position: absolute; bottom: -20px; width: 340px; height: 130px; pointer-events: auto; display: none; opacity: 0; transition: opacity 0.2s; }
         .dial-center-pointer { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 8px solid var(--ios-yellow); z-index: 150; }
-        .dial-live-text-hub { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); color: var(--ios-yellow); font-size: 14px; font-weight: 700; z-index: 150; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); padding: 4px 12px; border-radius: 12px; }
+        .dial-live-text-hub { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); color: var(--ios-yellow); font-size: 14px; font-weight: 700; z-index: 150; background: rgba(0,0,0,0.4); backdrop-filter: blur(15px); padding: 4px 12px; border-radius: 12px; }
         .dial-wheel-rotor { position: absolute; top: 45px; left: 50%; width: 640px; height: 640px; margin-left: -320px; border-radius: 50%; will-change: transform; }
-        .dial-tick-line { position: absolute; top: 0; left: 50%; width: 1.5px; height: 10px; background: rgba(255,255,255,0.25); transform-origin: 50% 320px; }
-        .dial-tick-line.major-line { height: 16px; background: rgba(255,255,255,0.75); width: 2px; }
+        .dial-tick-line { position: absolute; top: 0; left: 50%; width: 1.5px; height: 10px; background: rgba(255,255,255,0.3); transform-origin: 50% 320px; }
+        .dial-tick-line.major-line { height: 16px; background: rgba(255,255,255,0.8); width: 2px; }
         .dial-tick-line span { position: absolute; top: 22px; left: 50%; transform: translateX(-50%); font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.8); }
 
-        /* THANH ĐÁY ĐIỀU KHIỂN - HIỆU ỨNG KÍNH SIÊU MỜ TRONG SUỐT HIỆN ĐẠI (ĐÃ FIX TỈ LỆ KHÔNG GIAN) */
+        /* HIỆU ỨNG KÍNH TRONG SUỐT GIỌT NƯỚC - NHÌN THẤY RÕ RÀNG PHÍA SAU CAMERA */
         .ios-bottom-dashboard { 
             position: absolute; bottom: 0; left: 0; width: 100vw;
-            background: rgba(0, 0, 0, 0.35); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(0, 0, 0, 0.25); backdrop-filter: blur(30px) saturate(200%); -webkit-backdrop-filter: blur(30px) saturate(200%);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
             padding: 16px 0 calc(20px + env(safe-area-inset-bottom)) 0; 
             display: flex; flex-direction: column; align-items: center; gap: 16px; 
             box-sizing: border-box; z-index: 10010; transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
         }
         
-        /* Khi bật Full màn hình dạng Thanh dock lơ lửng */
         .app-container.is-fullscreen .ios-bottom-dashboard {
             position: fixed; bottom: calc(16px + env(safe-area-inset-bottom)); left: 5%; width: 90vw;
-            background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(35px); -webkit-backdrop-filter: blur(35px);
-            border-radius: 28px; border: 1px solid rgba(255, 255, 255, 0.12);
-            padding: 20px 0; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6); z-index: 100010;
+            background: rgba(0, 0, 0, 0.35); backdrop-filter: blur(35px) saturate(200%); -webkit-backdrop-filter: blur(35px) saturate(200%);
+            border-radius: 28px; border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 20px 0; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5); z-index: 100010;
         }
         
         .camera-mode-scroller { display: flex; gap: 32px; justify-content: center; width: 100%; }
@@ -133,10 +131,10 @@
         .btn-video-rec { width: 62px; height: 62px; background: var(--ios-red); border: 4px solid #000; box-shadow: 0 0 0 2px #fff; }
         .btn-video-rec.recording { border-radius: 14px; transform: scale(0.8); background: var(--ios-red); }
         
-        .btn-camera-flip { width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.12); border: none; display: flex; align-items: center; justify-content: center; }
+        .btn-camera-flip { width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.15); border: none; display: flex; align-items: center; justify-content: center; }
         .btn-camera-flip svg { width: 22px; height: 22px; fill: #ffffff; }
 
-        /* SỬA TRIỆT ĐỂ LỖI THƯ VIỆN ẢNH BỊ THƯA KHOẢNG ĐEN (SỬA LỖI ẢNH 2) */
+        /* ĐÃ FIX LỖI THƯ VIỆN ẢNH BỊ THƯA KHOẢNG ĐEN (ẢNH 2) */
         .gallery-modal { 
             position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; 
             background: #000000; z-index: 20000; display: none; flex-direction: column; 
@@ -145,21 +143,20 @@
         .gallery-header { 
             display: flex; justify-content: space-between; align-items: center; 
             padding: 16px 20px; border-bottom: 1px solid #1c1c1e; background: #000;
+            z-index: 20002;
         }
         .gallery-header-buttons { display: flex; gap: 12px; }
         .btn-gallery-close { background: none; border: none; color: var(--ios-blue); font-size: 16px; font-weight: 600; padding: 4px 8px; }
         
-        /* Chỉnh lại Grid khít sát chuẩn iOS, không để thừa khoảng đen lung tung */
         .gallery-grid { 
             flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); 
             gap: 2px; padding: 2px; overflow-y: auto; background: #000000;
-            align-content: start; /* Ép các phần tử xếp chặt từ đỉnh xuống đáy */
+            align-content: start;
         }
         
         .gallery-item { position: relative; width: 100%; aspect-ratio: 1; background: #121212; overflow: hidden; }
         .gallery-item img, .gallery-item video { width: 100%; height: 100%; object-fit: cover; }
         
-        /* Checkbox chọn hàng loạt */
         .gallery-item-checkbox {
             position: absolute; top: 8px; right: 8px; width: 24px; height: 24px;
             border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.9); background: rgba(0,0,0,0.2);
@@ -174,7 +171,6 @@
             border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg);
         }
 
-        /* Thời lượng video */
         .video-duration-badge {
             position: absolute; bottom: 8px; left: 8px;
             background: rgba(0, 0, 0, 0.65); color: #fff; font-size: 11px;
@@ -182,15 +178,14 @@
             letter-spacing: 0.3px; display: flex; align-items: center; gap: 3px;
         }
 
-        /* THANH ĐÁY ĐIỀU KHIỂN CHỌN HÀNG LOẠT */
         .gallery-footer-actions { 
             display: none; background: #1c1c1e; 
             padding: 16px 20px calc(16px + env(safe-area-inset-bottom)) 20px; 
-            justify-content: space-between; border-top: 1px solid #2c2c2e; gap: 12px; 
+            justify-content: space-between; border-top: 1px solid #2c2c2e; gap: 12px;
+            z-index: 20002;
         }
         .btn-footer-action { flex: 1; border: none; padding: 12px; font-size: 14px; font-weight: 600; border-radius: 12px; color: white; text-align: center; }
 
-        /* POPUP XEM CHI TIẾT */
         .detail-viewer-popup { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: #000; z-index: 30000; display: none; flex-direction: column; }
         .viewer-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; z-index: 30001; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); }
         .viewer-content-pane { flex: 1; display: flex; align-items: center; justify-content: center; overflow: hidden; }
@@ -293,11 +288,21 @@
     const tickSpacingAngle = 1.5;
     let startX = 0, baseAngle = 0, currentAngle = 0, collapseTimer = null;
 
-    // Chặn triệt để menu ngữ cảnh gốc của trình duyệt khi đè ngón tay (Sửa lỗi ảnh 1)
+    // Chặn menu ngữ cảnh và hành vi đè giữ mặc định của hệ điều hành
     window.addEventListener('contextmenu', function(e) {
         e.preventDefault();
         return false;
     }, { capture: true });
+
+    // CHẶN TÍNH NĂNG TỰ ĐỘNG PHÓNG TO KHI BẤM NHIỀU LẦN (DOUBLE-TAP TO ZOOM)
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', function (e) {
+        let now = (new Date()).getTime();
+        if (now - lastTouchEnd <= 300) {
+            e.preventDefault();
+        }
+        lastTouchEnd = now;
+    }, false);
 
     function buildDialTicks() {
         dialRotor.innerHTML = '';
@@ -502,8 +507,19 @@
         }
     }
 
-    function openGalleryModal() { renderGalleryGrid(); document.getElementById('galleryModal').style.display = 'flex'; }
-    function closeGalleryModal() { exitSelectMode(); document.getElementById('galleryModal').style.display = 'none'; }
+    // KHI MỞ THƯ VIỆN: ẨN THANH BOTTOM DASHBOARD ĐỂ KHÔNG BỊ HIỆN ĐÈ LÊN GIAO DIỆN (SỬA LỖI ẢNH 2)
+    function openGalleryModal() { 
+        document.getElementById('bottomDashboard').style.display = 'none';
+        renderGalleryGrid(); 
+        document.getElementById('galleryModal').style.display = 'flex'; 
+    }
+    
+    // KHI ĐÓNG THƯ VIỆN: HIỆN LẠI THANH BOTTOM DASHBOARD ĐỂ CHỤP ẢNH BÌNH THƯỜNG
+    function closeGalleryModal() { 
+        exitSelectMode(); 
+        document.getElementById('galleryModal').style.display = 'none'; 
+        document.getElementById('bottomDashboard').style.display = 'flex';
+    }
     
     function renderGalleryGrid() {
         const grid = document.getElementById('galleryGrid'); grid.innerHTML = '';
