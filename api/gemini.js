@@ -8,14 +8,16 @@ export default async function handler(req, res) {
     if (req.method !== 'POST') { return res.status(405).json({ error: 'Method not allowed' }); }
 
     try {
-        const { base64Data } = req.body;
+        const { base64Data, customPrompt } = req.body;
         if (!base64Data) { return res.status(400).json({ error: 'Missing base64Data' }); }
 
-        // Gọi Key từ biến môi trường của Vercel (An toàn, không bị GitHub quét)
         const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
         if (!GEMINI_API_KEY) { return res.status(500).json({ error: 'Chưa cấu hình biến GEMINI_API_KEY trên Vercel!' }); }
 
         const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+
+        // Sử dụng prompt tùy chỉnh từ ô nhập liệu, nếu trống sẽ dùng prompt mặc định
+        const finalPrompt = customPrompt || "Bức ảnh này được chụp ở chế độ siêu zoom kỹ thuật số, hãy phân tích độ nét vật thể và độ sáng.";
 
         const response = await fetch(GEMINI_API_URL, {
             method: "POST",
@@ -23,7 +25,7 @@ export default async function handler(req, res) {
             body: JSON.stringify({
                 contents: [{
                     parts: [
-                        { text: "Bức ảnh này được chụp ở chế độ siêu zoom kỹ thuật số, hãy phân tích độ nét vật thể và độ sáng." },
+                        { text: finalPrompt },
                         { inlineData: { mimeType: "image/jpeg", data: base64Data } }
                     ]
                 }]
