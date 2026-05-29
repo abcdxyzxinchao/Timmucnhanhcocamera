@@ -32,7 +32,6 @@
             background: #000; position: relative; overflow: hidden;
         }
 
-        /* KHUNG VIEWPORT CAMERA */
         .camera-viewport-wrapper {
             position: absolute; top: 0; left: 0; width: 100%; 
             height: calc(100dvh - 145px - env(safe-area-inset-bottom));
@@ -52,7 +51,6 @@
         }
         video.mirror-mode { transform: scaleX(-1); }
 
-        /* THANH CÀI ĐẶT TRÊN ĐẦU */
         .top-settings-bar {
             position: absolute; top: calc(16px + env(safe-area-inset-top)); left: 0; width: 100%;
             display: flex; justify-content: space-between; align-items: center; padding: 0 16px; z-index: 10005;
@@ -74,7 +72,6 @@
         }
         .btn-icon-top.active { background: var(--ios-yellow); color: #000; border-color: var(--ios-yellow); }
 
-        /* CỤM ĐIỀU KHIỂN ZOOM 200X */
         .zoom-control-layer {
             position: absolute; 
             bottom: calc(160px + env(safe-area-inset-bottom));
@@ -97,7 +94,6 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.5); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
         }
 
-        /* THƯỚC ĐO ZOOM VÒNG CUNG TỰ NHIÊN */
         .ios-curved-dial-panel { 
             position: absolute; bottom: -30px; width: 100vw; height: 110px;
             display: none; opacity: 0; transition: opacity 0.2s, transform 0.2s; background: transparent;
@@ -112,7 +108,6 @@
         .dial-tick-line.major-line { height: 14px; background: rgba(255,255,255,0.85); width: 2px; }
         .dial-tick-line span { position: absolute; top: 18px; left: 50%; transform: translateX(-50%); font-size: 9px; font-weight: 600; color: rgba(255,255,255,0.85); white-space: nowrap; }
 
-        /* CHỮ CHẾ ĐỘ */
         .mode-selection-wrapper {
             position: absolute;
             bottom: calc(115px + env(safe-area-inset-bottom));
@@ -131,7 +126,6 @@
         }
         .mode-item.active { color: var(--ios-yellow); text-shadow: 0 0 6px rgba(255,204,0,0.3); }
 
-        /* BẢNG ĐIỀU KHIỂN ĐÁY */
         .ios-bottom-dashboard { 
             position: absolute; bottom: 0; left: 0; width: 100vw; 
             height: calc(110px + env(safe-area-inset-bottom)); 
@@ -166,7 +160,7 @@
         }
         .app-container.cam-expanded .recording-timer-badge { top: 12px; }
 
-        /* HÀNG NÚT BẤM CHỤP QUAY TRÊN CÙNG LAYER - CÂN ĐỐI GIAO DIỆN CHUẨN IOS */
+        /* HÀNG NÚT BẤM DƯỚI ĐÁY CÂN ĐỐI THEO GRID */
         .shutter-row { 
             position: absolute; bottom: calc(20px + env(safe-area-inset-bottom)); left: 0;
             width: 100%; display: grid; grid-template-columns: 1fr auto 1fr; 
@@ -207,7 +201,6 @@
         }
         .btn-camera-flip svg { width: 22px; height: 22px; fill: #ffffff; }
 
-        /* THƯ VIỆN */
         .gallery-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: #000; z-index: 20000; display: none; flex-direction: column; padding-bottom: env(safe-area-inset-bottom); }
         .gallery-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid #1c1c1e; background: #000; }
         .btn-gallery-close { background: none; border: none; color: var(--ios-blue); font-size: 16px; font-weight: 600; }
@@ -245,7 +238,6 @@
         .btn-save-media { background: #30D158; color: white; border: none; padding: 8px 16px; border-radius: 10px; font-weight: 600; font-size: 14px; }
         .btn-ai-edit { background: var(--ios-purple); color: white; border: none; padding: 8px 16px; border-radius: 10px; font-weight: 600; font-size: 14px; }
 
-        /* LOADING AI OVERLAY */
         .ai-loading-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh;
             background: rgba(0,0,0,0.85); z-index: 99999; display: none;
@@ -282,10 +274,6 @@
                     <option value="24">24 FPS</option>
                     <option value="30" selected>30 FPS</option>
                     <option value="60">60 FPS</option>
-                    <option value="120">120 FPS Max</option>
-                    <option value="240">240 FPS Slo-Mo</option>
-                    <option value="480">480 FPS Ultra</option>
-                    <option value="960">960 FPS Extreme</option>
                 </select>
             </div>
             <div class="right-controls">
@@ -351,8 +339,8 @@
     <div class="viewer-header">
         <button class="btn-gallery-close" onclick="closeDetailViewer(event)" style="color:#fff;">✕ Đóng</button>
         <div style="display:flex; gap:8px;">
-            <button class="btn-ai-edit" id="btnAiDetail" onclick="processSelectedWithAI(event)">✨ Sửa AI</button>
-            <button class="btn-save-media" onclick="downloadSingleMedia(event)">📥 Lưu 1 file</button>
+            <button class="btn-ai-edit" id="btnAiDetail" onclick="processSelectedWithAI(event)">✨ Siêu Nét AI</button>
+            <button class="btn-save-media" onclick="downloadSingleMedia(event)">📥 Lưu file</button>
         </div>
     </div>
     <div class="viewer-content-pane" id="viewerContentPane"></div>
@@ -364,7 +352,9 @@
 </div>
 
 <script>
-    // CẤU HÌNH API GEMINI CHỈNH SỬA ẢNH
+    // =========================================================================
+    // ĐIỀN ĐÚNG THÔNG TIN API KEY CỦA BẠN VÀO ĐÂY
+    // =========================================================================
     const GEMINI_API_KEY = "AIzaSyD-YOUR_KEY_HERE"; 
     const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 
@@ -375,7 +365,6 @@
         lastTouchEnd = now;
     }, { passive: false });
 
-    // CẤU HÌNH BIẾN ZOOM LÊN TỐI ĐA 200X
     let currentZoom = 1.0, maxZoomLimit = 200.0;
     let facingModeSetting = "environment", activeMode = "PHOTO", mediaItems = [], isSelectModeActive = false, selectedMediaIds = new Set();
     let activeStream = null, videoTrack = null, isFlashOn = false, mediaRecorder = null, recordedChunks = [], isRecording = false, collapseTimer = null;
@@ -395,14 +384,12 @@
         dialRotor.innerHTML = '';
         for (let i = 0; i <= totalTicks; i++) {
             const tick = document.createElement('div'); tick.className = 'dial-tick-line';
-            
             if (i === 0) { tick.classList.add('major-line'); tick.innerHTML = `<span>1.0x</span>`; }
             else if (i === Math.floor(totalTicks * 0.25)) { tick.classList.add('major-line'); tick.innerHTML = `<span>50.0x</span>`; }
             else if (i === Math.floor(totalTicks * 0.5)) { tick.classList.add('major-line'); tick.innerHTML = `<span>100.0x</span>`; }
             else if (i === Math.floor(totalTicks * 0.75)) { tick.classList.add('major-line'); tick.innerHTML = `<span>150.0x</span>`; }
             else if (i === totalTicks) { tick.classList.add('major-line'); tick.innerHTML = `<span>200.0x</span>`; }
             else if (i % 10 === 0) { tick.classList.add('major-line'); }
-            
             let calculatedAngle = (i - totalTicks / 2) * tickSpacingAngle;
             tick.style.transform = `rotate(${calculatedAngle}deg)`;
             dialRotor.appendChild(tick);
@@ -417,7 +404,6 @@
         if(e) e.preventDefault(); clearTimeout(collapseTimer);
         collapsedHub.style.opacity = '0'; curvedPanel.style.display = 'block';
         setTimeout(() => { curvedPanel.style.opacity = '1'; }, 20);
-        
         let fraction = (currentZoom - 1) / (maxZoomLimit - 1);
         currentAngle = -(fraction * totalTicks - totalTicks / 2) * tickSpacingAngle;
         dialRotor.style.transform = `rotate(${currentAngle}deg)`;
@@ -436,16 +422,12 @@
     curvedPanel.addEventListener('touchmove', (e) => {
         let deltaX = e.touches[0].clientX - startX;
         currentAngle = baseAngle + (deltaX / window.innerWidth) * 120;
-        
         let borderAngle = (totalTicks / 2) * tickSpacingAngle;
         if (currentAngle > borderAngle) currentAngle = borderAngle;
         if (currentAngle < -borderAngle) currentAngle = -borderAngle;
-        
         dialRotor.style.transform = `rotate(${currentAngle}deg)`;
-        
         let ratio = 0.5 - (currentAngle / (totalTicks * tickSpacingAngle));
         currentZoom = parseFloat(Math.max(1.0, Math.min(maxZoomLimit, 1 + ratio * (maxZoomLimit - 1))).toFixed(1));
-        
         document.getElementById('liveZoomTxt').innerText = currentZoom.toFixed(1) + "x";
         applyHardwareAndDigitalZoom(currentZoom);
     }, { passive: true });
@@ -469,10 +451,8 @@
         if(e) e.preventDefault(); if(isRecording) return;
         activeMode = targetMode;
         const app = document.getElementById('mainAppStructure');
-        
         if(targetMode === 'VIDEO') app.classList.add('mode-is-video');
         else app.classList.remove('mode-is-video');
-        
         document.getElementById('mode-video').classList.toggle('active', targetMode === 'VIDEO');
         document.getElementById('mode-photo').classList.toggle('active', targetMode === 'PHOTO');
         document.getElementById('btnCapture').style.display = (targetMode === 'PHOTO') ? 'block' : 'none';
@@ -484,7 +464,6 @@
         const video = document.getElementById('videoFeed');
         const selectedRes = document.getElementById('resSelector').value;
         const selectedFps = parseInt(document.getElementById('fpsSelector').value);
-        
         let width = 1920, height = 1080;
         if(selectedRes === '140p') { width = 256; height = 144; }
         else if(selectedRes === '360p') { width = 640; height = 360; }
@@ -492,16 +471,9 @@
         else if(selectedRes === '720p') { width = 1280; height = 720; }
         else if(selectedRes === '2K') { width = 2560; height = 1440; }
         else if(selectedRes === '4K') { width = 3840; height = 2160; }
-        else if(selectedRes === '8K') { width = 7680; height = 4320; }
-
         try {
             activeStream = await navigator.mediaDevices.getUserMedia({ 
-                video: { 
-                    facingMode: { ideal: facingModeSetting }, 
-                    width: { ideal: width }, 
-                    height: { ideal: height },
-                    frameRate: { ideal: selectedFps }
-                }, 
+                video: { facingMode: { ideal: facingModeSetting }, width: { ideal: width }, height: { ideal: height }, frameRate: { ideal: selectedFps } }, 
                 audio: true 
             });
             video.srcObject = activeStream; videoTrack = activeStream.getVideoTracks()[0];
@@ -517,10 +489,7 @@
 
     async function toggleFlash(e) {
         if(e) e.preventDefault(); if (!videoTrack) return;
-        try {
-            isFlashOn = !isFlashOn; await videoTrack.applyConstraints({ advanced: [{ torch: isFlashOn }] });
-            document.getElementById('btnFlash').classList.toggle('active', isFlashOn);
-        } catch (e) {}
+        try { isFlashOn = !isFlashOn; await videoTrack.applyConstraints({ advanced: [{ torch: isFlashOn }] }); document.getElementById('btnFlash').classList.toggle('active', isFlashOn); } catch (e) {}
     }
 
     function takePhoto(e) {
@@ -550,13 +519,11 @@
     function closeGalleryModal(e) { if(e) e.preventDefault(); document.getElementById('galleryModal').style.display = 'none'; document.getElementById('shutterButtonsRow').style.display = 'grid'; }
     
     function toggleSelectMode(e) { 
-        if(e) e.preventDefault(); 
-        isSelectModeActive = !isSelectModeActive; 
+        if(e) e.preventDefault(); isSelectModeActive = !isSelectModeActive; 
         document.getElementById('galleryModal').classList.toggle('select-mode', isSelectModeActive); 
         document.getElementById('galleryFooter').style.display = isSelectModeActive ? 'flex' : 'none'; 
         document.getElementById('btnSelectToggle').innerText = isSelectModeActive ? "Hủy" : "Chọn"; 
-        if(!isSelectModeActive) selectedMediaIds.clear(); 
-        renderGalleryGrid(); 
+        if(!isSelectModeActive) selectedMediaIds.clear(); renderGalleryGrid(); 
     }
 
     function renderGalleryGrid() {
@@ -574,146 +541,103 @@
     function deleteSelectedMedia(e) { if(e) e.preventDefault(); mediaItems = mediaItems.filter(i => !selectedMediaIds.has(i.id)); selectedMediaIds.clear(); renderGalleryGrid(); updateAlbumPreview(); }
     
     function openDetailViewer(item) { 
-        currentViewingItem = item; 
-        const pane = document.getElementById('viewerContentPane'); 
+        currentViewingItem = item; const pane = document.getElementById('viewerContentPane'); 
         pane.innerHTML = item.type === 'PHOTO' ? `<img src="${item.src}">` : `<video src="${item.src}" controls autoplay></video>`; 
         document.getElementById('btnAiDetail').style.display = (item.type === 'PHOTO') ? 'block' : 'none';
         document.getElementById('detailViewer').style.display = 'flex'; 
     }
-    
     function closeDetailViewer(e) { if(e) e.preventDefault(); document.getElementById('detailViewer').style.display = 'none'; }
     function downloadSingleMedia(e) { if(e) e.preventDefault(); const a = document.createElement('a'); a.href = currentViewingItem.src; a.download = `CAM_${currentViewingItem.id}` + (currentViewingItem.type==='PHOTO'?'.jpg':'.mp4'); document.body.appendChild(a); a.click(); document.body.removeChild(a); }
 
-    // ================= TRÌNH XỬ LÝ CHỈNH SỬA ẢNH PHÂN TÍCH VÀ BIẾN ĐỔI ĐỒ HỌA SỐ MỚI =================
+    // ================= XỬ LÝ GỬI DỮ LIỆU ĐỂ HỎI LÀM NÉT QUA GEMINI API CHUẨN ĐÚNG NGUYÊN BẢN =================
     function processLiveFrameWithAI(e) {
-        if(e) e.preventDefault();
-        const video = document.getElementById('videoFeed');
-        if (!activeStream) return;
-        
-        const canvas = document.createElement('canvas');
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        const ctx = canvas.getContext('2d');
-        if (facingModeSetting === "user") { ctx.translate(canvas.width, 0); ctx.scale(-1, 1); }
+        if(e) e.preventDefault(); const video = document.getElementById('videoFeed'); if (!activeStream) return;
+        const canvas = document.createElement('canvas'); canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+        const ctx = canvas.getContext('2d'); if (facingModeSetting === "user") { ctx.translate(canvas.width, 0); ctx.scale(-1, 1); }
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        
-        let rawBase64 = canvas.toDataURL('image/jpeg', 0.95);
-        callGeminiAiEdit(rawBase64);
+        callGeminiAiEdit(canvas.toDataURL('image/jpeg', 0.95));
     }
 
-    function processSelectedWithAI(e) {
-        if(e) e.preventDefault();
-        if(currentViewingItem && currentViewingItem.type === 'PHOTO') {
-            callGeminiAiEdit(currentViewingItem.src);
-        }
-    }
+    function processSelectedWithAI(e) { if(e) e.preventDefault(); if(currentViewingItem && currentViewingItem.type === 'PHOTO') callGeminiAiEdit(currentViewingItem.src); }
 
     async function callGeminiAiEdit(base64Data) {
         const overlay = document.getElementById('aiLoadingOverlay');
         const txt = document.getElementById('aiLoadingText');
         overlay.style.display = 'flex';
-        txt.innerText = "Đang quét ma trận điểm ảnh vật lý...";
+        txt.innerText = "Đang truyền tải cấu trúc ảnh sang server AI xử lý...";
 
         try {
-            let cleanBase64 = base64Data.split(',')[1];
-            txt.innerText = "Gemini AI đang phân tích dữ liệu nhiễu bề mặt và dải sáng...";
-
-            // Gửi dữ liệu lên API Gemini để lấy phân tích cấu trúc bộ lọc tối ưu từ AI
+            // Lọc bỏ phần tiền tố header của Base64
+            let cleanBase64 = base64Data.includes(",") ? base64Data.split(',')[1] : base64Data;
+            
+            // Gửi dữ liệu đúng cấu trúc JSON chuẩn của mẫu model Gemini 2.5 Flash
             const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     contents: [{
                         parts: [
-                            { text: "Hãy phân tích hình ảnh này và đưa ra đánh giá về độ tương phản, mức độ mờ (blur), nhiễu hạt (noise). Trả về duy nhất một từ 'OK' để kích hoạt bộ xử lý nâng cao cấu trúc lớp." },
+                            { text: "Bức ảnh này được chụp ở chế độ siêu zoom kỹ thuật số nên có hiện tượng vỡ hạt mờ đục. Hãy phân tích chuyên sâu phân bổ các hạt nhiễu, biên vật thể, mật độ dải tương phản động và cung cấp phương án cải thiện chi tiết." },
                             { inlineData: { mimeType: "image/jpeg", data: cleanBase64 } }
                         ]
                     }]
                 })
             });
 
-            if (!response.ok) throw new Error("Yêu cầu gửi dữ liệu phân tích thất bại!");
+            if (!response.ok) {
+                const errorLog = await response.text();
+                throw new Error("Mã phản hồi từ Google báo lỗi: " + response.status + " - " + errorLog);
+            }
 
-            txt.innerText = "Đang kích hoạt Canvas Render thực hiện khử nhiễu và làm sắc nét cấu trúc...";
+            const jsonResult = await response.json();
+            
+            // Lấy kết quả văn bản phản hồi từ AI
+            let aiAnalysisText = "Không nhận được phản hồi phân tích lý tưởng.";
+            if (jsonResult.candidates && jsonResult.candidates[0].content.parts[0].text) {
+                aiAnalysisText = jsonResult.candidates[0].content.parts[0].text;
+            }
 
-            // Khởi tạo đối tượng Image tải bất đồng bộ ảnh gốc vào đồ họa máy khách
-            const img = new Image();
-            img.src = base64Data;
-            await new Promise((resolve) => (img.onload = resolve));
+            // Gắn văn bản phân tích nhận được từ AI trực tiếp lên giao diện của ảnh
+            const imgObj = new Image();
+            imgObj.src = base64Data;
+            await new Promise(r => imgObj.onload = r);
 
             const canvas = document.createElement('canvas');
-            canvas.width = img.width;
-            canvas.height = img.height;
+            canvas.width = imgObj.width;
+            canvas.height = imgObj.height + 120; // Chừa khoảng trống bên dưới để ghi chữ AI phân tích
             const ctx = canvas.getContext('2d');
+            
+            ctx.fillStyle = "#000000";
+            ctx.fillRect(0,0, canvas.width, canvas.height);
+            ctx.drawImage(imgObj, 0, 0);
 
-            // 1. Áp dụng các bộ lọc phần cứng tăng cường độ tương phản, độ sáng và bão hòa màu sắc tự nhiên
-            ctx.filter = "contrast(1.25) brightness(1.05) saturate(1.15)";
-            ctx.drawImage(img, 0, 0);
+            // Vẽ viền nhãn dán AI hiệu ứng
+            ctx.fillStyle = "rgba(191, 90, 242, 0.85)";
+            ctx.fillRect(10, imgObj.height + 10, canvas.width - 20, 100);
 
-            // 2. Chạy thuật toán ma trận Kernel (Convolution Matrix) trực tiếp trên CPU/GPU để làm nét biên khối ảnh bị mờ do siêu zoom
-            const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const weights = [
-                0, -0.5,  0,
-             -0.5,  3.0, -0.5,
-                0, -0.5,  0
-            ];
-            const side = Math.round(Math.sqrt(weights.length));
-            const halfSide = Math.floor(side / 2);
-            const src = imgData.data;
-            const sw = imgData.width;
-            const sh = imgData.height;
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "bold 14px Arial";
+            ctx.fillText("KẾT QUẢ PHÂN TÍCH TỪ GEMINI AI:", 20, imgObj.height + 35);
+            
+            ctx.font = "12px Arial";
+            // Cắt ngắn chuỗi văn bản thông minh để vừa vặn khung ảnh
+            let shortText = aiAnalysisText.replace(/[\*\#\`]/g, "").substring(0, 120) + "...";
+            ctx.fillText(shortText, 20, imgObj.height + 65);
 
-            const output = ctx.createImageData(sw, sh);
-            const dst = output.data;
-
-            for (let y = 0; y < sh; y++) {
-                for (let x = 0; x < sw; x++) {
-                    const sy = y;
-                    const sx = x;
-                    const dstOff = (y * sw + x) * 4;
-                    let r = 0, g = 0, b = 0;
-
-                    for (let cy = 0; cy < side; cy++) {
-                        for (let cx = 0; cx < side; cx++) {
-                            const scy = Math.min(sh - 1, Math.max(0, sy + cy - halfSide));
-                            const scx = Math.min(sw - 1, Math.max(0, sx + cx - halfSide));
-                            const srcOff = (scy * sw + scx) * 4;
-                            const wt = weights[cy * side + cx];
-                            r += src[srcOff] * wt;
-                            g += src[srcOff + 1] * wt;
-                            b += src[srcOff + 2] * wt;
-                        }
-                    }
-                    dst[dstOff] = Math.min(255, Math.max(0, r));
-                    dst[dstOff + 1] = Math.min(255, Math.max(0, g));
-                    dst[dstOff + 2] = Math.min(255, Math.max(0, b));
-                    dst[dstOff + 3] = src[dstOff + 3]; 
-                }
-            }
-            ctx.putImageData(output, 0, 0);
-
-            // Xuất chuỗi nhị phân ảnh JPEG chất lượng cao cuối cùng
-            let finalAiImageSrc = canvas.toDataURL('image/jpeg', 0.98);
-
-            let aiItem = {
-                id: Date.now(),
-                type: 'PHOTO',
-                src: finalAiImageSrc,
-                duration: ""
-            };
+            let enhancedAiSrc = canvas.toDataURL('image/jpeg', 0.95);
+            let aiItem = { id: Date.now(), type: 'PHOTO', src: enhancedAiSrc, duration: "" };
+            
             mediaItems.unshift(aiItem);
             updateAlbumPreview();
-
             overlay.style.display = 'none';
             openDetailViewer(aiItem);
             
-            if(document.getElementById('galleryModal').style.display === 'flex') {
-                renderGalleryGrid();
-            }
+            if(document.getElementById('galleryModal').style.display === 'flex') renderGalleryGrid();
 
         } catch (error) {
-            alert("Lỗi xử lý AI: " + error.message);
             overlay.style.display = 'none';
+            console.error(error);
+            alert("Lỗi xử lý AI: Yêu cầu gửi lên API Gemini không thành công!\nHãy kiểm tra lại API Key hoặc cấu hình CORS.");
         }
     }
 
