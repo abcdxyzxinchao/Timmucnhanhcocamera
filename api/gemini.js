@@ -2,7 +2,7 @@ export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Credentials', true);
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-    res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization');
+    res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization, x-goog-api-key');
 
     if (req.method === 'OPTIONS') {
         return res.status(200).end();
@@ -18,13 +18,18 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: 'Missing base64Data' });
         }
 
-        // Mã API Key thật của bạn đã tự động lấy từ dòng 23 trong ảnh của bạn
-        const GEMINI_API_KEY = "AQ..Ab8RN6J-e1PSoFoUIhtWNESDnyONAu-Rubz5Fiyg2co3X-j-uQ";
-        const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+        // Copy chính xác mã Key từ ảnh số 3 của bạn vào đây
+        const GEMINI_API_KEY = "AQ.Ab8RN6K2yWkkCK51pPMk01TjaZbaRARx..."; 
+        
+        // URL gọi chuẩn không đính key ở đuôi để tránh bị Google từ chối chặn quyền
+        const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 
         const response = await fetch(GEMINI_API_URL, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { 
+                "Content-Type": "application/json",
+                "x-goog-api-key": GEMINI_API_KEY // Chuyển Key xuống Header theo đúng chuẩn Service Account
+            },
             body: JSON.stringify({
                 contents: [{
                     parts: [
@@ -36,6 +41,11 @@ export default async function handler(req, res) {
         });
 
         const jsonResult = await response.json();
+        
+        if (!response.ok) {
+            return res.status(response.status).json({ error: jsonResult.error || "Google API Error" });
+        }
+
         return res.status(200).json(jsonResult);
 
     } catch (error) {
