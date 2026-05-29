@@ -160,7 +160,6 @@
         }
         .app-container.cam-expanded .recording-timer-badge { top: 12px; }
 
-        /* HÀNG NÚT BẤM DƯỚI ĐÁY CÂN ĐỐI THEO GRID */
         .shutter-row { 
             position: absolute; bottom: calc(20px + env(safe-area-inset-bottom)); left: 0;
             width: 100%; display: grid; grid-template-columns: 1fr auto 1fr; 
@@ -269,11 +268,13 @@
                     <option value="8K">8K UltraHD</option>
                 </select>
                 <select id="fpsSelector" class="res-badge-select" onchange="restartStream()">
-                    <option value="1">1 FPS</option>
-                    <option value="15">15 FPS</option>
-                    <option value="24">24 FPS</option>
-                    <option value="30" selected>30 FPS</option>
-                    <option value="60">60 FPS</option>
+                    <option value="120">120 FPS Max</option>
+                    <option value="90">90 FPS</option>
+                    <option value="60">60 FPS Ultra</option>
+                    <option value="30" selected>30 FPS Standard</option>
+                    <option value="24">24 FPS Cinematic</option>
+                    <option value="15">15 FPS Saving</option>
+                    <option value="1">1 FPS TimeLapse</option>
                 </select>
             </div>
             <div class="right-controls">
@@ -352,12 +353,6 @@
 </div>
 
 <script>
-    // =========================================================================
-    // ĐIỀN ĐÚNG THÔNG TIN API KEY CỦA BẠN VÀO ĐÂY
-    // =========================================================================
-    const GEMINI_API_KEY = "AIzaSyD-YOUR_KEY_HERE"; 
-    const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
-
     let lastTouchEnd = 0;
     document.addEventListener('touchend', (e) => {
         let now = (new Date()).getTime();
@@ -549,7 +544,6 @@
     function closeDetailViewer(e) { if(e) e.preventDefault(); document.getElementById('detailViewer').style.display = 'none'; }
     function downloadSingleMedia(e) { if(e) e.preventDefault(); const a = document.createElement('a'); a.href = currentViewingItem.src; a.download = `CAM_${currentViewingItem.id}` + (currentViewingItem.type==='PHOTO'?'.jpg':'.mp4'); document.body.appendChild(a); a.click(); document.body.removeChild(a); }
 
-    // ================= XỬ LÝ GỬI DỮ LIỆU ĐỂ HỎI LÀM NÉT QUA GEMINI API CHUẨN ĐÚNG NGUYÊN BẢN =================
     function processLiveFrameWithAI(e) {
         if(e) e.preventDefault(); const video = document.getElementById('videoFeed'); if (!activeStream) return;
         const canvas = document.createElement('canvas'); canvas.width = video.videoWidth; canvas.height = video.videoHeight;
@@ -560,6 +554,7 @@
 
     function processSelectedWithAI(e) { if(e) e.preventDefault(); if(currentViewingItem && currentViewingItem.type === 'PHOTO') callGeminiAiEdit(currentViewingItem.src); }
 
+    // ================= CHUYỂN HƯỚNG GỌI QUA PROXY SERVERLESS VERCEL AN TOÀN =================
     async function callGeminiAiEdit(base64Data) {
         const overlay = document.getElementById('aiLoadingOverlay');
         const txt = document.getElementById('aiLoadingText');
@@ -567,51 +562,39 @@
         txt.innerText = "Đang truyền tải cấu trúc ảnh sang server AI xử lý...";
 
         try {
-            // Lọc bỏ phần tiền tố header của Base64
             let cleanBase64 = base64Data.includes(",") ? base64Data.split(',')[1] : base64Data;
             
-            // Gửi dữ liệu đúng cấu trúc JSON chuẩn của mẫu model Gemini 2.5 Flash
-            const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+            // Gọi endpoint nội bộ bảo mật của Vercel
+            const response = await fetch('/api/gemini', {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [
-                            { text: "Bức ảnh này được chụp ở chế độ siêu zoom kỹ thuật số nên có hiện tượng vỡ hạt mờ đục. Hãy phân tích chuyên sâu phân bổ các hạt nhiễu, biên vật thể, mật độ dải tương phản động và cung cấp phương án cải thiện chi tiết." },
-                            { inlineData: { mimeType: "image/jpeg", data: cleanBase64 } }
-                        ]
-                    }]
-                })
+                body: JSON.stringify({ base64Data: cleanBase64 })
             });
 
             if (!response.ok) {
-                const errorLog = await response.text();
-                throw new Error("Mã phản hồi từ Google báo lỗi: " + response.status + " - " + errorLog);
+                throw new Error("Mã phản hồi từ Serverless Proxy lỗi: " + response.status);
             }
 
             const jsonResult = await response.json();
             
-            // Lấy kết quả văn bản phản hồi từ AI
             let aiAnalysisText = "Không nhận được phản hồi phân tích lý tưởng.";
             if (jsonResult.candidates && jsonResult.candidates[0].content.parts[0].text) {
                 aiAnalysisText = jsonResult.candidates[0].content.parts[0].text;
             }
 
-            // Gắn văn bản phân tích nhận được từ AI trực tiếp lên giao diện của ảnh
             const imgObj = new Image();
             imgObj.src = base64Data;
             await new Promise(r => imgObj.onload = r);
 
             const canvas = document.createElement('canvas');
             canvas.width = imgObj.width;
-            canvas.height = imgObj.height + 120; // Chừa khoảng trống bên dưới để ghi chữ AI phân tích
+            canvas.height = imgObj.height + 120;
             const ctx = canvas.getContext('2d');
             
             ctx.fillStyle = "#000000";
             ctx.fillRect(0,0, canvas.width, canvas.height);
             ctx.drawImage(imgObj, 0, 0);
 
-            // Vẽ viền nhãn dán AI hiệu ứng
             ctx.fillStyle = "rgba(191, 90, 242, 0.85)";
             ctx.fillRect(10, imgObj.height + 10, canvas.width - 20, 100);
 
@@ -620,7 +603,6 @@
             ctx.fillText("KẾT QUẢ PHÂN TÍCH TỪ GEMINI AI:", 20, imgObj.height + 35);
             
             ctx.font = "12px Arial";
-            // Cắt ngắn chuỗi văn bản thông minh để vừa vặn khung ảnh
             let shortText = aiAnalysisText.replace(/[\*\#\`]/g, "").substring(0, 120) + "...";
             ctx.fillText(shortText, 20, imgObj.height + 65);
 
@@ -637,7 +619,7 @@
         } catch (error) {
             overlay.style.display = 'none';
             console.error(error);
-            alert("Lỗi xử lý AI: Yêu cầu gửi lên API Gemini không thành công!\nHãy kiểm tra lại API Key hoặc cấu hình CORS.");
+            alert("Yêu cầu gửi dữ liệu phân tích thất bại!\nHãy đảm bảo bạn đã tạo đúng thư mục api/gemini.js trên GitHub.");
         }
     }
 
