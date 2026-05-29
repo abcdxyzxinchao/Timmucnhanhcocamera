@@ -51,27 +51,29 @@
         }
         video.mirror-mode { transform: scaleX(-1); }
 
-        /* THANH CÀI ĐẶT TRÊN ĐẦU */
+        /* THANH CÀI ĐẶT TRÊN ĐẦU - PHÂN CHIA ĐỀU CHO CÁC MENU CHỌN */
         .top-settings-bar {
             position: absolute; top: calc(16px + env(safe-area-inset-top)); left: 0; width: 100%;
-            display: flex; justify-content: space-between; align-items: center; padding: 0 20px; z-index: 10005;
+            display: flex; justify-content: space-between; align-items: center; padding: 0 16px; z-index: 10005;
         }
         
+        .left-selectors { display: flex; gap: 6px; }
+
         .res-badge-select {
             background: rgba(0, 0, 0, 0.5); color: var(--ios-yellow); border: 1px solid rgba(255,255,255,0.2);
-            padding: 6px 12px; font-size: 12px; font-weight: 600; border-radius: 12px; outline: none;
+            padding: 6px 10px; font-size: 11px; font-weight: 600; border-radius: 12px; outline: none;
             backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
         }
         
-        .right-controls { display: flex; gap: 12px; }
+        .right-controls { display: flex; gap: 10px; }
         .btn-icon-top {
             background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255,255,255,0.2); color: #fff;
-            width: 40px; height: 40px; border-radius: 50%; font-size: 15px;
+            width: 38px; height: 38px; border-radius: 50%; font-size: 14px;
             display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
         }
         .btn-icon-top.active { background: var(--ios-yellow); color: #000; border-color: var(--ios-yellow); }
 
-        /* CỤM ĐIỀU KHIỂN ZOOM - HOẠT ĐỘNG RIÊNG LẬP KHÔNG LỖI */
+        /* CỤM ĐIỀU KHIỂN ZOOM - KHÔNG ĐỔI */
         .zoom-control-layer {
             position: absolute; 
             bottom: calc(160px + env(safe-area-inset-bottom));
@@ -109,7 +111,7 @@
         .dial-tick-line.major-line { height: 14px; background: rgba(255,255,255,0.85); width: 2px; }
         .dial-tick-line span { position: absolute; top: 18px; left: 50%; transform: translateX(-50%); font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.85); }
 
-        /* CHỮ HIỂN THỊ CHẾ ĐỘ - ĐẨY LÊN TRÊN KHUNG KÍNH ĐỂ CHẠM ĐƯỢC */
+        /* CHỮ HIỂN THỊ CHẾ ĐỘ - ĐẢM BẢO CHẠM MƯỢT */
         .mode-selection-wrapper {
             position: absolute;
             bottom: calc(115px + env(safe-area-inset-bottom));
@@ -128,7 +130,7 @@
         }
         .mode-item.active { color: var(--ios-yellow); text-shadow: 0 0 6px rgba(255,204,0,0.3); }
 
-        /* BẢNG ĐIỀU KHIỂN ĐÁY - GIẢM Z-INDEX XUỐNG ĐỂ LÀM NỀN PHÍA DƯỚI */
+        /* BẢNG ĐIỀU KHIỂN ĐÁY */
         .ios-bottom-dashboard { 
             position: absolute; bottom: 0; left: 0; width: 100vw; 
             height: calc(110px + env(safe-area-inset-bottom)); 
@@ -156,7 +158,7 @@
             box-shadow: var(--glass-shadow);
         }
         
-        /* HIỂN THỊ THỜI GIAN QUAY PHIM - KHÓA CHÍNH GIỮA TRÊN NÚT BẤM */
+        /* HIỂN THỊ THỜI GIAN QUAY PHIM */
         .recording-timer-badge {
             position: absolute; 
             top: -38px;
@@ -166,10 +168,10 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.4); z-index: 10050;
         }
         .app-container.cam-expanded .recording-timer-badge {
-            top: 12px; /* Cân bằng lại khi khung kính phình cao */
+            top: 12px;
         }
 
-        /* HÀNG NÚT CHỤP / QUAY - ĐƯỢC ĐẨY LÊN TẦNG CAO NHẤT ĐỂ LUÔN BẤM ĐƯỢC ĐƯỢC */
+        /* HÀNG NÚT BẤM CHỤP QUAY KHÓA Z-INDEX LÊN TRÊN CÙNG */
         .shutter-row { 
             position: absolute; bottom: calc(20px + env(safe-area-inset-bottom)); left: 0;
             width: 100%; display: flex; justify-content: space-between; 
@@ -195,7 +197,7 @@
         }
         .btn-camera-flip svg { width: 22px; height: 22px; fill: #ffffff; }
 
-        /* THƯ VIỆN MODAL VÀ CHẾ ĐỘ CHỌN (SELECT MODE) KHÔI PHỤC HOÀN TOÀN */
+        /* THƯ VIỆN MODAL */
         .gallery-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: #000; z-index: 20000; display: none; flex-direction: column; padding-bottom: env(safe-area-inset-bottom); }
         .gallery-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid #1c1c1e; background: #000; }
         .btn-gallery-close { background: none; border: none; color: var(--ios-blue); font-size: 16px; font-weight: 600; }
@@ -234,16 +236,29 @@
 <div class="app-container" id="mainAppStructure">
     <div class="camera-viewport-wrapper" id="cameraBox">
         <div class="top-settings-bar">
-            <select id="resSelector" class="res-badge-select" onchange="restartStream()">
-                <option value="140p">140p SD</option>
-                <option value="360p">360p SD</option>
-                <option value="480p">480p SD</option>
-                <option value="720p">720p HD</option>
-                <option value="1080p" selected>1080p FHD</option>
-                <option value="2K">2K QHD</option>
-                <option value="4K">4K UHD</option>
-                <option value="8K">8K UltraHD</option>
-            </select>
+            <div class="left-selectors">
+                <select id="resSelector" class="res-badge-select" onchange="restartStream()">
+                    <option value="140p">140p SD</option>
+                    <option value="360p">360p SD</option>
+                    <option value="480p">480p SD</option>
+                    <option value="720p">720p HD</option>
+                    <option value="1080p" selected>1080p FHD</option>
+                    <option value="2K">2K QHD</option>
+                    <option value="4K">4K UHD</option>
+                    <option value="8K">8K UltraHD</option>
+                </select>
+                <select id="fpsSelector" class="res-badge-select" onchange="restartStream()">
+                    <option value="1">1 FPS</option>
+                    <option value="15">15 FPS</option>
+                    <option value="24">24 FPS</option>
+                    <option value="30" selected>30 FPS</option>
+                    <option value="60">60 FPS</option>
+                    <option value="120">120 FPS Max</option>
+                    <option value="240">240 FPS Slo-Mo</option>
+                    <option value="480">480 FPS Ultra</option>
+                    <option value="960">960 FPS Extreme</option>
+                </select>
+            </div>
             <div class="right-controls">
                 <button class="btn-icon-top active" id="btnCamPower" onclick="toggleCamPower(event)">👁‍🗨</button>
                 <button class="btn-icon-top" id="btnFlash" onclick="toggleFlash(event)">⚡</button>
@@ -410,8 +425,28 @@
     async function startCamera() {
         if (activeStream) stopCamera();
         const video = document.getElementById('videoFeed');
+        const selectedRes = document.getElementById('resSelector').value;
+        const selectedFps = parseInt(document.getElementById('fpsSelector').value);
+        
+        let width = 1920, height = 1080;
+        if(selectedRes === '140p') { width = 256; height = 144; }
+        else if(selectedRes === '360p') { width = 640; height = 360; }
+        else if(selectedRes === '480p') { width = 854; height = 480; }
+        else if(selectedRes === '720p') { width = 1280; height = 720; }
+        else if(selectedRes === '2K') { width = 2560; height = 1440; }
+        else if(selectedRes === '4K') { width = 3840; height = 2160; }
+        else if(selectedRes === '8K') { width = 7680; height = 4320; }
+
         try {
-            activeStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: facingModeSetting }, width: 1920, height: 1080 }, audio: true });
+            activeStream = await navigator.mediaDevices.getUserMedia({ 
+                video: { 
+                    facingMode: { ideal: facingModeSetting }, 
+                    width: { ideal: width }, 
+                    height: { ideal: height },
+                    frameRate: { ideal: selectedFps }
+                }, 
+                audio: true 
+            });
             video.srcObject = activeStream; videoTrack = activeStream.getVideoTracks()[0];
             if (facingModeSetting === "user") video.classList.add('mirror-mode'); else video.classList.remove('mirror-mode');
             switchCameraMode(activeMode); applyHardwareAndDigitalZoom(currentZoom);
