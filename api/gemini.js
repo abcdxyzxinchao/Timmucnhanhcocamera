@@ -11,7 +11,7 @@ export default async function handler(req, res) {
         const { base64Data } = req.body;
         if (!base64Data) { return res.status(400).json({ error: 'Missing base64Data' }); }
 
-        // Đọc Key bảo mật từ cài đặt Vercel, tuyệt đối không dán cứng Key vào đây nữa kẻo bị quét khóa tiếp
+        // Gọi Key bảo mật từ Vercel bạn đã cài đặt lúc nãy
         const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
         if (!GEMINI_API_KEY) { return res.status(500).json({ error: 'Chưa cấu hình biến GEMINI_API_KEY trên Vercel!' }); }
 
@@ -37,4 +37,3 @@ export default async function handler(req, res) {
         return res.status(500).json({ error: error.message });
     }
 }
-tp
