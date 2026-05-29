@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hệ Thống Giám Sát Camera 200X & AI Edit</title>
+    <title>Hệ Thống Giám Sát Camera 200X & AI Edit Pro</title>
     <style>
         :root {
             --ios-yellow: #ffcc00;
@@ -56,15 +56,16 @@
             display: flex; justify-content: space-between; align-items: center; padding: 0 16px; z-index: 10005;
         }
         
-        .left-selectors { display: flex; gap: 6px; }
+        .left-selectors { display: flex; gap: 6px; align-items: center; justify-content: flex-start; flex: 1; }
 
         .res-badge-select {
-            background: rgba(0, 0, 0, 0.5); color: var(--ios-yellow); border: 1px solid rgba(255,255,255,0.2);
-            padding: 6px 10px; font-size: 11px; font-weight: 600; border-radius: 12px; outline: none;
+            background: rgba(0, 0, 0, 0.6); color: var(--ios-yellow); border: 1px solid rgba(255,255,255,0.2.5);
+            padding: 6px 8px; font-size: 11px; font-weight: 600; border-radius: 12px; outline: none;
             backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            max-width: 95px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;
         }
         
-        .right-controls { display: flex; gap: 10px; }
+        .right-controls { display: flex; gap: 10px; justify-content: flex-end; }
         .btn-icon-top {
             background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255,255,255,0.2); color: #fff;
             width: 38px; height: 38px; border-radius: 50%; font-size: 14px;
@@ -200,6 +201,51 @@
         }
         .btn-camera-flip svg { width: 22px; height: 22px; fill: #ffffff; }
 
+        /* Giao diện Trang Studio Chỉnh Ảnh AI Chuyên Nghiệp */
+        .ai-studio-modal {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh;
+            background: #0d0d0e; z-index: 40000; display: none; flex-direction: column;
+            padding-bottom: calc(12px + env(safe-area-inset-bottom));
+            padding-top: env(safe-area-inset-top);
+        }
+        .ai-studio-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 16px 20px; background: #161618; border-bottom: 0.5px solid rgba(255,255,255,0.1);
+        }
+        .ai-studio-body {
+            flex: 1; display: flex; flex-direction: column; padding: 16px; overflow-y: auto; gap: 16px;
+        }
+        .ai-image-preview-box {
+            width: 100%; aspect-ratio: 4/3; background: #000; border-radius: 16px;
+            border: 1px dashed rgba(255,255,255,0.2); display: flex; align-items: center;
+            justify-content: center; overflow: hidden; position: relative;
+        }
+        .ai-image-preview-box img { width: 100%; height: 100%; object-fit: contain; }
+        .ai-upload-placeholder { text-align: center; color: rgba(255,255,255,0.4); font-size: 14px; display: flex; flex-direction: column; gap: 8px; }
+        
+        .ai-action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn-studio-action {
+            background: #1c1c1e; border: 1px solid rgba(255,255,255,0.15); color: #fff;
+            padding: 12px; border-radius: 12px; font-weight: 600; font-size: 13px;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
+        .btn-studio-action:active { background: #2c2c2e; }
+        
+        .ai-prompt-container {
+            background: #161618; border-radius: 16px; padding: 12px;
+            border: 1px solid rgba(191, 90, 242, 0.3); display: flex; flex-direction: column; gap: 10px;
+        }
+        .ai-prompt-input {
+            width: 100%; background: transparent; border: none; color: #fff;
+            font-size: 14px; outline: none; resize: none; min-height: 60px;
+            font-family: inherit;
+        }
+        .btn-studio-submit {
+            background: var(--ios-purple); color: #fff; border: none; padding: 12px;
+            border-radius: 10px; font-weight: 700; font-size: 14px; letter-spacing: 0.5px;
+        }
+        .btn-studio-submit:disabled { background: #3a3a3c; color: rgba(255,255,255,0.3); }
+
         .gallery-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: #000; z-index: 20000; display: none; flex-direction: column; padding-bottom: env(safe-area-inset-bottom); }
         .gallery-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid #1c1c1e; background: #000; }
         .btn-gallery-close { background: none; border: none; color: var(--ios-blue); font-size: 16px; font-weight: 600; }
@@ -227,7 +273,7 @@
         .gallery-item.selected .gallery-item-checkbox { background: var(--ios-blue); border-color: #fff; display: flex; align-items: center; justify-content: center; }
         .gallery-item.selected .gallery-item-checkbox::after { content: ''; width: 5px; height: 9px; border: solid white; border-width: 0 2.5px 2.5px 0; transform: rotate(45deg); margin-bottom: 2px; }
 
-        .gallery-footer-actions { display: none; background: #1c1c1e; padding: 16px; justify-content: space-between; gap: 12px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .gallery-footer-actions { display: none; background: #1c1e1e; padding: 16px; justify-content: space-between; gap: 12px; border-top: 1px solid rgba(255,255,255,0.1); }
         .btn-footer-action { flex: 1; border: none; padding: 14px; font-size: 14px; font-weight: 600; border-radius: 12px; color: white; }
         
         .detail-viewer-popup { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: #000; z-index: 30000; display: none; flex-direction: column; }
@@ -239,7 +285,7 @@
 
         .ai-loading-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh;
-            background: rgba(0,0,0,0.85); z-index: 99999; display: none;
+            background: rgba(0,0,0,0.9); z-index: 99999; display: none;
             flex-direction: column; align-items: center; justify-content: center;
         }
         .ai-spinner {
@@ -267,17 +313,17 @@
                     <option value="4K">4K UHD</option>
                     <option value="8K">8K UltraHD</option>
                 </select>
-                <select id="fpsSelector" class="res-badge-select" onchange="restartStream()">
-                    <option value="960">960 FPS (Super Slow-Mo)</option>
-                    <option value="480">480 FPS (Ultra Slow)</option>
-                    <option value="240">240 FPS (Slow Motion)</option>
-                    <option value="120">120 FPS (Pro Motion)</option>
-                    <option value="90">90 FPS Gaming</option>
-                    <option value="60">60 FPS Ultra Smooth</option>
-                    <option value="30" selected>30 FPS Standard</option>
-                    <option value="24">24 FPS Cinematic</option>
-                    <option value="15">15 FPS Battery Save</option>
-                    <option value="1">1 FPS TimeLapse</option>
+                <select id="fpsSelector" class="res-badge-select" style="max-width: 78px;" onchange="restartStream()">
+                    <option value="960">960 FPS</option>
+                    <option value="480">480 FPS</option>
+                    <option value="240">240 FPS</option>
+                    <option value="120">120 FPS</option>
+                    <option value="90">90 FPS</option>
+                    <option value="60">60 FPS</option>
+                    <option value="30" selected>30 FPS</option>
+                    <option value="24">24 FPS</option>
+                    <option value="15">15 FPS</option>
+                    <option value="1">1 FPS</option>
                 </select>
             </div>
             <div class="right-controls">
@@ -314,15 +360,49 @@
     <div class="shutter-row" id="shutterButtonsRow">
         <div class="left-preview-group">
             <div class="album-preview-placeholder" id="albumPreview" onclick="openGalleryModal(event)"></div>
-            <button class="btn-ai-outer" id="btnAiDirect" onclick="processLiveFrameWithAI(event)" title="Sửa ảnh AI trực tiếp">✨</button>
+            <button class="btn-ai-outer" id="btnAiDirect" onclick="openAiStudio(event)" title="Mở Studio AI">✨</button>
         </div>
         <div class="shutter-center-box">
             <button class="shutter-trigger-btn btn-photo-snap" id="btnCapture" onclick="takePhoto(event)"></button>
             <button class="shutter-trigger-btn btn-video-rec" id="btnRecord" onclick="toggleRecording(event)"></button>
         </div>
         <button class="btn-camera-flip" onclick="flipCameraFacing(event)">
-            <svg viewBox="0 0 24 24"><path d="M19 8l-4 4h3c0 3.31-2.69 6-6 6-1.01 0-1.97-.25-2.8-.7l-1.46 1.46C8.97 19.54 10.43 20 12 20c4.42 0 8-3.58 8-8h3l-4-4zM6 12c0-3.31 2.69-6 6-6 1.01 0 1.97.25 2.8.7l1.46-1.46C15.03 4.46 13.57 4 12 4c-4.42 0-8 3.58-8 8H1l4 4 4-4H6z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M19 8l-4 4h3c0 3.31-2.69 6-6 6-1.01 0-1.97-.25-2.8-.7l-1.46 1.46C8.97 19.54 10.43 20 12 20c4.42 0 8-3.58 8-8h3l-4-4zM6 12c0-3.31 2.69-6 6-6 1.01 0 1.97$.25 2.8.7l1.46-1.46C15.03 4.46 13.57 4 12 4c-4.42 0-8 3.58-8 8H1l4 4 4-4H6z"/></svg>
         </button>
+    </div>
+</div>
+
+<div class="ai-studio-modal" id="aiStudioModal">
+    <div class="ai-studio-header">
+        <button class="btn-gallery-close" onclick="closeAiStudio(event)" style="color: #fff;">✕ Đóng</button>
+        <div style="font-weight:700; color:var(--ios-purple); font-size:16px;">Gemini AI Studio</div>
+        <div style="width:40px;"></div>
+    </div>
+    <div class="ai-studio-body">
+        <div class="ai-image-preview-box" id="aiStudioPreviewBox">
+            <div class="ai-upload-placeholder" id="studioPlaceholder">
+                <span>🔮 Chưa có ảnh nào được nạp</span>
+                <span style="font-size:11px; color:rgba(255,255,255,0.3)">Hãy tải file lên hoặc chụp nhanh qua app</span>
+            </div>
+            <img id="studioPreviewImg" style="display:none;" src="">
+        </div>
+
+        <div class="ai-action-row">
+            <button class="btn-studio-action" onclick="document.getElementById('hiddenFileInput').click()">
+                📂 Tải ảnh từ máy
+            </button>
+            <button class="btn-studio-action" onclick="captureCurrentFrameToStudio()">
+                📸 Lấy từ Camera
+            </button>
+        </div>
+        <input type="file" id="hiddenFileInput" accept="image/*" style="display:none;" onchange="handleStudioFileSelect(event)">
+
+        <div class="ai-prompt-container">
+            <textarea class="ai-prompt-input" id="aiPromptInput" placeholder="Nhập yêu cầu phân tích/sửa đổi ảnh của bạn vào đây (Ví dụ: Phân tích độ nét vật thể, kiểm tra ánh sáng...)"></textarea>
+            <button class="btn-studio-submit" id="btnStudioSubmit" onclick="submitStudioToGemini()">
+                ⚡ Gửi Yêu Cầu Đến Gemini AI
+            </button>
+        </div>
     </div>
 </div>
 
@@ -343,7 +423,7 @@
     <div class="viewer-header">
         <button class="btn-gallery-close" onclick="closeDetailViewer(event)" style="color:#fff;">✕ Đóng</button>
         <div style="display:flex; gap:8px;">
-            <button class="btn-ai-edit" id="btnAiDetail" onclick="processSelectedWithAI(event)">✨ Siêu Nét AI</button>
+            <button class="btn-ai-edit" id="btnAiDetail" onclick="processSelectedWithAI(event)">✨ Đưa vào Studio AI</button>
             <button class="btn-save-media" onclick="downloadSingleMedia(event)">📥 Lưu file</button>
         </div>
     </div>
@@ -367,6 +447,7 @@
     let facingModeSetting = "environment", activeMode = "PHOTO", mediaItems = [], isSelectModeActive = false, selectedMediaIds = new Set();
     let activeStream = null, videoTrack = null, isFlashOn = false, mediaRecorder = null, recordedChunks = [], isRecording = false, collapseTimer = null;
     let secondsRecorded = 0, timerInterval = null, currentViewingItem = null;
+    let studioSelectedBase64 = null; // Biến lưu trữ ảnh hiện tại trong Studio AI
     
     const dialRotor = document.getElementById('dialRotor');
     const totalTicks = 160;       
@@ -528,7 +609,7 @@
         const grid = document.getElementById('galleryGrid'); grid.innerHTML = '';
         mediaItems.forEach(item => {
             const div = document.createElement('div'); div.className = `gallery-item ${selectedMediaIds.has(item.id) ? 'selected' : ''}`;
-            div.innerHTML = item.type === 'PHOTO' ? `<img src="${item.src}"><div class="gallery-ai-badge" onclick="event.stopPropagation(); callGeminiAiEdit('${item.src}')">✨ AI</div>` : `<video src="${item.src}"></video><div class="video-duration-tag">${item.duration}</div>`;
+            div.innerHTML = item.type === 'PHOTO' ? `<img src="${item.src}"><div class="gallery-ai-badge" onclick="event.stopPropagation(); loadPhotoToStudio('${item.src}')">✨ AI</div>` : `<video src="${item.src}"></video><div class="video-duration-tag">${item.duration}</div>`;
             const chk = document.createElement('div'); chk.className = 'gallery-item-checkbox'; div.appendChild(chk);
             div.onclick = () => { if (isSelectModeActive) { if(selectedMediaIds.has(item.id)) selectedMediaIds.delete(item.id); else selectedMediaIds.add(item.id); renderGalleryGrid(); } else openDetailViewer(item); };
             grid.appendChild(div);
@@ -545,66 +626,112 @@
         document.getElementById('detailViewer').style.display = 'flex'; 
     }
     function closeDetailViewer(e) { if(e) e.preventDefault(); document.getElementById('detailViewer').style.display = 'none'; }
+    
+    function processSelectedWithAI(e) { 
+        if(e) e.preventDefault(); 
+        if(currentViewingItem && currentViewingItem.type === 'PHOTO') {
+            closeDetailViewer();
+            closeGalleryModal();
+            loadPhotoToStudio(currentViewingItem.src);
+        } 
+    }
+    
     function downloadSingleMedia(e) { if(e) e.preventDefault(); const a = document.createElement('a'); a.href = currentViewingItem.src; a.download = `CAM_${currentViewingItem.id}` + (currentViewingItem.type==='PHOTO'?'.jpg':'.mp4'); document.body.appendChild(a); a.click(); document.body.removeChild(a); }
 
-    function processLiveFrameWithAI(e) {
-        if(e) e.preventDefault(); const video = document.getElementById('videoFeed'); if (!activeStream) return;
+    /* LOGIC TOÀN BỘ HỆ THỐNG GEMINI AI STUDIO MỚI */
+    function openAiStudio(e) {
+        if(e) e.preventDefault();
+        document.getElementById('aiStudioModal').style.display = 'flex';
+    }
+
+    function closeAiStudio(e) {
+        if(e) e.preventDefault();
+        document.getElementById('aiStudioModal').style.display = 'none';
+    }
+
+    function updateStudioImageDisplay(src) {
+        studioSelectedBase64 = src;
+        document.getElementById('studioPlaceholder').style.display = 'none';
+        const img = document.getElementById('studioPreviewImg');
+        img.src = src;
+        img.style.display = 'block';
+    }
+
+    function captureCurrentFrameToStudio() {
+        const video = document.getElementById('videoFeed');
+        if (!activeStream) { alert("Camera chưa bật!"); return; }
         const canvas = document.createElement('canvas'); canvas.width = video.videoWidth; canvas.height = video.videoHeight;
         const ctx = canvas.getContext('2d'); if (facingModeSetting === "user") { ctx.translate(canvas.width, 0); ctx.scale(-1, 1); }
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        callGeminiAiEdit(canvas.toDataURL('image/jpeg', 0.95));
+        updateStudioImageDisplay(canvas.toDataURL('image/jpeg', 0.95));
     }
 
-    function processSelectedWithAI(e) { if(e) e.preventDefault(); if(currentViewingItem && currentViewingItem.type === 'PHOTO') callGeminiAiEdit(currentViewingItem.src); }
+    function handleStudioFileSelect(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            updateStudioImageDisplay(event.target.result);
+        };
+        reader.readAsDataURL(file);
+    }
 
-    async function callGeminiAiEdit(base64Data) {
+    function loadPhotoToStudio(src) {
+        openAiStudio();
+        updateStudioImageDisplay(src);
+    }
+
+    async function submitStudioToGemini() {
+        if (!studioSelectedBase64) { alert("Vui lòng nạp ảnh vào Studio trước!"); return; }
+        const promptText = document.getElementById('aiPromptInput').value.trim() || "Bức ảnh này được chụp ở chế độ siêu zoom kỹ thuật số, hãy phân tích độ nét vật thể và độ sáng.";
+        
         const overlay = document.getElementById('aiLoadingOverlay');
         const txt = document.getElementById('aiLoadingText');
         overlay.style.display = 'flex';
-        txt.innerText = "Đang truyền tải cấu trúc ảnh sang server AI xử lý...";
+        txt.innerText = "Gemini AI đang xử lý cấu trúc ảnh theo yêu cầu của bạn...";
 
         try {
-            let cleanBase64 = base64Data.includes(",") ? base64Data.split(',')[1] : base64Data;
+            let cleanBase64 = studioSelectedBase64.includes(",") ? studioSelectedBase64.split(',')[1] : studioSelectedBase64;
             
             const response = await fetch('/api/gemini', {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ base64Data: cleanBase64 })
+                body: JSON.stringify({ base64Data: cleanBase64, customPrompt: promptText })
             });
 
             const jsonResult = await response.json();
             
             if (!response.ok || jsonResult.error) {
-                throw new Error(jsonResult.error || "Lỗi không xác định từ Serverless Node");
+                throw new Error(jsonResult.error || "Lỗi không xác định từ Server Node");
             }
             
-            let aiAnalysisText = "Không nhận được phản hồi phân tích lý tưởng.";
+            let aiAnalysisText = "Không nhận được phản hồi phân tích.";
             if (jsonResult.candidates && jsonResult.candidates[0].content.parts[0].text) {
                 aiAnalysisText = jsonResult.candidates[0].content.parts[0].text;
             }
 
             const imgObj = new Image();
-            imgObj.src = base64Data;
+            imgObj.src = studioSelectedBase64;
             await new Promise(r => imgObj.onload = r);
 
             const canvas = document.createElement('canvas');
             canvas.width = imgObj.width;
-            canvas.height = imgObj.height + 120;
+            canvas.height = imgObj.height + 140;
             const ctx = canvas.getContext('2d');
             
             ctx.fillStyle = "#000000";
-            ctx.fillRect(0,0, canvas.width, canvas.height);
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
             ctx.drawImage(imgObj, 0, 0);
 
-            ctx.fillStyle = "rgba(191, 90, 242, 0.85)";
-            ctx.fillRect(10, imgObj.height + 10, canvas.width - 20, 100);
+            ctx.fillStyle = "rgba(191, 90, 242, 0.9)";
+            ctx.fillRect(10, imgObj.height + 10, canvas.width - 20, 120);
 
             ctx.fillStyle = "#ffffff";
             ctx.font = "bold 14px Arial";
-            ctx.fillText("KẾT QUẢ PHÂN TÍCH TỪ GEMINI AI:", 20, imgObj.height + 35);
+            ctx.fillText("GEMINI AI STUDIO RESULT:", 20, imgObj.height + 35);
             
             ctx.font = "12px Arial";
-            let shortText = aiAnalysisText.replace(/[\*\#\`]/g, "").substring(0, 120) + "...";
+            let shortText = aiAnalysisText.replace(/[\*\#\`]/g, "").substring(0, 140) + "...";
             ctx.fillText(shortText, 20, imgObj.height + 65);
 
             let enhancedAiSrc = canvas.toDataURL('image/jpeg', 0.95);
@@ -613,14 +740,13 @@
             mediaItems.unshift(aiItem);
             updateAlbumPreview();
             overlay.style.display = 'none';
+            closeAiStudio();
             openDetailViewer(aiItem);
             
-            if(document.getElementById('galleryModal').style.display === 'flex') renderGalleryGrid();
-
         } catch (error) {
             overlay.style.display = 'none';
             console.error(error);
-            alert("Lỗi xử lý AI: Yêu cầu gửi lên API Gemini không thành công!\nHãy kiểm tra lại API Key hoặc cấu hình Environment Variables.");
+            alert("Lỗi kết nối Gemini: Gửi yêu cầu không thành công!\nHãy đảm bảo bạn đã lưu GEMINI_API_KEY chính xác trên biến môi trường Vercel.");
         }
     }
 
