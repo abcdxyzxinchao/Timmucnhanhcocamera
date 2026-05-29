@@ -11,7 +11,7 @@
             --ios-blue: #0A84FF;
             --ios-gray: #1C1C1E;
             --ios-red: #FF453A;
-            --glass-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+            --glass-shadow: 0 12px 30px rgba(0, 0, 0, 0.75), inset 0 1px 1px rgba(255, 255, 255, 0.25);
         }
 
         html, body {
@@ -31,16 +31,15 @@
             background: #000; position: relative; overflow: hidden;
         }
 
-        /* KHUNG VIEWPORT CAMERA - ĐIỀU CHỈNH CHIỀU CAO CHUẨN TỈ LỆ ẢNH 4:3 */
+        /* KHUNG VIEWPORT CAMERA */
         .camera-viewport-wrapper {
             position: absolute; top: 0; left: 0; width: 100%; 
-            height: calc(100dvh - 145px - env(safe-area-inset-bottom)); /* Hạ thấp khung đen giúp tăng diện tích preview */
+            height: calc(100dvh - 145px - env(safe-area-inset-bottom));
             background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden;
             z-index: 10; 
             transition: height 0.3s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
-        /* CHẾ ĐỘ VIDEO HOẶC FULL MÀN HÌNH -> CAMERA TRÀN ĐÁY */
         .app-container.mode-is-video .camera-viewport-wrapper,
         .app-container.cam-expanded .camera-viewport-wrapper {
             height: 100dvh;
@@ -72,31 +71,30 @@
         }
         .btn-icon-top.active { background: var(--ios-yellow); color: #000; border-color: var(--ios-yellow); }
 
-        /* CỤM ĐIỀU KHIỂN ZOOM - ĐƯỢC ĐẨY LÊN TRÊN CAO RA KHỎI KHUNG ĐEN ĐÚNG CHUẨN IOS */
+        /* CỤM ĐIỀU KHIỂN ZOOM - TÁCH LAYER RIÊNG BIỆT KHÔNG LÀM ĐƠ NÚT */
         .zoom-control-layer {
             position: absolute; 
-            bottom: calc(160px + env(safe-area-inset-bottom)); /* Nằm hẳn lên trên phần chữ và khung đen */
+            bottom: calc(160px + env(safe-area-inset-bottom));
             left: 50%; transform: translateX(-50%); width: 100%;
             display: flex; flex-direction: column; align-items: center; 
-            z-index: 10020; pointer-events: none;
+            z-index: 10030; pointer-events: none; /* Quan trọng: để click xuyên xuống dưới */
             transition: bottom 0.3s cubic-bezier(0.25, 1, 0.5, 1);
         }
         
-        /* Khi ở chế độ Full màn hình, đẩy nhẹ vị trí zoom lên cho cân xứng với dock lơ lửng */
         .app-container.cam-expanded .zoom-control-layer {
-            bottom: calc(185px + env(safe-area-inset-bottom));
+            bottom: calc(175px + env(safe-area-inset-bottom));
         }
         
         .collapsed-zoom-hub, .ios-curved-dial-panel { pointer-events: auto; }
         
         .zoom-single-dot {
-            background: rgba(20, 20, 20, 0.8); border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(20, 20, 20, 0.85); border: 1px solid rgba(255, 255, 255, 0.25);
             color: var(--ios-yellow); width: 44px; height: 44px; border-radius: 50%;
             font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.4); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
         }
 
-        /* THƯỚC ĐO ZOOM VÒNG CUNG - ĐƯỢC ĐẨY LÊN CAO THEO NÚT */
+        /* THƯỚC ĐO ZOOM VÒNG CUNG */
         .ios-curved-dial-panel { 
             position: absolute; bottom: -30px; width: 100vw; height: 110px;
             display: none; opacity: 0; transition: opacity 0.2s, transform 0.2s; background: transparent;
@@ -104,23 +102,23 @@
         .dial-center-pointer { position: absolute; top: -4px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 7px solid var(--ios-yellow); z-index: 150; }
         .dial-live-text-hub { 
             position: absolute; top: -32px; left: 50%; transform: translateX(-50%); color: var(--ios-yellow); font-size: 13px; font-weight: 700; z-index: 150; 
-            background: rgba(0,0,0,0.85); padding: 4px 12px; border-radius: 10px; border: 0.5px solid rgba(255,255,255,0.15);
+            background: rgba(0,0,0,0.85); padding: 4px 12px; border-radius: 10px; border: 0.5px solid rgba(255,255,255,0.2);
         }
         .dial-wheel-rotor { position: absolute; top: 20px; left: 50%; width: 640px; height: 640px; margin-left: -320px; border-radius: 50%; will-change: transform; }
         .dial-tick-line { position: absolute; top: 0; left: 50%; width: 1.5px; height: 8px; background: rgba(255,255,255,0.35); transform-origin: 50% 320px; }
         .dial-tick-line.major-line { height: 14px; background: rgba(255,255,255,0.85); width: 2px; }
         .dial-tick-line span { position: absolute; top: 18px; left: 50%; transform: translateX(-50%); font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.85); }
 
-        /* PHẦN CHỮ HIỂN THỊ CHẾ ĐỘ - NẰM RIÊNG BIỆT TRÊN KHUNG ĐEN GỐC */
+        /* CHỮ HIỂN THỊ CHẾ ĐỘ */
         .mode-selection-wrapper {
             position: absolute;
             bottom: calc(115px + env(safe-area-inset-bottom));
             left: 0; width: 100vw; display: flex; justify-content: center;
-            z-index: 10015; pointer-events: auto;
+            z-index: 10020; pointer-events: auto;
             transition: bottom 0.3s cubic-bezier(0.25, 1, 0.5, 1);
         }
         .app-container.cam-expanded .mode-selection-wrapper {
-            bottom: calc(135px + env(safe-area-inset-bottom));
+            bottom: calc(130px + env(safe-area-inset-bottom));
         }
 
         .camera-mode-scroller { display: flex; gap: 32px; justify-content: center; }
@@ -130,7 +128,7 @@
         }
         .mode-item.active { color: var(--ios-yellow); text-shadow: 0 0 6px rgba(255,204,0,0.3); }
 
-        /* BẢNG ĐIỀU KHIỂN ĐÁY - ĐÃ ĐƯỢC THU THẤP KHUNG XUỐNG CỰC GỌN */
+        /* BẢNG ĐIỀU KHIỂN ĐÁY - PHÌNH RỘNG SANG HAI BÊN THEO ẢNH 3 */
         .ios-bottom-dashboard { 
             position: absolute; bottom: 0; left: 0; width: 100vw; 
             height: calc(110px + env(safe-area-inset-bottom)); 
@@ -141,47 +139,53 @@
             transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
         }
         
-        /* LOGIC 1: CHẾ ĐỘ VIDEO GỐC -> ẨN KHUNG ĐEN */
+        /* CHẾ ĐỘ VIDEO GỐC -> ẨN KHUNG ĐEN */
         .app-container.mode-is-video .ios-bottom-dashboard {
             background: transparent !important;
             border-top: none !important;
         }
 
-        /* LOGIC 2: BẤM FULL MÀN HÌNH -> BIẾN THÀNH KHỐI KÍNH MỜ BO CON TỈ LỆ ĐẸP */
+        /* KHI ẤN ZOOM RỘNG -> KHUNG HIỆU ỨNG KÍNH PHÌNH RỘNG RA SÁT VIỀN THEO ẢNH 3 */
         .app-container.cam-expanded .ios-bottom-dashboard {
-            background: rgba(25, 25, 27, 0.45) !important; 
-            backdrop-filter: blur(20px) saturate(190%); 
-            -webkit-backdrop-filter: blur(20px) saturate(190%);
-            border: 1px solid rgba(255, 255, 255, 0.18) !important; 
-            width: calc(100vw - 24px);
-            left: 12px;
-            bottom: calc(10px + env(safe-area-inset-bottom));
-            border-radius: 28px;
-            height: 120px; 
+            background: rgba(28, 28, 30, 0.45) !important; 
+            backdrop-filter: blur(25px) saturate(210%); 
+            -webkit-backdrop-filter: blur(25px) saturate(210%);
+            border: 1px solid rgba(255, 255, 255, 0.2) !important; 
+            width: calc(100vw - 16px); /* Mở rộng khung ra sát mép như ảnh 3 của bạn */
+            left: 8px;
+            bottom: calc(8px + env(safe-area-inset-bottom));
+            border-radius: 24px;
+            height: 115px; 
             box-shadow: var(--glass-shadow);
             padding: 0;
         }
         
+        /* HIỂN THỊ THỜI GIAN QUAY PHIM - NẰM CÂN BẰNG NGAY TRÊN NÚT BẤM (HÌNH 1) */
         .recording-timer-badge {
-            position: absolute; top: -35px; left: 50%; transform: translateX(-50%);
-            background: rgba(255, 69, 58, 0.95); color: #fff; font-size: 12px; font-weight: 700;
-            padding: 4px 10px; border-radius: 6px; display: none; letter-spacing: 0.5px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3); z-index: 10050;
+            position: absolute; 
+            top: -38px; /* Đặt cân bằng ngay giữa vùng không gian trên nút bấm */
+            left: 50%; transform: translateX(-50%);
+            background: rgba(255, 69, 58, 0.95); color: #fff; font-size: 13px; font-weight: 700;
+            padding: 4px 12px; border-radius: 6px; display: none; letter-spacing: 0.5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.4); z-index: 10050;
+        }
+        .app-container.cam-expanded .recording-timer-badge {
+            top: -34px;
         }
 
         /* HÀNG NÚT CHỤP / QUAY */
         .shutter-row { 
             width: 100%; display: flex; justify-content: space-between; 
-            align-items: center; padding: 0 45px; 
+            align-items: center; padding: 0 35px; z-index: 10012; pointer-events: auto;
         }
         
         .album-preview-placeholder { 
             width: 48px; height: 48px; border-radius: 50%; background: #1c1c1e; 
             border: 1.5px solid #ffffff; background-size: cover; background-position: center; 
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3); pointer-events: auto;
         }
 
-        .shutter-trigger-btn { border-radius: 50%; border: none; display: none; outline: none; transition: transform 0.1s ease; }
+        .shutter-trigger-btn { border-radius: 50%; border: none; display: none; outline: none; transition: transform 0.1s ease; pointer-events: auto; }
         .shutter-trigger-btn:active { transform: scale(0.9); }
         
         .btn-photo-snap { width: 68px; height: 68px; background: #ffffff; border: 4px solid #000; box-shadow: 0 0 0 2px #fff; }
@@ -189,12 +193,12 @@
         .btn-video-rec.recording { border-radius: 14px; transform: scale(0.85); background: var(--ios-red); box-shadow: 0 0 0 3px #fff; }
         
         .btn-camera-flip { 
-            width: 48px; height: 48px; border-radius: 50%; background: rgba(30,30,30,0.6); border: none;
-            display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            width: 48px; height: 48px; border-radius: 50%; background: rgba(35,35,35,0.6); border: none;
+            display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 8px rgba(0,0,0,0.2); pointer-events: auto;
         }
         .btn-camera-flip svg { width: 22px; height: 22px; fill: #ffffff; }
 
-        /* THƯ VIỆN & CHI TIẾT */
+        /* THƯ VIỆN MODAL */
         .gallery-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: #000; z-index: 20000; display: none; flex-direction: column; padding-bottom: env(safe-area-inset-bottom); }
         .gallery-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid #1c1c1e; background: #000; }
         .btn-gallery-close { background: none; border: none; color: var(--ios-blue); font-size: 16px; font-weight: 600; }
@@ -208,10 +212,6 @@
             display: flex; align-items: center; gap: 3px;
         }
         .video-duration-tag::before { content: ''; display: inline-block; width: 0; height: 0; border-top: 3px solid transparent; border-bottom: 3px solid transparent; border-left: 5px solid #fff; }
-        .gallery-item-checkbox { position: absolute; top: 8px; right: 8px; width: 22px; height: 22px; border-radius: 50%; border: 2px solid #fff; background: rgba(0,0,0,0.2); display: none; }
-        .gallery-modal.select-mode .gallery-item-checkbox { display: block; }
-        .gallery-item.selected .gallery-item-checkbox { background: var(--ios-blue); border-color: #fff; display: flex; align-items: center; justify-content: center; }
-        .gallery-item.selected .gallery-item-checkbox::after { content: ''; width: 4px; height: 8px; border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg); margin-bottom: 2px; }
         .gallery-footer-actions { display: none; background: #1c1e; padding: 16px; justify-content: space-between; gap: 12px; }
         .btn-footer-action { flex: 1; border: none; padding: 12px; font-size: 14px; font-weight: 600; border-radius: 12px; color: white; }
         .detail-viewer-popup { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: #000; z-index: 30000; display: none; flex-direction: column; }
@@ -236,7 +236,6 @@
                 <button class="btn-icon-top" id="btnCamSizeToggle" onclick="toggleCameraExpansion(event)">⛶</button>
             </div>
         </div>
-
         <video id="videoFeed" autoplay playsinline muted></video>
     </div>
 
@@ -300,7 +299,6 @@
         if (now - lastTouchEnd <= 250) { e.preventDefault(); }
         lastTouchEnd = now;
     }, { passive: false });
-    document.addEventListener('gesturestart', (e) => e.preventDefault(), { passive: false });
 
     let currentZoom = 1.0, facingModeSetting = "environment", activeMode = "PHOTO", mediaItems = [], isSelectModeActive = false, selectedMediaIds = new Set();
     let activeStream = null, videoTrack = null, isFlashOn = false, mediaRecorder = null, recordedChunks = [], isRecording = false, collapseTimer = null;
@@ -352,6 +350,7 @@
         }, 2000);
     }
 
+    /* ĐÃ FIX: Không sử dụng preventDefault vô tội vạ để tránh gây đơ cứng nút click hệ thống */
     curvedPanel.addEventListener('touchstart', (e) => { clearTimeout(collapseTimer); startX = e.touches[0].clientX; baseAngle = currentAngle; }, { passive: true });
     curvedPanel.addEventListener('touchmove', (e) => {
         let deltaX = e.touches[0].clientX - startX;
