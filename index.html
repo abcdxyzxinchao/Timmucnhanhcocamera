@@ -593,7 +593,6 @@
     measurementId: "G-YY3NQSSWNZ"
   };
 
-  // Khởi tạo ứng dụng
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
   const auth = getAuth(app);
@@ -612,15 +611,20 @@
         } else {
             profileBtn.innerText = user.email.charAt(0).toUpperCase();
         }
-        // Tải lịch sử chat được lưu riêng cho user này nếu có
         loadUserChatHistory(user.uid);
+        
+        // CHỈ KHỞI CHẠY CAMERA KHI ĐÃ ĐĂNG NHẬP THÀNH CÔNG
+        window.startCamera();
+        document.getElementById('btnCamPower').classList.add('active');
     } else {
+        // Nếu chưa đăng nhập hoặc đăng xuất, tắt camera đi và hiện bảng đăng nhập
+        window.stopCamera();
+        document.getElementById('btnCamPower').classList.remove('active');
         authScreen.style.display = 'flex';
         profileBtn.innerHTML = '👤';
     }
   });
 
-  // Chuyển đổi trạng thái Đăng nhập / Đăng ký
   window.toggleAuthMode = function() {
       isSignUpMode = !isSignUpMode;
       document.getElementById('authTitle').innerText = isSignUpMode ? "Đăng ký tài khoản" : "Đăng nhập hệ thống";
@@ -629,7 +633,6 @@
         "Đã có tài khoản? <span>Đăng nhập ngay</span>" : "Chưa có tài khoản? <span>Đăng ký ngay</span>";
   }
 
-  // Đăng nhập/Đăng ký bằng Email & Mật khẩu
   window.handleEmailAuth = async function() {
       const email = document.getElementById('authEmail').value.trim();
       const password = document.getElementById('authPassword').value;
@@ -647,7 +650,6 @@
       }
   }
 
-  // Đăng nhập bằng Google Account
   window.handleGoogleAuth = async function() {
       try {
           await signInWithPopup(auth, googleProvider);
@@ -656,17 +658,14 @@
       }
   }
 
-  // Đăng xuất hệ thống
   window.handleSignOut = function() {
       if(confirm("Bạn có chắc chắn muốn đăng xuất khỏi hệ thống không?")) {
           signOut(auth).then(() => {
-              // Reset chat flow về trạng thái ban đầu sau khi đăng xuất
               resetChatUI();
           });
       }
   }
 
-  // Quản lý lưu cục bộ lịch sử chat theo Id của từng tài khoản
   function loadUserChatHistory(uid) {
       const localData = localStorage.getItem(`chat_history_${uid}`);
       if(localData) {
@@ -806,6 +805,7 @@
         document.getElementById('btnRecord').style.display = (targetMode === 'VIDEO') ? 'block' : 'none';
     }
 
+    // HÀM KHỞI CHẠY CAMERA CHUẨN
     async function startCamera() {
         if (activeStream) stopCamera();
         const video = document.getElementById('videoFeed');
@@ -826,11 +826,35 @@
             video.srcObject = activeStream; videoTrack = activeStream.getVideoTracks()[0];
             if (facingModeSetting === "user") video.classList.add('mirror-mode'); else video.classList.remove('mirror-mode');
             switchCameraMode(activeMode); applyHardwareAndDigitalZoom(currentZoom);
-        } catch (err) {}
+            video.style.background = "transparent"; // Xóa nền đen khi luồng chạy thành công
+        } catch (err) {
+            console.error("Không thể truy cập camera:", err);
+        }
     }
 
-    function stopCamera() { if (activeStream) { activeStream.getTracks().forEach(t => t.stop()); activeStream = null; } videoTrack = null; }
-    function toggleCamPower(e) { if(e) e.preventDefault(); if (activeStream) { stopCamera(); document.getElementById('btnCamPower').classList.remove('active'); } else { startCamera(); document.getElementById('btnCamPower').classList.add('active'); } }
+    function stopCamera() { 
+        if (activeStream) { 
+            activeStream.getTracks().forEach(t => t.stop()); 
+            activeStream = null; 
+        } 
+        videoTrack = null;
+        const video = document.getElementById('videoFeed');
+        video.srcObject = null;
+        video.style.background = "#000000"; // Hiện nền đen khi camera chủ động tắt
+    }
+
+    // Nút con mắt (👁‍🗨) thực hiện bật/tắt camera đúng vị trí chức năng
+    function toggleCamPower(e) { 
+        if(e) e.preventDefault(); 
+        if (activeStream) { 
+            stopCamera(); 
+            document.getElementById('btnCamPower').classList.remove('active'); 
+        } else { 
+            startCamera(); 
+            document.getElementById('btnCamPower').classList.add('active'); 
+        } 
+    }
+
     function restartStream() { if (activeStream) startCamera(); }
     function flipCameraFacing(e) { if(e) e.preventDefault(); facingModeSetting = (facingModeSetting === "environment") ? "user" : "environment"; if (activeStream) startCamera(); }
 
@@ -926,7 +950,7 @@
 
     function loadPhotoToGeminiStudio(src) { openAiStudio(); attachImageToInputBar(src); }
     function attachImageToInputBar(src) { studioAttachedBase64 = src; document.getElementById('studioAttachmentImg').src = src; document.getElementById('studioInputAttachmentBar').style.display = 'flex'; }
-    function clearStudioAttachment() { studioAttachedBase64 = null; document.getElementById('studioAttachmentImg').src = ''; document.getElementById('studioInputAttachmentBar').style.display = 'none'; }
+    function clearStudioAttachment() { studioAttachedBase64 = null; document.getElementById('studioAttachmentImg').src = ''; document.getElementById('studioInputAttachmentBar').style.none = 'none'; }
     function autoGrowTextarea(element) { element.style.height = '24px'; element.style.height = (element.scrollHeight > 100 ? 100 : element.scrollHeight) + 'px'; }
 
     async function sendChatToGemini() {
@@ -973,7 +997,6 @@
             aiResponseBubble.innerHTML = aiAnalysisText.replace(/\n/g, "<br>").replace(/[\*\#\`]/g, "");
             historyFlow.scrollTop = historyFlow.scrollHeight;
 
-            // Kích hoạt đồng bộ lưu trữ vào bộ nhớ cục bộ theo phiên đăng nhập cá nhân
             if(window.saveUserChatHistory) window.saveUserChatHistory();
 
             if (apiBase64) {
@@ -992,7 +1015,8 @@
         }
     }
 
-    window.onload = () => { buildDialTicks(); startCamera(); };
+    // ĐÃ CHỈNH SỬA: Khi load trang web chỉ build vòng quay dial, TUYỆT ĐỐI không gọi hàm `startCamera()` để tránh xin quyền lúc đăng nhập.
+    window.onload = () => { buildDialTicks(); };
 </script>
 </body>
 </html>
