@@ -71,7 +71,7 @@
         }
         .btn-icon-top.active { background: var(--ios-yellow); color: #000; border-color: var(--ios-yellow); }
 
-        /* CỤM ĐIỀU KHIỂN ZOOM - GIỮ NGUYÊN CHỨC NĂNG NGON LÀNH */
+        /* CỤM ĐIỀU KHIỂN ZOOM - HOẠT ĐỘNG RIÊNG LẬP KHÔNG LỖI */
         .zoom-control-layer {
             position: absolute; 
             bottom: calc(160px + env(safe-area-inset-bottom));
@@ -94,7 +94,7 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.5); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
         }
 
-        /* THƯỚC ĐO ZOOM */
+        /* THƯỚC ĐO ZOOM VÒNG CUNG */
         .ios-curved-dial-panel { 
             position: absolute; bottom: -30px; width: 100vw; height: 110px;
             display: none; opacity: 0; transition: opacity 0.2s, transform 0.2s; background: transparent;
@@ -109,16 +109,16 @@
         .dial-tick-line.major-line { height: 14px; background: rgba(255,255,255,0.85); width: 2px; }
         .dial-tick-line span { position: absolute; top: 18px; left: 50%; transform: translateX(-50%); font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.85); }
 
-        /* CHỮ HIỂN THỊ CHẾ ĐỘ - ĐƯỢC ĐƯA VÀO TRONG LAYER ĐỂ KHÔNG BỊ KHUẤT */
+        /* CHỮ HIỂN THỊ CHẾ ĐỘ - ĐẨY LÊN TRÊN KHUNG KÍNH ĐỂ CHẠM ĐƯỢC */
         .mode-selection-wrapper {
             position: absolute;
             bottom: calc(115px + env(safe-area-inset-bottom));
             left: 0; width: 100vw; display: flex; justify-content: center;
-            z-index: 10025; pointer-events: auto;
+            z-index: 10045; pointer-events: auto;
             transition: bottom 0.3s cubic-bezier(0.25, 1, 0.5, 1);
         }
         .app-container.cam-expanded .mode-selection-wrapper {
-            bottom: calc(125px + env(safe-area-inset-bottom));
+            bottom: calc(122px + env(safe-area-inset-bottom));
         }
 
         .camera-mode-scroller { display: flex; gap: 32px; justify-content: center; }
@@ -128,13 +128,11 @@
         }
         .mode-item.active { color: var(--ios-yellow); text-shadow: 0 0 6px rgba(255,204,0,0.3); }
 
-        /* BẢNG ĐIỀU KHIỂN ĐÁY - ĐÃ TĂNG ĐỘ CAO BAO TRÙM HẾT CHỮ VÀ NÚT */
+        /* BẢNG ĐIỀU KHIỂN ĐÁY - GIẢM Z-INDEX XUỐNG ĐỂ LÀM NỀN PHÍA DƯỚI */
         .ios-bottom-dashboard { 
             position: absolute; bottom: 0; left: 0; width: 100vw; 
             height: calc(110px + env(safe-area-inset-bottom)); 
             background: var(--ios-dark-bg);
-            padding: 10px 0 calc(10px + env(safe-area-inset-bottom)) 0; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
             z-index: 10010;
             transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
         }
@@ -144,7 +142,7 @@
             border-top: none !important;
         }
 
-        /* ĐÃ ĐIỀU CHỈNH: Tăng kích thước khung kính mờ lên 150px bao trọn cả chữ và nút, nhìn rõ bấm nhạy */
+        /* KHUNG HIỆU ỨNG KÍNH PHÌNH TO CHUẨN ĐẸP */
         .app-container.cam-expanded .ios-bottom-dashboard {
             background: rgba(20, 20, 22, 0.6) !important; 
             backdrop-filter: blur(25px) saturate(210%); 
@@ -156,10 +154,9 @@
             border-radius: 28px;
             height: 150px; 
             box-shadow: var(--glass-shadow);
-            padding-top: 45px; /* Đẩy cụm nút xuống dưới nhường chỗ cho chữ chế độ */
         }
         
-        /* HIỂN THỊ THỜI GIAN QUAY PHIM - CÂN BẰNG GIỮA */
+        /* HIỂN THỊ THỜI GIAN QUAY PHIM - KHÓA CHÍNH GIỮA TRÊN NÚT BẤM */
         .recording-timer-badge {
             position: absolute; 
             top: -38px;
@@ -169,13 +166,14 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.4); z-index: 10050;
         }
         .app-container.cam-expanded .recording-timer-badge {
-            top: -34px;
+            top: 12px; /* Cân bằng lại khi khung kính phình cao */
         }
 
-        /* HÀNG NÚT CHỤP / QUAY */
+        /* HÀNG NÚT CHỤP / QUAY - ĐƯỢC ĐẨY LÊN TẦNG CAO NHẤT ĐỂ LUÔN BẤM ĐƯỢC ĐƯỢC */
         .shutter-row { 
+            position: absolute; bottom: calc(20px + env(safe-area-inset-bottom)); left: 0;
             width: 100%; display: flex; justify-content: space-between; 
-            align-items: center; padding: 0 35px; z-index: 10012; pointer-events: auto;
+            align-items: center; padding: 0 35px; z-index: 10040; pointer-events: auto;
         }
         
         .album-preview-placeholder { 
@@ -210,7 +208,6 @@
             color: #fff; font-size: 10px; font-weight: 600; padding: 2px 5px; border-radius: 4px;
             display: flex; align-items: center; gap: 3px;
         }
-        .video-duration-tag::before { content: ''; display: inline-block; width: 0; height: 0; border-top: 3px solid transparent; border-bottom: 3px solid transparent; border-left: 5px solid #fff; }
         
         /* Checkbox chọn ảnh */
         .gallery-item-checkbox { 
@@ -238,8 +235,14 @@
     <div class="camera-viewport-wrapper" id="cameraBox">
         <div class="top-settings-bar">
             <select id="resSelector" class="res-badge-select" onchange="restartStream()">
+                <option value="140p">140p SD</option>
+                <option value="360p">360p SD</option>
+                <option value="480p">480p SD</option>
+                <option value="720p">720p HD</option>
                 <option value="1080p" selected>1080p FHD</option>
+                <option value="2K">2K QHD</option>
                 <option value="4K">4K UHD</option>
+                <option value="8K">8K UltraHD</option>
             </select>
             <div class="right-controls">
                 <button class="btn-icon-top active" id="btnCamPower" onclick="toggleCamPower(event)">👁‍🗨</button>
@@ -270,15 +273,15 @@
 
     <div class="ios-bottom-dashboard" id="bottomDashboard">
         <div class="recording-timer-badge" id="recTimer">00:00</div>
+    </div>
 
-        <div class="shutter-row">
-            <div class="album-preview-placeholder" id="albumPreview" onclick="openGalleryModal(event)"></div>
-            <button class="shutter-trigger-btn btn-photo-snap" id="btnCapture" onclick="takePhoto(event)"></button>
-            <button class="shutter-trigger-btn btn-video-rec" id="btnRecord" onclick="toggleRecording(event)"></button>
-            <button class="btn-camera-flip" onclick="flipCameraFacing(event)">
-                <svg viewBox="0 0 24 24"><path d="M19 8l-4 4h3c0 3.31-2.69 6-6 6-1.01 0-1.97-.25-2.8-.7l-1.46 1.46C8.97 19.54 10.43 20 12 20c4.42 0 8-3.58 8-8h3l-4-4zM6 12c0-3.31 2.69-6 6-6 1.01 0 1.97.25 2.8.7l1.46-1.46C15.03 4.46 13.57 4 12 4c-4.42 0-8 3.58-8 8H1l4 4 4-4H6z"/></svg>
-            </button>
-        </div>
+    <div class="shutter-row" id="shutterButtonsRow">
+        <div class="album-preview-placeholder" id="albumPreview" onclick="openGalleryModal(event)"></div>
+        <button class="shutter-trigger-btn btn-photo-snap" id="btnCapture" onclick="takePhoto(event)"></button>
+        <button class="shutter-trigger-btn btn-video-rec" id="btnRecord" onclick="toggleRecording(event)"></button>
+        <button class="btn-camera-flip" onclick="flipCameraFacing(event)">
+            <svg viewBox="0 0 24 24"><path d="M19 8l-4 4h3c0 3.31-2.69 6-6 6-1.01 0-1.97-.25-2.8-.7l-1.46 1.46C8.97 19.54 10.43 20 12 20c4.42 0 8-3.58 8-8h3l-4-4zM6 12c0-3.31 2.69-6 6-6 1.01 0 1.97.25 2.8.7l1.46-1.46C15.03 4.46 13.57 4 12 4c-4.42 0-8 3.58-8 8H1l4 4 4-4H6z"/></svg>
+        </button>
     </div>
 </div>
 
@@ -451,10 +454,9 @@
     }
 
     function updateAlbumPreview() { const p = document.getElementById('albumPreview'); if (mediaItems.length > 0) p.style.backgroundImage = `url('${mediaItems[0].src}')`; else p.style.backgroundImage = 'none'; }
-    function openGalleryModal(e) { if(e) e.preventDefault(); document.getElementById('bottomDashboard').style.display = 'none'; isSelectModeActive = false; selectedMediaIds.clear(); renderGalleryGrid(); document.getElementById('galleryModal').style.display = 'flex'; }
-    function closeGalleryModal(e) { if(e) e.preventDefault(); document.getElementById('galleryModal').style.display = 'none'; document.getElementById('bottomDashboard').style.display = 'flex'; }
+    function openGalleryModal(e) { if(e) e.preventDefault(); document.getElementById('shutterButtonsRow').style.display = 'none'; isSelectModeActive = false; selectedMediaIds.clear(); renderGalleryGrid(); document.getElementById('galleryModal').style.display = 'flex'; }
+    function closeGalleryModal(e) { if(e) e.preventDefault(); document.getElementById('galleryModal').style.display = 'none'; document.getElementById('shutterButtonsRow').style.display = 'flex'; }
     
-    /* LOGIC CHỌN FILE NHIỀU ĐÃ ĐƯỢC FIX KHÔNG LỖI */
     function toggleSelectMode(e) { 
         if(e) e.preventDefault(); 
         isSelectModeActive = !isSelectModeActive; 
