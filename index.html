@@ -31,15 +31,17 @@
             background: #000; position: relative; overflow: hidden;
         }
 
-        /* KHUNG PREVIEW CAMERA */
+        /* KHUNG VIEWPORT CAMERA - TRÀN RA TÙY THEO CHẾ ĐỘ */
         .camera-viewport-wrapper {
             position: absolute; top: 0; left: 0; width: 100%; 
-            height: calc(100dvh - 210px);
+            height: calc(100dvh - 210px); /* Mặc định của chế độ Ảnh */
             background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden;
             z-index: 10; 
-            transition: height 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            transition: height 0.3s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
+        /* KHI CHỌN VIDEO HOẶC KHI ẤN PHÓNG TO -> CAMERA TRÀN TOÀN MÀN HÌNH CHUẨN IOS */
+        .app-container.mode-is-video .camera-viewport-wrapper,
         .app-container.cam-expanded .camera-viewport-wrapper {
             height: 100dvh;
         }
@@ -50,7 +52,7 @@
         }
         video.mirror-mode { transform: scaleX(-1); }
 
-        /* THANH TIỆN ÍCH PHÍA TRÊN */
+        /* THANH TIỆN ÍCH TRÊN ĐẦU */
         .top-settings-bar {
             position: absolute; top: calc(16px + env(safe-area-inset-top)); left: 0; width: 100%;
             display: flex; justify-content: space-between; align-items: center; padding: 0 20px; z-index: 10005;
@@ -70,27 +72,22 @@
         }
         .btn-icon-top.active { background: var(--ios-yellow); color: #000; border-color: var(--ios-yellow); }
 
-        /* KHU VỰC ĐIỀU KHIỂN ZOOM - KHÓA CHẶT VỊ TRÍ LUÔN CÂN ĐỐI SÁT CHỮ CHẾ ĐỘ */
+        /* CỤM ĐIỀU KHIỂN ZOOM - KHÓA VỊ TRÍ CÂN ĐỐI TUYỆT ĐỐI */
         .zoom-control-layer {
             position: absolute; 
-            bottom: 25px; /* Kéo cực thấp xuống ngay sát trên text Video/Ảnh */
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100%;
+            bottom: 25px; /* Luôn giữ khoảng cách sát sạt phía trên text chế độ */
+            left: 50%; transform: translateX(-50%); width: 100%;
             display: flex; flex-direction: column; align-items: center; 
-            z-index: 10020;
-            pointer-events: none;
+            z-index: 10020; pointer-events: none;
         }
         
-        .collapsed-zoom-hub, .ios-curved-dial-panel {
-            pointer-events: auto;
-        }
+        .collapsed-zoom-hub, .ios-curved-dial-panel { pointer-events: auto; }
         
         .zoom-single-dot {
-            background: rgba(0, 0, 0, 0.7); border: 1.5px solid rgba(255, 255, 255, 0.4);
+            background: rgba(0, 0, 0, 0.65); border: 1.5px solid rgba(255, 255, 255, 0.35);
             color: var(--ios-yellow); width: 46px; height: 46px; border-radius: 50%;
             font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5); backdrop-filter: blur(5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
         }
 
         /* THƯỚC ĐO ZOOM VÒNG CUNG */
@@ -112,20 +109,26 @@
         .ios-bottom-dashboard { 
             position: absolute; bottom: 0; left: 0; width: 100vw; 
             height: 210px; 
-            background: var(--ios-dark-bg);
+            background: var(--ios-dark-bg); /* Mặc định nền đen cho chế độ Ảnh */
             border-top: 1px solid rgba(255, 255, 255, 0.05);
             padding: 12px 0 calc(12px + env(safe-area-inset-bottom)) 0; 
             display: flex; flex-direction: column; align-items: center; justify-content: space-between;
             z-index: 10010;
-            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
         }
         
-        /* HIỆU ỨNG KÍNH MỜ 3D LỒI XUYÊN THẤU KHI PHÓNG TO */
+        /* LOGIC 1: KHI Ở CHẾ ĐỘ VIDEO GỐC -> ẨN TOÀN BỘ KHUNG ĐEN NHƯ ẢNH 1 BẠN GỬI */
+        .app-container.mode-is-video .ios-bottom-dashboard {
+            background: transparent !important;
+            border-top: none !important;
+        }
+
+        /* LOGIC 2: KHI BẤM NÚT PHÓNG TO FULL MÀN HÌNH -> BIẾN THÀNH KHỐI KÍNH 3D LỒI LƠ LỬNG */
         .app-container.cam-expanded .ios-bottom-dashboard {
-            background: rgba(25, 25, 27, 0.4); 
+            background: rgba(25, 25, 27, 0.4) !important; 
             backdrop-filter: blur(25px) saturate(200%); 
             -webkit-backdrop-filter: blur(25px) saturate(200%);
-            border: 1px solid rgba(255, 255, 255, 0.22); 
+            border: 1px solid rgba(255, 255, 255, 0.22) !important; 
             width: calc(100vw - 24px);
             left: 12px;
             bottom: calc(12px + env(safe-area-inset-bottom));
@@ -135,15 +138,15 @@
             padding: 14px 0;
         }
 
-        /* KHUNG CHỨA TRỰC TIẾP CỦA NÚT ZOOM VÀ CHỮ ĐỂ KHÔNG BỊ RỜI NHAU */
+        /* CẦU NỐI ĐỂ GIỮ CHỮ VÀ NÚT ZOOM LUÔN ĐI LIỀN NHAU */
         .mode-and-zoom-bridge {
             width: 100%; display: flex; flex-direction: column; align-items: center; position: relative;
         }
 
-        /* TEXT VIDEO / ÁNH */
+        /* CHỮ CHẾ ĐỘ VIDEO / ẢNH */
         .camera-mode-scroller { 
             display: flex; gap: 36px; justify-content: center; width: 100%; 
-            margin-top: 55px; /* Chừa khoảng trống hoàn hảo cho nút zoom nằm đè sát lên */
+            margin-top: 55px; /* Khoảng trống cố định cho nút zoom tròn */
             margin-bottom: 4px;
         }
         .mode-item { 
@@ -152,7 +155,7 @@
         }
         .mode-item.active { color: var(--ios-yellow); text-shadow: 0 0 6px rgba(255,204,0,0.4); }
         
-        /* BỘ ĐẾM THỜI GIAN QUAY VIDEO (MỚI THÊM) */
+        /* BADGE ĐẾM GIỜ QUAY VIDEO */
         .recording-timer-badge {
             position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
             background: rgba(255, 69, 58, 0.9); color: #fff; font-size: 12px; font-weight: 700;
@@ -160,7 +163,7 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.3); z-index: 10050;
         }
 
-        /* CỤM NÚT CHỤP / ALBUM */
+        /* HÀNG NÚT CHỤP / QUAY */
         .shutter-row { 
             width: 100%; display: flex; justify-content: space-between; 
             align-items: center; padding: 0 45px; 
@@ -185,7 +188,7 @@
         }
         .btn-camera-flip svg { width: 22px; height: 22px; fill: #ffffff; }
 
-        /* THƯ VIỆN ẢNH VÀ HIỂN THỊ THỜI LƯỢNG VIDEO (MỚI CẬP NHẬT) */
+        /* MODAL THƯ VIỆN & PHẦN HIỂN THỊ THỜI LƯỢNG */
         .gallery-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: #000; z-index: 20000; display: none; flex-direction: column; padding-bottom: env(safe-area-inset-bottom); }
         .gallery-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid #1c1c1e; background: #000; }
         .btn-gallery-close { background: none; border: none; color: var(--ios-blue); font-size: 16px; font-weight: 600; }
@@ -194,7 +197,6 @@
         .gallery-item { position: relative; width: 100%; aspect-ratio: 1; background: #121212; overflow: hidden; }
         .gallery-item img, .gallery-item video { width: 100%; height: 100%; object-fit: cover; }
         
-        /* Nhãn thời lượng video trong thư viện */
         .video-duration-tag {
             position: absolute; bottom: 6px; right: 6px; background: rgba(0,0,0,0.7);
             color: #fff; font-size: 10px; font-weight: 600; padding: 2px 5px; border-radius: 4px;
@@ -206,10 +208,10 @@
         }
 
         .gallery-item-checkbox { position: absolute; top: 8px; right: 8px; width: 22px; height: 22px; border-radius: 50%; border: 2px solid #fff; background: rgba(0,0,0,0.2); display: none; }
-        .gallery-modal.select-mode .gallery-item-checkbox { display: block; }
+        .gallery-modal.select-mode .gallery-item-checkbox { block; }
         .gallery-item.selected .gallery-item-checkbox { background: var(--ios-blue); border-color: #fff; display: flex; align-items: center; justify-content: center; }
         .gallery-item.selected .gallery-item-checkbox::after { content: ''; width: 4px; height: 8px; border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg); margin-bottom: 2px; }
-        .gallery-footer-actions { display: none; background: #1c1c1e; padding: 16px; justify-content: space-between; gap: 12px; }
+        .gallery-footer-actions { display: none; background: #1c1e; padding: 16px; justify-content: space-between; gap: 12px; }
         .btn-footer-action { flex: 1; border: none; padding: 12px; font-size: 14px; font-weight: 600; border-radius: 12px; color: white; }
 
         .detail-viewer-popup { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: #000; z-index: 30000; display: none; flex-direction: column; }
@@ -239,7 +241,6 @@
     </div>
 
     <div class="ios-bottom-dashboard" id="bottomDashboard">
-        
         <div class="mode-and-zoom-bridge">
             <div class="recording-timer-badge" id="recTimer">00:00</div>
 
@@ -384,6 +385,15 @@
     function switchCameraMode(targetMode, e) {
         if(e) e.preventDefault(); if(isRecording) return;
         activeMode = targetMode;
+        
+        const app = document.getElementById('mainAppStructure');
+        
+        if(targetMode === 'VIDEO') {
+            app.classList.add('mode-is-video');
+        } else {
+            app.classList.remove('mode-is-video');
+        }
+        
         document.getElementById('mode-video').classList.toggle('active', targetMode === 'VIDEO');
         document.getElementById('mode-photo').classList.toggle('active', targetMode === 'PHOTO');
         document.getElementById('btnCapture').style.display = (targetMode === 'PHOTO') ? 'block' : 'none';
@@ -439,7 +449,6 @@
             mediaRecorder = new MediaRecorder(activeStream, { mimeType: 'video/mp4' });
             mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
             
-            // Xử lý bộ đếm thời gian
             secondsRecorded = 0;
             timerBadge.innerText = "00:00";
             timerBadge.style.display = "block";
@@ -461,7 +470,6 @@
             };
             mediaRecorder.start(); isRecording = true; btn.classList.add('recording');
         } else { 
-            // Dừng quay
             clearInterval(timerInterval);
             timerBadge.style.display = "none";
             mediaRecorder.stop(); isRecording = false; btn.classList.remove('recording'); 
@@ -496,7 +504,6 @@
             if (item.type === 'PHOTO') {
                 div.innerHTML = `<img src="${item.src}">`;
             } else {
-                // Hiện thêm nhãn thời lượng video chuẩn iOS ở góc
                 div.innerHTML = `<video src="${item.src}"></video><div class="video-duration-tag">${item.duration}</div>`;
             }
             
