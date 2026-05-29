@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hệ Thống Giám Sát Camera 120X</title>
+    <title>Hệ Thống Giám Sát Camera 200X</title>
     <style>
         :root {
             --ios-yellow: #ffcc00;
@@ -51,7 +51,7 @@
         }
         video.mirror-mode { transform: scaleX(-1); }
 
-        /* THANH CÀI ĐẶT TRÊN ĐẦU - PHÂN CHIA ĐỀU CHO CÁC MENU CHỌN */
+        /* THANH CÀI ĐẶT TRÊN ĐẦU */
         .top-settings-bar {
             position: absolute; top: calc(16px + env(safe-area-inset-top)); left: 0; width: 100%;
             display: flex; justify-content: space-between; align-items: center; padding: 0 16px; z-index: 10005;
@@ -73,7 +73,7 @@
         }
         .btn-icon-top.active { background: var(--ios-yellow); color: #000; border-color: var(--ios-yellow); }
 
-        /* CỤM ĐIỀU KHIỂN ZOOM - KHÔNG ĐỔI */
+        /* CỤM ĐIỀU KHIỂN ZOOM 200X */
         .zoom-control-layer {
             position: absolute; 
             bottom: calc(160px + env(safe-area-inset-bottom));
@@ -96,7 +96,7 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.5); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
         }
 
-        /* THƯỚC ĐO ZOOM VÒNG CUNG */
+        /* THƯỚC ĐO ZOOM VÒNG CUNG TỰ NHIÊN */
         .ios-curved-dial-panel { 
             position: absolute; bottom: -30px; width: 100vw; height: 110px;
             display: none; opacity: 0; transition: opacity 0.2s, transform 0.2s; background: transparent;
@@ -106,12 +106,12 @@
             position: absolute; top: -32px; left: 50%; transform: translateX(-50%); color: var(--ios-yellow); font-size: 13px; font-weight: 700; z-index: 150; 
             background: rgba(0,0,0,0.85); padding: 4px 12px; border-radius: 10px; border: 0.5px solid rgba(255,255,255,0.2);
         }
-        .dial-wheel-rotor { position: absolute; top: 20px; left: 50%; width: 640px; height: 640px; margin-left: -320px; border-radius: 50%; will-change: transform; }
-        .dial-tick-line { position: absolute; top: 0; left: 50%; width: 1.5px; height: 8px; background: rgba(255,255,255,0.35); transform-origin: 50% 320px; }
+        .dial-wheel-rotor { position: absolute; top: 20px; left: 50%; width: 720px; height: 720px; margin-left: -360px; border-radius: 50%; will-change: transform; }
+        .dial-tick-line { position: absolute; top: 0; left: 50%; width: 1.5px; height: 8px; background: rgba(255,255,255,0.35); transform-origin: 50% 360px; }
         .dial-tick-line.major-line { height: 14px; background: rgba(255,255,255,0.85); width: 2px; }
-        .dial-tick-line span { position: absolute; top: 18px; left: 50%; transform: translateX(-50%); font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.85); }
+        .dial-tick-line span { position: absolute; top: 18px; left: 50%; transform: translateX(-50%); font-size: 9px; font-weight: 600; color: rgba(255,255,255,0.85); white-space: nowrap; }
 
-        /* CHỮ HIỂN THỊ CHẾ ĐỘ - ĐẢM BẢO CHẠM MƯỢT */
+        /* CHỮ CHẾ ĐỘ */
         .mode-selection-wrapper {
             position: absolute;
             bottom: calc(115px + env(safe-area-inset-bottom));
@@ -144,7 +144,6 @@
             border-top: none !important;
         }
 
-        /* KHUNG HIỆU ỨNG KÍNH PHÌNH TO CHUẨN ĐẸP */
         .app-container.cam-expanded .ios-bottom-dashboard {
             background: rgba(20, 20, 22, 0.6) !important; 
             backdrop-filter: blur(25px) saturate(210%); 
@@ -158,20 +157,15 @@
             box-shadow: var(--glass-shadow);
         }
         
-        /* HIỂN THỊ THỜI GIAN QUAY PHIM */
         .recording-timer-badge {
-            position: absolute; 
-            top: -38px;
-            left: 50%; transform: translateX(-50%);
+            position: absolute; top: -38px; left: 50%; transform: translateX(-50%);
             background: rgba(255, 69, 58, 0.95); color: #fff; font-size: 13px; font-weight: 700;
             padding: 4px 12px; border-radius: 6px; display: none; letter-spacing: 0.5px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.4); z-index: 10050;
         }
-        .app-container.cam-expanded .recording-timer-badge {
-            top: 12px;
-        }
+        .app-container.cam-expanded .recording-timer-badge { top: 12px; }
 
-        /* HÀNG NÚT BẤM CHỤP QUAY KHÓA Z-INDEX LÊN TRÊN CÙNG */
+        /* HÀNG NÚT BẤM CHỤP QUAY TRÊN CÙNG LAYER */
         .shutter-row { 
             position: absolute; bottom: calc(20px + env(safe-area-inset-bottom)); left: 0;
             width: 100%; display: flex; justify-content: space-between; 
@@ -197,7 +191,7 @@
         }
         .btn-camera-flip svg { width: 22px; height: 22px; fill: #ffffff; }
 
-        /* THƯ VIỆN MODAL */
+        /* THƯ VIỆN */
         .gallery-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: #000; z-index: 20000; display: none; flex-direction: column; padding-bottom: env(safe-area-inset-bottom); }
         .gallery-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid #1c1c1e; background: #000; }
         .btn-gallery-close { background: none; border: none; color: var(--ios-blue); font-size: 16px; font-weight: 600; }
@@ -211,11 +205,9 @@
             display: flex; align-items: center; gap: 3px;
         }
         
-        /* Checkbox chọn ảnh */
         .gallery-item-checkbox { 
             position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; 
-            border-radius: 50%; border: 2px solid #fff; background: rgba(0,0,0,0.3); 
-            display: none; z-index: 10;
+            border-radius: 50%; border: 2px solid #fff; background: rgba(0,0,0,0.3); display: none; z-index: 10;
         }
         .gallery-modal.select-mode .gallery-item-checkbox { display: block; }
         .gallery-item.selected .gallery-item-checkbox { background: var(--ios-blue); border-color: #fff; display: flex; align-items: center; justify-content: center; }
@@ -329,12 +321,15 @@
         lastTouchEnd = now;
     }, { passive: false });
 
-    let currentZoom = 1.0, facingModeSetting = "environment", activeMode = "PHOTO", mediaItems = [], isSelectModeActive = false, selectedMediaIds = new Set();
+    // CẤU HÌNH BIẾN ZOOM LÊN TỐI ĐA 200X
+    let currentZoom = 1.0, maxZoomLimit = 200.0;
+    let facingModeSetting = "environment", activeMode = "PHOTO", mediaItems = [], isSelectModeActive = false, selectedMediaIds = new Set();
     let activeStream = null, videoTrack = null, isFlashOn = false, mediaRecorder = null, recordedChunks = [], isRecording = false, collapseTimer = null;
     let secondsRecorded = 0, timerInterval = null, currentViewingItem = null;
     
     const dialRotor = document.getElementById('dialRotor');
-    const totalTicks = 120; const tickSpacingAngle = 1.4;
+    const totalTicks = 160;       // Tăng số vạch chia để thước mượt hơn
+    const tickSpacingAngle = 1.1; // Góc khoảng cách giữa các vạch thước xoay
     let startX = 0, baseAngle = 0, currentAngle = 0;
 
     function toggleCameraExpansion(e) {
@@ -342,15 +337,20 @@
         document.getElementById('mainAppStructure').classList.toggle('cam-expanded');
     }
 
+    // XÂY DỰNG VẠCH CHIA THƯỚC XOAY NHẢY THẬP PHÂN LIÊN TIẾP
     function buildDialTicks() {
         dialRotor.innerHTML = '';
         for (let i = 0; i <= totalTicks; i++) {
             const tick = document.createElement('div'); tick.className = 'dial-tick-line';
-            if (i === 0) { tick.classList.add('major-line'); tick.innerHTML = `<span>1x</span>`; }
-            else if (i === 20) { tick.classList.add('major-line'); tick.innerHTML = `<span>20x</span>`; }
-            else if (i === 60) { tick.classList.add('major-line'); tick.innerHTML = `<span>60x</span>`; }
-            else if (i === totalTicks) { tick.classList.add('major-line'); tick.innerHTML = `<span>120x</span>`; }
+            
+            // Chia đều các mốc hiển thị text trải rộng từ 1x đến 200x
+            if (i === 0) { tick.classList.add('major-line'); tick.innerHTML = `<span>1.0x</span>`; }
+            else if (i === Math.floor(totalTicks * 0.25)) { tick.classList.add('major-line'); tick.innerHTML = `<span>50.0x</span>`; }
+            else if (i === Math.floor(totalTicks * 0.5)) { tick.classList.add('major-line'); tick.innerHTML = `<span>100.0x</span>`; }
+            else if (i === Math.floor(totalTicks * 0.75)) { tick.classList.add('major-line'); tick.innerHTML = `<span>150.0x</span>`; }
+            else if (i === totalTicks) { tick.classList.add('major-line'); tick.innerHTML = `<span>200.0x</span>`; }
             else if (i % 10 === 0) { tick.classList.add('major-line'); }
+            
             let calculatedAngle = (i - totalTicks / 2) * tickSpacingAngle;
             tick.style.transform = `rotate(${calculatedAngle}deg)`;
             dialRotor.appendChild(tick);
@@ -365,7 +365,8 @@
         if(e) e.preventDefault(); clearTimeout(collapseTimer);
         collapsedHub.style.opacity = '0'; curvedPanel.style.display = 'block';
         setTimeout(() => { curvedPanel.style.opacity = '1'; }, 20);
-        let fraction = (currentZoom - 1) / 119;
+        
+        let fraction = (currentZoom - 1) / (maxZoomLimit - 1);
         currentAngle = -(fraction * totalTicks - totalTicks / 2) * tickSpacingAngle;
         dialRotor.style.transform = `rotate(${currentAngle}deg)`;
         document.getElementById('liveZoomTxt').innerText = currentZoom.toFixed(1) + "x";
@@ -382,14 +383,19 @@
     curvedPanel.addEventListener('touchstart', (e) => { clearTimeout(collapseTimer); startX = e.touches[0].clientX; baseAngle = currentAngle; }, { passive: true });
     curvedPanel.addEventListener('touchmove', (e) => {
         let deltaX = e.touches[0].clientX - startX;
-        currentAngle = baseAngle + (deltaX / window.innerWidth) * 140;
+        currentAngle = baseAngle + (deltaX / window.innerWidth) * 120;
+        
         let borderAngle = (totalTicks / 2) * tickSpacingAngle;
         if (currentAngle > borderAngle) currentAngle = borderAngle;
         if (currentAngle < -borderAngle) currentAngle = -borderAngle;
+        
         dialRotor.style.transform = `rotate(${currentAngle}deg)`;
+        
+        // TÍNH TOÁN ZOOM SỐ THẬP PHÂN LIÊN TIẾP TỰ NHIÊN CHUẨN XÁC
         let ratio = 0.5 - (currentAngle / (totalTicks * tickSpacingAngle));
-        currentZoom = parseFloat(Math.max(1.0, Math.min(120.0, 1 + ratio * 119)).toFixed(1));
-        document.getElementById('liveZoomTxt').innerText = currentZoom + "x";
+        currentZoom = parseFloat(Math.max(1.0, Math.min(maxZoomLimit, 1 + ratio * (maxZoomLimit - 1))).toFixed(1));
+        
+        document.getElementById('liveZoomTxt').innerText = currentZoom.toFixed(1) + "x";
         applyHardwareAndDigitalZoom(currentZoom);
     }, { passive: true });
     curvedPanel.addEventListener('touchend', startCollapseCountdown);
