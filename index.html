@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hệ Thống Giám Sát Camera 200X</title>
+    <title>Hệ Thống Giám Sát Camera 200X + Gemini AI</title>
     <style>
         :root {
             --ios-yellow: #ffcc00;
@@ -73,7 +73,7 @@
         }
         .btn-icon-top.active { background: var(--ios-yellow); color: #000; border-color: var(--ios-yellow); }
 
-        /* CỤM ĐIỀU KHIỂN ZOOM 200X */
+        /* CỤM ĐIỀU KHIỂN ZOOM */
         .zoom-control-layer {
             position: absolute; 
             bottom: calc(160px + env(safe-area-inset-bottom));
@@ -82,11 +82,7 @@
             z-index: 10030; pointer-events: none;
             transition: bottom 0.3s cubic-bezier(0.25, 1, 0.5, 1);
         }
-        
-        .app-container.cam-expanded .zoom-control-layer {
-            bottom: calc(185px + env(safe-area-inset-bottom));
-        }
-        
+        .app-container.cam-expanded .zoom-control-layer { bottom: calc(185px + env(safe-area-inset-bottom)); }
         .collapsed-zoom-hub, .ios-curved-dial-panel { pointer-events: auto; }
         
         .zoom-single-dot {
@@ -96,7 +92,7 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.5); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
         }
 
-        /* THƯỚC ĐO ZOOM VÒNG CUNG TỰ NHIÊN */
+        /* THƯỚC ĐO ZOOM VÒNG CUNG VÀ NÚT AI NGOÀI */
         .ios-curved-dial-panel { 
             position: absolute; bottom: -30px; width: 100vw; height: 110px;
             display: none; opacity: 0; transition: opacity 0.2s, transform 0.2s; background: transparent;
@@ -111,116 +107,71 @@
         .dial-tick-line.major-line { height: 14px; background: rgba(255,255,255,0.85); width: 2px; }
         .dial-tick-line span { position: absolute; top: 18px; left: 50%; transform: translateX(-50%); font-size: 9px; font-weight: 600; color: rgba(255,255,255,0.85); white-space: nowrap; }
 
+        /* NÚT AI GIAO DIỆN NGOÀI */
+        .btn-ai-outer-trigger {
+            position: absolute; top: -75px; left: 50%; transform: translateX(-50%);
+            background: linear-gradient(135deg, #1a73e8, #4285f4); color: white;
+            border: 1px solid rgba(255,255,255,0.3); padding: 6px 14px; font-size: 11px;
+            font-weight: 700; border-radius: 20px; display: none; box-shadow: 0 4px 12px rgba(66,133,244,0.4);
+            z-index: 10060; pointer-events: auto; gap: 4px; align-items: center;
+        }
+
         /* CHỮ CHẾ ĐỘ */
         .mode-selection-wrapper {
-            position: absolute;
-            bottom: calc(115px + env(safe-area-inset-bottom));
-            left: 0; width: 100vw; display: flex; justify-content: center;
-            z-index: 10045; pointer-events: auto;
-            transition: bottom 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            position: absolute; bottom: calc(115px + env(safe-area-inset-bottom)); left: 0; width: 100vw; display: flex; justify-content: center; z-index: 10045; pointer-events: auto; transition: bottom 0.3s;
         }
-        .app-container.cam-expanded .mode-selection-wrapper {
-            bottom: calc(122px + env(safe-area-inset-bottom));
-        }
-
         .camera-mode-scroller { display: flex; gap: 32px; justify-content: center; }
-        .mode-item { 
-            font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.4); 
-            letter-spacing: 0.8px; text-transform: uppercase; transition: color 0.2s;
-        }
-        .mode-item.active { color: var(--ios-yellow); text-shadow: 0 0 6px rgba(255,204,0,0.3); }
+        .mode-item { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.4); letter-spacing: 0.8px; text-transform: uppercase; }
+        .mode-item.active { color: var(--ios-yellow); }
 
         /* BẢNG ĐIỀU KHIỂN ĐÁY */
-        .ios-bottom-dashboard { 
-            position: absolute; bottom: 0; left: 0; width: 100vw; 
-            height: calc(110px + env(safe-area-inset-bottom)); 
-            background: var(--ios-dark-bg);
-            z-index: 10010;
-            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-        }
-        
-        .app-container.mode-is-video .ios-bottom-dashboard {
-            background: transparent !important;
-            border-top: none !important;
-        }
+        .ios-bottom-dashboard { position: absolute; bottom: 0; left: 0; width: 100vw; height: calc(110px + env(safe-area-inset-bottom)); background: var(--ios-dark-bg); z-index: 10010; transition: all 0.3s; }
+        .recording-timer-badge { position: absolute; top: -38px; left: 50%; transform: translateX(-50%); background: rgba(255, 69, 58, 0.95); color: #fff; font-size: 13px; font-weight: 700; padding: 4px 12px; border-radius: 6px; display: none; z-index: 10050; }
 
-        .app-container.cam-expanded .ios-bottom-dashboard {
-            background: rgba(20, 20, 22, 0.6) !important; 
-            backdrop-filter: blur(25px) saturate(210%); 
-            -webkit-backdrop-filter: blur(25px) saturate(210%);
-            border: 1px solid rgba(255, 255, 255, 0.2) !important; 
-            width: calc(100vw - 16px);
-            left: 8px;
-            bottom: calc(8px + env(safe-area-inset-bottom));
-            border-radius: 28px;
-            height: 150px; 
-            box-shadow: var(--glass-shadow);
-        }
-        
-        .recording-timer-badge {
-            position: absolute; top: -38px; left: 50%; transform: translateX(-50%);
-            background: rgba(255, 69, 58, 0.95); color: #fff; font-size: 13px; font-weight: 700;
-            padding: 4px 12px; border-radius: 6px; display: none; letter-spacing: 0.5px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.4); z-index: 10050;
-        }
-        .app-container.cam-expanded .recording-timer-badge { top: 12px; }
-
-        /* HÀNG NÚT BẤM CHỤP QUAY TRÊN CÙNG LAYER */
-        .shutter-row { 
-            position: absolute; bottom: calc(20px + env(safe-area-inset-bottom)); left: 0;
-            width: 100%; display: flex; justify-content: space-between; 
-            align-items: center; padding: 0 35px; z-index: 10040; pointer-events: auto;
-        }
-        
-        .album-preview-placeholder { 
-            width: 48px; height: 48px; border-radius: 50%; background: #1c1c1e; 
-            border: 1.5px solid #ffffff; background-size: cover; background-position: center; 
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3); pointer-events: auto;
-        }
-
-        .shutter-trigger-btn { border-radius: 50%; border: none; display: none; outline: none; transition: transform 0.1s ease; pointer-events: auto; }
+        /* HÀNG NÚT BẤM */
+        .shutter-row { position: absolute; bottom: calc(20px + env(safe-area-inset-bottom)); left: 0; width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0 35px; z-index: 10040; }
+        .album-preview-placeholder { width: 48px; height: 48px; border-radius: 50%; background: #1c1c1e; border: 1.5px solid #ffffff; background-size: cover; background-position: center; box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
+        .shutter-trigger-btn { border-radius: 50%; border: none; display: none; outline: none; transition: transform 0.1s ease; }
         .shutter-trigger-btn:active { transform: scale(0.9); }
-        
         .btn-photo-snap { width: 68px; height: 68px; background: #ffffff; border: 4px solid #000; box-shadow: 0 0 0 2px #fff; }
         .btn-video-rec { width: 64px; height: 64px; background: var(--ios-red); border: 4px solid #000; box-shadow: 0 0 0 2px #fff; }
-        .btn-video-rec.recording { border-radius: 14px; transform: scale(0.85); background: var(--ios-red); box-shadow: 0 0 0 3px #fff; }
-        
-        .btn-camera-flip { 
-            width: 48px; height: 48px; border-radius: 50%; background: rgba(35,35,35,0.6); border: none;
-            display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 8px rgba(0,0,0,0.2); pointer-events: auto;
-        }
+        .btn-video-rec.recording { border-radius: 14px; transform: scale(0.85); background: var(--ios-red); }
+        .btn-camera-flip { width: 48px; height: 48px; border-radius: 50%; background: rgba(35,35,35,0.6); border: none; display: flex; align-items: center; justify-content: center; }
         .btn-camera-flip svg { width: 22px; height: 22px; fill: #ffffff; }
 
-        /* THƯ VIỆN */
+        /* MODAL THƯ VIỆN */
         .gallery-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: #000; z-index: 20000; display: none; flex-direction: column; padding-bottom: env(safe-area-inset-bottom); }
-        .gallery-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid #1c1c1e; background: #000; }
+        .gallery-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid #1c1c1e; }
         .btn-gallery-close { background: none; border: none; color: var(--ios-blue); font-size: 16px; font-weight: 600; }
         .gallery-grid { flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; padding: 3px; overflow-y: auto; align-content: start; }
         .gallery-item { position: relative; width: 100%; aspect-ratio: 1; background: #121212; overflow: hidden; }
         .gallery-item img, .gallery-item video { width: 100%; height: 100%; object-fit: cover; }
-        
-        .video-duration-tag {
-            position: absolute; bottom: 6px; right: 6px; background: rgba(0,0,0,0.7);
-            color: #fff; font-size: 10px; font-weight: 600; padding: 2px 5px; border-radius: 4px;
-            display: flex; align-items: center; gap: 3px;
-        }
-        
-        .gallery-item-checkbox { 
-            position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; 
-            border-radius: 50%; border: 2px solid #fff; background: rgba(0,0,0,0.3); display: none; z-index: 10;
-        }
+        .video-duration-tag { position: absolute; bottom: 6px; right: 6px; background: rgba(0,0,0,0.7); color: #fff; font-size: 10px; font-weight: 600; padding: 2px 5px; border-radius: 4px; }
+        .gallery-item-checkbox { position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; border-radius: 50%; border: 2px solid #fff; background: rgba(0,0,0,0.3); display: none; }
         .gallery-modal.select-mode .gallery-item-checkbox { display: block; }
-        .gallery-item.selected .gallery-item-checkbox { background: var(--ios-blue); border-color: #fff; display: flex; align-items: center; justify-content: center; }
-        .gallery-item.selected .gallery-item-checkbox::after { content: ''; width: 5px; height: 9px; border: solid white; border-width: 0 2.5px 2.5px 0; transform: rotate(45deg); margin-bottom: 2px; }
-
-        .gallery-footer-actions { display: none; background: #1c1c1e; padding: 16px; justify-content: space-between; gap: 12px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .gallery-item.selected .gallery-item-checkbox { background: var(--ios-blue); border-color: #fff; }
+        .gallery-footer-actions { display: none; background: #1c1c1e; padding: 16px; justify-content: space-between; gap: 12px; }
         .btn-footer-action { flex: 1; border: none; padding: 14px; font-size: 14px; font-weight: 600; border-radius: 12px; color: white; }
         
+        /* POPUP XEM CHI TIẾT + CHẾ ĐỘ SPLIT VIEW AI GIỮA CŨ VÀ MỚI */
         .detail-viewer-popup { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: #000; z-index: 30000; display: none; flex-direction: column; }
         .viewer-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: rgba(0,0,0,0.8); }
-        .viewer-content-pane { flex: 1; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .viewer-content-pane img, .viewer-content-pane video { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .viewer-content-pane { flex: 1; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; width: 100%; }
+        
+        /* Giao diện so sánh đôi */
+        .split-view-container { display: flex; width: 100%; height: 100%; }
+        .split-pane { flex: 1; height: 100%; position: relative; display: flex; align-items: center; justify-content: center; background: #050505; overflow: hidden; }
+        .split-pane img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .split-label { position: absolute; top: 12px; left: 12px; background: rgba(0,0,0,0.7); padding: 4px 8px; font-size: 11px; border-radius: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .split-label.enhanced { color: #30D158; border: 0.5px solid #30D158; }
+
         .btn-save-media { background: #30D158; color: white; border: none; padding: 8px 16px; border-radius: 10px; font-weight: 600; font-size: 14px; }
+        .btn-ai-inside { background: linear-gradient(135deg, #1a73e8, #a500ff); color: white; border: none; padding: 8px 16px; border-radius: 10px; font-weight: 700; font-size: 14px; }
+
+        /* LOADING INDICATOR OVERLAY */
+        .ai-loading-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 50000; display: none; flex-direction: column; align-items: center; justify-content: center; }
+        .spinner { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1); border-top-color: var(--ios-blue); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -265,6 +216,7 @@
             <button class="zoom-single-dot" id="zoomSingleDot" onclick="openCurvedDial(event)">1x</button>
         </div>
         <div class="ios-curved-dial-panel" id="curvedDialPanel">
+            <button class="btn-ai-outer-trigger" id="btnAiOuter" onclick="triggerOuterAiEnhance(event)">🤖 Gemini Làm Nét Ảnh Vừa Chụp</button>
             <div class="dial-center-pointer"></div>
             <div class="dial-live-text-hub" id="liveZoomTxt">1.0x</div>
             <div class="dial-wheel-rotor" id="dialRotor"></div>
@@ -300,7 +252,7 @@
     </div>
     <div class="gallery-grid" id="galleryGrid"></div>
     <div class="gallery-footer-actions" id="galleryFooter">
-        <button class="btn-footer-action" style="background:var(--ios-blue);" onclick="batchDownloadSelected(event)">📥 Lưu loạt file về máy</button>
+        <button class="btn-footer-action" style="background:var(--ios-blue);" onclick="batchDownloadSelected(event)">📥 Lưu file</button>
         <button class="btn-footer-action" style="background:var(--ios-red);" onclick="deleteSelectedMedia(event)">🗑 Xóa</button>
     </div>
 </div>
@@ -308,12 +260,22 @@
 <div class="detail-viewer-popup" id="detailViewer">
     <div class="viewer-header">
         <button class="btn-gallery-close" onclick="closeDetailViewer(event)" style="color:#fff;">✕ Đóng</button>
-        <button class="btn-save-media" onclick="downloadSingleMedia(event)">📥 Lưu 1 file</button>
+        <button class="btn-ai-inside" id="btnAiInside" onclick="triggerInsideAiEnhance(event)">✨ Gemini AI Làm Nét</button>
+        <button class="btn-save-media" onclick="downloadSingleMedia(event)">📥 Lưu Ảnh</button>
     </div>
     <div class="viewer-content-pane" id="viewerContentPane"></div>
 </div>
 
+<div class="ai-loading-overlay" id="aiLoader">
+    <div class="spinner"></div>
+    <p style="margin-top: 16px; font-weight: 600; font-size: 14px; color: #fff; letter-spacing: 0.5px;">Google Gemini AI đang phục hồi độ nét...</p>
+</div>
+
 <script>
+    // === CẤU HÌNH BIẾN MÔI TRƯỜNG BẢO MẬT KHÔNG BỊ GITHUB CHẶN ===
+    // Web khi chạy thực tế trên Vercel sẽ tự nạp biến môi trường này hệ thống cung cấp
+    const GEMINI_API_KEY = window.process?.env?.NEXT_PUBLIC_GEMINI_KEY || "";
+
     let lastTouchEnd = 0;
     document.addEventListener('touchend', (e) => {
         let now = (new Date()).getTime();
@@ -321,36 +283,27 @@
         lastTouchEnd = now;
     }, { passive: false });
 
-    // CẤU HÌNH BIẾN ZOOM LÊN TỐI ĐA 200X
     let currentZoom = 1.0, maxZoomLimit = 200.0;
     let facingModeSetting = "environment", activeMode = "PHOTO", mediaItems = [], isSelectModeActive = false, selectedMediaIds = new Set();
     let activeStream = null, videoTrack = null, isFlashOn = false, mediaRecorder = null, recordedChunks = [], isRecording = false, collapseTimer = null;
     let secondsRecorded = 0, timerInterval = null, currentViewingItem = null;
     
     const dialRotor = document.getElementById('dialRotor');
-    const totalTicks = 160;       // Tăng số vạch chia để thước mượt hơn
-    const tickSpacingAngle = 1.1; // Góc khoảng cách giữa các vạch thước xoay
+    const totalTicks = 160; const tickSpacingAngle = 1.1;
     let startX = 0, baseAngle = 0, currentAngle = 0;
 
-    function toggleCameraExpansion(e) {
-        if(e) e.preventDefault();
-        document.getElementById('mainAppStructure').classList.toggle('cam-expanded');
-    }
+    function toggleCameraExpansion(e) { if(e) e.preventDefault(); document.getElementById('mainAppStructure').classList.toggle('cam-expanded'); }
 
-    // XÂY DỰNG VẠCH CHIA THƯỚC XOAY NHẢY THẬP PHÂN LIÊN TIẾP
     function buildDialTicks() {
         dialRotor.innerHTML = '';
         for (let i = 0; i <= totalTicks; i++) {
             const tick = document.createElement('div'); tick.className = 'dial-tick-line';
-            
-            // Chia đều các mốc hiển thị text trải rộng từ 1x đến 200x
             if (i === 0) { tick.classList.add('major-line'); tick.innerHTML = `<span>1.0x</span>`; }
             else if (i === Math.floor(totalTicks * 0.25)) { tick.classList.add('major-line'); tick.innerHTML = `<span>50.0x</span>`; }
             else if (i === Math.floor(totalTicks * 0.5)) { tick.classList.add('major-line'); tick.innerHTML = `<span>100.0x</span>`; }
             else if (i === Math.floor(totalTicks * 0.75)) { tick.classList.add('major-line'); tick.innerHTML = `<span>150.0x</span>`; }
             else if (i === totalTicks) { tick.classList.add('major-line'); tick.innerHTML = `<span>200.0x</span>`; }
             else if (i % 10 === 0) { tick.classList.add('major-line'); }
-            
             let calculatedAngle = (i - totalTicks / 2) * tickSpacingAngle;
             tick.style.transform = `rotate(${calculatedAngle}deg)`;
             dialRotor.appendChild(tick);
@@ -360,11 +313,14 @@
     const zoomSingleDot = document.getElementById('zoomSingleDot');
     const collapsedHub = document.getElementById('collapsedZoomHub');
     const curvedPanel = document.getElementById('curvedDialPanel');
+    const btnAiOuter = document.getElementById('btnAiOuter');
 
     function openCurvedDial(e) {
         if(e) e.preventDefault(); clearTimeout(collapseTimer);
         collapsedHub.style.opacity = '0'; curvedPanel.style.display = 'block';
         setTimeout(() => { curvedPanel.style.opacity = '1'; }, 20);
+        
+        if(mediaItems.length > 0 && mediaItems[0].type === 'PHOTO') btnAiOuter.style.display = "flex";
         
         let fraction = (currentZoom - 1) / (maxZoomLimit - 1);
         currentAngle = -(fraction * totalTicks - totalTicks / 2) * tickSpacingAngle;
@@ -376,25 +332,20 @@
         clearTimeout(collapseTimer);
         collapseTimer = setTimeout(() => {
             curvedPanel.style.opacity = '0';
-            setTimeout(() => { curvedPanel.style.display = 'none'; collapsedHub.style.opacity = '1'; zoomSingleDot.innerText = currentZoom.toFixed(1) + "x"; }, 200);
-        }, 2000);
+            setTimeout(() => { curvedPanel.style.display = 'none'; collapsedHub.style.opacity = '1'; zoomSingleDot.innerText = currentZoom.toFixed(1) + "x"; btnAiOuter.style.display = "none"; }, 200);
+        }, 3000);
     }
 
     curvedPanel.addEventListener('touchstart', (e) => { clearTimeout(collapseTimer); startX = e.touches[0].clientX; baseAngle = currentAngle; }, { passive: true });
     curvedPanel.addEventListener('touchmove', (e) => {
         let deltaX = e.touches[0].clientX - startX;
         currentAngle = baseAngle + (deltaX / window.innerWidth) * 120;
-        
         let borderAngle = (totalTicks / 2) * tickSpacingAngle;
         if (currentAngle > borderAngle) currentAngle = borderAngle;
         if (currentAngle < -borderAngle) currentAngle = -borderAngle;
-        
         dialRotor.style.transform = `rotate(${currentAngle}deg)`;
-        
-        // TÍNH TOÁN ZOOM SỐ THẬP PHÂN LIÊN TIẾP TỰ NHIÊN CHUẨN XÁC
         let ratio = 0.5 - (currentAngle / (totalTicks * tickSpacingAngle));
         currentZoom = parseFloat(Math.max(1.0, Math.min(maxZoomLimit, 1 + ratio * (maxZoomLimit - 1))).toFixed(1));
-        
         document.getElementById('liveZoomTxt').innerText = currentZoom.toFixed(1) + "x";
         applyHardwareAndDigitalZoom(currentZoom);
     }, { passive: true });
@@ -414,14 +365,129 @@
         video.style.transform = `scale(${zoomVal})` + (facingModeSetting === "user" ? " scaleX(-1)" : "");
     }
 
+    // ================= KHU VỰC GỌI API GEMINI QUA CẤU TRÚC CURL BẢO MẬT =================
+    async function requestGeminiAiEnhance(base64ImageWithHeader) {
+        if (!GEMINI_API_KEY) {
+            alert("Chưa cấu hình NEXT_PUBLIC_GEMINI_KEY trong Environment Variables của Vercel!");
+            return null;
+        }
+
+        const endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent";
+        const rawBase64 = base64ImageWithHeader.split(',')[1];
+        
+        const payload = {
+            contents: [
+                {
+                    parts: [
+                        { text: "Bức ảnh này được chụp ở mức thu phóng lớn, độ chi tiết bị vỡ pixel. Hãy thực hiện thuật toán nội suy phục hồi siêu phân giải hình ảnh (Super Resolution). Khử nhiễu hạt hoàn toàn, kéo nét các viền cạnh của vật thể và làm mịn các khối ảnh bị mờ rạn. Nhiệm vụ tối thượng: Hãy xử lý và chuyển đổi toàn bộ cấu trúc điểm ảnh mới đó thành một chuỗi mã hóa Base64 ảnh JPEG hoàn chỉnh duy nhất. Không giải thích văn bản, chỉ trả về chuỗi base64 thuần túy bắt đầu bằng /9j/." },
+                        { inlineData: { mimeType: "image/jpeg", data: rawBase64 } }
+                    ]
+                }
+            ]
+        };
+
+        try {
+            const response = await fetch(`${endpoint}?key=${GEMINI_API_KEY}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+            if(!data.candidates || data.candidates.length === 0) {
+                alert("Lỗi từ Google AI: " + (data.error?.message || "Không có phản hồi"));
+                return null;
+            }
+
+            let aiTextOutput = data.candidates[0].content.parts[0].text.trim();
+            aiTextOutput = aiTextOutput.replace(/[\n\r\s`]/g, "");
+            if (!aiTextOutput.startsWith("data:image")) {
+                aiTextOutput = "data:image/jpeg;base64," + aiTextOutput;
+            }
+            return aiTextOutput;
+        } catch (err) {
+            console.error(err);
+            alert("Lỗi kết nối máy chủ Google Gemini API!");
+            return null;
+        }
+    }
+
+    async function triggerOuterAiEnhance(e) {
+        if(e) e.preventDefault();
+        if(mediaItems.length === 0 || mediaItems[0].type !== 'PHOTO') return;
+        
+        const loader = document.getElementById('aiLoader');
+        loader.style.display = "flex";
+        
+        let targetItem = mediaItems[0];
+        let resultImage = await requestGeminiAiEnhance(targetItem.src);
+        
+        loader.style.display = "none";
+        if(resultImage) {
+            targetItem.aiEnhancedSrc = resultImage;
+            openDetailViewer(targetItem);
+        }
+    }
+
+    async function triggerInsideAiEnhance(e) {
+        if(e) e.preventDefault();
+        if(!currentViewingItem || currentViewingItem.type !== 'PHOTO') return;
+        
+        const loader = document.getElementById('aiLoader');
+        loader.style.display = "flex";
+        
+        let resultImage = await requestGeminiAiEnhance(currentViewingItem.src);
+        loader.style.display = "none";
+        
+        if(resultImage) {
+            currentViewingItem.aiEnhancedSrc = resultImage;
+            openDetailViewer(currentViewingItem);
+        }
+    }
+
+    function openDetailViewer(item) {
+        currentViewingItem = item;
+        const pane = document.getElementById('viewerContentPane');
+        const btnAi = document.getElementById('btnAiInside');
+        
+        if(item.type === 'PHOTO') {
+            btnAi.style.display = "block";
+            if(item.aiEnhancedSrc) {
+                pane.innerHTML = `
+                    <div class="split-view-container">
+                        <div class="split-pane" style="border-right: 1px solid #333;">
+                            <img src="${item.src}">
+                            <div class="split-label">Ảnh Gốc</div>
+                        </div>
+                        <div class="split-pane">
+                            <img src="${item.aiEnhancedSrc}">
+                            <div class="split-label enhanced">Gemini AI Enhanced</div>
+                        </div>
+                    </div>
+                `;
+                btnAi.style.display = "none";
+            } else {
+                pane.innerHTML = `<img src="${item.src}">`;
+            }
+        } else {
+            btnAi.style.display = "none";
+            pane.innerHTML = `<video src="${item.src}" controls autoplay></video>`;
+        }
+        document.getElementById('detailViewer').style.display = 'flex';
+    }
+
+    function downloadSingleMedia(e) {
+        if(e) e.preventDefault();
+        const a = document.createElement('a');
+        a.href = currentViewingItem.aiEnhancedSrc ? currentViewingItem.aiEnhancedSrc : currentViewingItem.src;
+        a.download = `GEMINI_CAM_${currentViewingItem.id}` + (currentViewingItem.type==='PHOTO'?'.jpg':'.mp4');
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    }
+
     function switchCameraMode(targetMode, e) {
         if(e) e.preventDefault(); if(isRecording) return;
-        activeMode = targetMode;
-        const app = document.getElementById('mainAppStructure');
-        
-        if(targetMode === 'VIDEO') app.classList.add('mode-is-video');
-        else app.classList.remove('mode-is-video');
-        
+        activeMode = targetMode; const app = document.getElementById('mainAppStructure');
+        if(targetMode === 'VIDEO') app.classList.add('mode-is-video'); else app.classList.remove('mode-is-video');
         document.getElementById('mode-video').classList.toggle('active', targetMode === 'VIDEO');
         document.getElementById('mode-photo').classList.toggle('active', targetMode === 'PHOTO');
         document.getElementById('btnCapture').style.display = (targetMode === 'PHOTO') ? 'block' : 'none';
@@ -433,7 +499,6 @@
         const video = document.getElementById('videoFeed');
         const selectedRes = document.getElementById('resSelector').value;
         const selectedFps = parseInt(document.getElementById('fpsSelector').value);
-        
         let width = 1920, height = 1080;
         if(selectedRes === '140p') { width = 256; height = 144; }
         else if(selectedRes === '360p') { width = 640; height = 360; }
@@ -445,13 +510,7 @@
 
         try {
             activeStream = await navigator.mediaDevices.getUserMedia({ 
-                video: { 
-                    facingMode: { ideal: facingModeSetting }, 
-                    width: { ideal: width }, 
-                    height: { ideal: height },
-                    frameRate: { ideal: selectedFps }
-                }, 
-                audio: true 
+                video: { facingMode: { ideal: facingModeSetting }, width: { ideal: width }, height: { ideal: height }, frameRate: { ideal: selectedFps } }, audio: true 
             });
             video.srcObject = activeStream; videoTrack = activeStream.getVideoTracks()[0];
             if (facingModeSetting === "user") video.classList.add('mirror-mode'); else video.classList.remove('mirror-mode');
@@ -466,10 +525,7 @@
 
     async function toggleFlash(e) {
         if(e) e.preventDefault(); if (!videoTrack) return;
-        try {
-            isFlashOn = !isFlashOn; await videoTrack.applyConstraints({ advanced: [{ torch: isFlashOn }] });
-            document.getElementById('btnFlash').classList.toggle('active', isFlashOn);
-        } catch (e) {}
+        try { isFlashOn = !isFlashOn; await videoTrack.applyConstraints({ advanced: [{ torch: isFlashOn }] }); document.getElementById('btnFlash').classList.toggle('active', isFlashOn); } catch (e) {}
     }
 
     function takePhoto(e) {
@@ -477,7 +533,7 @@
         const canvas = document.createElement('canvas'); canvas.width = video.videoWidth; canvas.height = video.videoHeight;
         const ctx = canvas.getContext('2d'); if (facingModeSetting === "user") { ctx.translate(canvas.width, 0); ctx.scale(-1, 1); }
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        let item = { id: Date.now(), type: 'PHOTO', src: canvas.toDataURL('image/jpeg', 0.95), duration: "" };
+        let item = { id: Date.now(), type: 'PHOTO', src: canvas.toDataURL('image/jpeg', 0.9), duration: "", aiEnhancedSrc: null };
         mediaItems.unshift(item); updateAlbumPreview();
     }
 
@@ -497,15 +553,14 @@
     function updateAlbumPreview() { const p = document.getElementById('albumPreview'); if (mediaItems.length > 0) p.style.backgroundImage = `url('${mediaItems[0].src}')`; else p.style.backgroundImage = 'none'; }
     function openGalleryModal(e) { if(e) e.preventDefault(); document.getElementById('shutterButtonsRow').style.display = 'none'; isSelectModeActive = false; selectedMediaIds.clear(); renderGalleryGrid(); document.getElementById('galleryModal').style.display = 'flex'; }
     function closeGalleryModal(e) { if(e) e.preventDefault(); document.getElementById('galleryModal').style.display = 'none'; document.getElementById('shutterButtonsRow').style.display = 'flex'; }
+    function closeDetailViewer(e) { if(e) e.preventDefault(); document.getElementById('detailViewer').style.display = 'none'; }
     
     function toggleSelectMode(e) { 
-        if(e) e.preventDefault(); 
-        isSelectModeActive = !isSelectModeActive; 
+        if(e) e.preventDefault(); isSelectModeActive = !isSelectModeActive; 
         document.getElementById('galleryModal').classList.toggle('select-mode', isSelectModeActive); 
         document.getElementById('galleryFooter').style.display = isSelectModeActive ? 'flex' : 'none'; 
         document.getElementById('btnSelectToggle').innerText = isSelectModeActive ? "Hủy" : "Chọn"; 
-        if(!isSelectModeActive) selectedMediaIds.clear(); 
-        renderGalleryGrid(); 
+        if(!isSelectModeActive) selectedMediaIds.clear(); renderGalleryGrid(); 
     }
 
     function renderGalleryGrid() {
@@ -519,11 +574,8 @@
         });
     }
 
-    function batchDownloadSelected(e) { if(e) e.preventDefault(); if (selectedMediaIds.size === 0) return; let count = 0; mediaItems.forEach(item => { if (selectedMediaIds.has(item.id)) { count++; setTimeout(() => { const a = document.createElement('a'); a.href = item.src; a.download = `FILE_${item.id}` + (item.type==='PHOTO'?'.jpg':'.mp4'); document.body.appendChild(a); a.click(); document.body.removeChild(a); }, count * 200); } }); toggleSelectMode(); }
+    function batchDownloadSelected(e) { if(e) e.preventDefault(); if (selectedMediaIds.size === 0) return; let count = 0; mediaItems.forEach(item => { if (selectedMediaIds.has(item.id)) { count++; setTimeout(() => { const a = document.createElement('a'); a.href = item.aiEnhancedSrc ? item.aiEnhancedSrc : item.src; a.download = `FILE_${item.id}` + (item.type==='PHOTO'?'.jpg':'.mp4'); document.body.appendChild(a); a.click(); document.body.removeChild(a); }, count * 200); } }); toggleSelectMode(); }
     function deleteSelectedMedia(e) { if(e) e.preventDefault(); mediaItems = mediaItems.filter(i => !selectedMediaIds.has(i.id)); selectedMediaIds.clear(); renderGalleryGrid(); updateAlbumPreview(); }
-    function openDetailViewer(item) { currentViewingItem = item; const pane = document.getElementById('viewerContentPane'); pane.innerHTML = item.type === 'PHOTO' ? `<img src="${item.src}">` : `<video src="${item.src}" controls autoplay></video>`; document.getElementById('detailViewer').style.display = 'flex'; }
-    function closeDetailViewer(e) { if(e) e.preventDefault(); document.getElementById('detailViewer').style.display = 'none'; }
-    function downloadSingleMedia(e) { if(e) e.preventDefault(); const a = document.createElement('a'); a.href = currentViewingItem.src; a.download = `CAM_${currentViewingItem.id}` + (currentViewingItem.type==='PHOTO'?'.jpg':'.mp4'); document.body.appendChild(a); a.click(); document.body.removeChild(a); }
 
     window.onload = () => { buildDialTicks(); startCamera(); };
 </script>
