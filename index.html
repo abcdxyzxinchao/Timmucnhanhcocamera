@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hệ Thống Giám Sát Camera 200X</title>
+    <title>Hệ Thống Giám Sát Camera 200X & AI Edit</title>
     <style>
         :root {
             --ios-yellow: #ffcc00;
@@ -12,6 +12,7 @@
             --ios-gray: #1C1C1E;
             --ios-red: #FF453A;
             --glass-shadow: 0 12px 30px rgba(0, 0, 0, 0.75), inset 0 1px 1px rgba(255, 255, 255, 0.25);
+            --ios-purple: #BF5AF2;
         }
 
         html, body {
@@ -169,13 +170,23 @@
         .shutter-row { 
             position: absolute; bottom: calc(20px + env(safe-area-inset-bottom)); left: 0;
             width: 100%; display: flex; justify-content: space-between; 
-            align-items: center; padding: 0 35px; z-index: 10040; pointer-events: auto;
+            align-items: center; padding: 0 20px; z-index: 10040; pointer-events: auto;
         }
         
+        .left-preview-group {
+            display: flex; align-items: center; gap: 10px;
+        }
+
         .album-preview-placeholder { 
             width: 48px; height: 48px; border-radius: 50%; background: #1c1c1e; 
             border: 1.5px solid #ffffff; background-size: cover; background-position: center; 
             box-shadow: 0 4px 8px rgba(0,0,0,0.3); pointer-events: auto;
+        }
+
+        .btn-ai-outer {
+            width: 38px; height: 38px; border-radius: 50%; background: var(--ios-purple);
+            border: none; color: white; display: flex; align-items: center; justify-content: center;
+            font-size: 16px; box-shadow: 0 4px 8px rgba(0,0,0,0.3); font-weight: bold; cursor: pointer;
         }
 
         .shutter-trigger-btn { border-radius: 50%; border: none; display: none; outline: none; transition: transform 0.1s ease; pointer-events: auto; }
@@ -204,6 +215,12 @@
             color: #fff; font-size: 10px; font-weight: 600; padding: 2px 5px; border-radius: 4px;
             display: flex; align-items: center; gap: 3px;
         }
+
+        .gallery-ai-badge {
+            position: absolute; bottom: 6px; left: 6px; background: var(--ios-purple);
+            color: white; font-size: 10px; font-weight: bold; padding: 3px 6px; border-radius: 5px;
+            z-index: 5;
+        }
         
         .gallery-item-checkbox { 
             position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; 
@@ -217,10 +234,25 @@
         .btn-footer-action { flex: 1; border: none; padding: 14px; font-size: 14px; font-weight: 600; border-radius: 12px; color: white; }
         
         .detail-viewer-popup { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: #000; z-index: 30000; display: none; flex-direction: column; }
-        .viewer-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: rgba(0,0,0,0.8); }
+        .viewer-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: rgba(0,0,0,0.8); gap: 10px; }
         .viewer-content-pane { flex: 1; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .viewer-content-pane img, .viewer-content-pane video { max-width: 100%; max-height: 100%; object-fit: contain; }
         .btn-save-media { background: #30D158; color: white; border: none; padding: 8px 16px; border-radius: 10px; font-weight: 600; font-size: 14px; }
+        .btn-ai-edit { background: var(--ios-purple); color: white; border: none; padding: 8px 16px; border-radius: 10px; font-weight: 600; font-size: 14px; }
+
+        /* LOADING AI OVERLAY */
+        .ai-loading-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh;
+            background: rgba(0,0,0,0.85); z-index: 99999; display: none;
+            flex-direction: column; align-items: center; justify-content: center;
+        }
+        .ai-spinner {
+            width: 50px; height: 50px; border: 5px solid rgba(191, 90, 242, 0.2);
+            border-top: 5px solid var(--ios-purple); border-radius: 50%;
+            animation: spin-ai 1s linear infinite; margin-bottom: 16px;
+        }
+        @keyframes spin-ai { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .ai-loading-text { font-size: 16px; font-weight: 600; color: #fff; letter-spacing: 0.5px; }
     </style>
 </head>
 <body>
@@ -283,7 +315,10 @@
     </div>
 
     <div class="shutter-row" id="shutterButtonsRow">
-        <div class="album-preview-placeholder" id="albumPreview" onclick="openGalleryModal(event)"></div>
+        <div class="left-preview-group">
+            <div class="album-preview-placeholder" id="albumPreview" onclick="openGalleryModal(event)"></div>
+            <button class="btn-ai-outer" id="btnAiDirect" onclick="processLiveFrameWithAI(event)" title="Sửa ảnh AI trực tiếp">✨</button>
+        </div>
         <button class="shutter-trigger-btn btn-photo-snap" id="btnCapture" onclick="takePhoto(event)"></button>
         <button class="shutter-trigger-btn btn-video-rec" id="btnRecord" onclick="toggleRecording(event)"></button>
         <button class="btn-camera-flip" onclick="flipCameraFacing(event)">
@@ -308,12 +343,24 @@
 <div class="detail-viewer-popup" id="detailViewer">
     <div class="viewer-header">
         <button class="btn-gallery-close" onclick="closeDetailViewer(event)" style="color:#fff;">✕ Đóng</button>
-        <button class="btn-save-media" onclick="downloadSingleMedia(event)">📥 Lưu 1 file</button>
+        <div style="display:flex; gap:8px;">
+            <button class="btn-ai-edit" id="btnAiDetail" onclick="processSelectedWithAI(event)">✨ Sửa AI</button>
+            <button class="btn-save-media" onclick="downloadSingleMedia(event)">📥 Lưu 1 file</button>
+        </div>
     </div>
     <div class="viewer-content-pane" id="viewerContentPane"></div>
 </div>
 
+<div class="ai-loading-overlay" id="aiLoadingOverlay">
+    <div class="ai-spinner"></div>
+    <div class="ai-loading-text" id="aiLoadingText">AI Đang Khởi Tạo...</div>
+</div>
+
 <script>
+    // CẤU HÌNH API GEMINI CHỈNH SỬA ẢNH
+    const GEMINI_API_KEY = "AIzaSyD-YOUR_KEY_HERE"; 
+    const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
+
     let lastTouchEnd = 0;
     document.addEventListener('touchend', (e) => {
         let now = (new Date()).getTime();
@@ -512,7 +559,7 @@
         const grid = document.getElementById('galleryGrid'); grid.innerHTML = '';
         mediaItems.forEach(item => {
             const div = document.createElement('div'); div.className = `gallery-item ${selectedMediaIds.has(item.id) ? 'selected' : ''}`;
-            div.innerHTML = item.type === 'PHOTO' ? `<img src="${item.src}">` : `<video src="${item.src}"></video><div class="video-duration-tag">${item.duration}</div>`;
+            div.innerHTML = item.type === 'PHOTO' ? `<img src="${item.src}"><div class="gallery-ai-badge" onclick="event.stopPropagation(); callGeminiAiEdit('${item.src}')">✨ AI</div>` : `<video src="${item.src}"></video><div class="video-duration-tag">${item.duration}</div>`;
             const chk = document.createElement('div'); chk.className = 'gallery-item-checkbox'; div.appendChild(chk);
             div.onclick = () => { if (isSelectModeActive) { if(selectedMediaIds.has(item.id)) selectedMediaIds.delete(item.id); else selectedMediaIds.add(item.id); renderGalleryGrid(); } else openDetailViewer(item); };
             grid.appendChild(div);
@@ -521,9 +568,111 @@
 
     function batchDownloadSelected(e) { if(e) e.preventDefault(); if (selectedMediaIds.size === 0) return; let count = 0; mediaItems.forEach(item => { if (selectedMediaIds.has(item.id)) { count++; setTimeout(() => { const a = document.createElement('a'); a.href = item.src; a.download = `FILE_${item.id}` + (item.type==='PHOTO'?'.jpg':'.mp4'); document.body.appendChild(a); a.click(); document.body.removeChild(a); }, count * 200); } }); toggleSelectMode(); }
     function deleteSelectedMedia(e) { if(e) e.preventDefault(); mediaItems = mediaItems.filter(i => !selectedMediaIds.has(i.id)); selectedMediaIds.clear(); renderGalleryGrid(); updateAlbumPreview(); }
-    function openDetailViewer(item) { currentViewingItem = item; const pane = document.getElementById('viewerContentPane'); pane.innerHTML = item.type === 'PHOTO' ? `<img src="${item.src}">` : `<video src="${item.src}" controls autoplay></video>`; document.getElementById('detailViewer').style.display = 'flex'; }
+    
+    function openDetailViewer(item) { 
+        currentViewingItem = item; 
+        const pane = document.getElementById('viewerContentPane'); 
+        pane.innerHTML = item.type === 'PHOTO' ? `<img src="${item.src}">` : `<video src="${item.src}" controls autoplay></video>`; 
+        document.getElementById('btnAiDetail').style.display = (item.type === 'PHOTO') ? 'block' : 'none';
+        document.getElementById('detailViewer').style.display = 'flex'; 
+    }
+    
     function closeDetailViewer(e) { if(e) e.preventDefault(); document.getElementById('detailViewer').style.display = 'none'; }
     function downloadSingleMedia(e) { if(e) e.preventDefault(); const a = document.createElement('a'); a.href = currentViewingItem.src; a.download = `CAM_${currentViewingItem.id}` + (currentViewingItem.type==='PHOTO'?'.jpg':'.mp4'); document.body.appendChild(a); a.click(); document.body.removeChild(a); }
+
+    // ================= TRÌNH XỬ LÝ CHỈNH SỬA ẢNH BẰNG AI GEMINI =================
+    
+    // Giao diện ngoài: Chụp nhanh frame hiện tại từ luồng Camera trực tiếp và gửi AI sửa luôn
+    function processLiveFrameWithAI(e) {
+        if(e) e.preventDefault();
+        const video = document.getElementById('videoFeed');
+        if (!activeStream) return;
+        
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext('2d');
+        if (facingModeSetting === "user") { ctx.translate(canvas.width, 0); ctx.scale(-1, 1); }
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        let rawBase64 = canvas.toDataURL('image/jpeg', 0.95);
+        callGeminiAiEdit(rawBase64);
+    }
+
+    // Giao diện trong: Lấy ảnh đang được chọn để xem chi tiết gửi AI sửa
+    function processSelectedWithAI(e) {
+        if(e) e.preventDefault();
+        if(currentViewingItem && currentViewingItem.type === 'PHOTO') {
+            callGeminiAiEdit(currentViewingItem.src);
+        }
+    }
+
+    // Hàm lõi chịu trách nhiệm tương tác bóc tách Base64 và gọi API Gemini
+    async function callGeminiAiEdit(base64Data) {
+        const overlay = document.getElementById('aiLoadingOverlay');
+        const txt = document.getElementById('aiLoadingText');
+        overlay.style.display = 'flex';
+        txt.innerText = "Đang quét dữ liệu hình ảnh...";
+
+        try {
+            // Chuẩn hóa chuỗi base64 (Bỏ tiền tố data:image/...;base64,)
+            let cleanBase64 = base64Data.split(',')[1];
+            
+            txt.innerText = "Đang gửi ảnh lên hệ thống AI Gemini...";
+
+            const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [
+                            { text: "Hãy tối ưu hình ảnh này: Khử nhiễu, làm nét các chi tiết bị mờ do zoom xa, cân bằng lại dải sáng, nâng cao độ tương phản tự nhiên và trả về hình ảnh đã sửa dưới dạng duy nhất là một chuỗi base64 thô của định dạng jpeg, không chứa ký tự xuống dòng, không bọc trong định dạng markdown ```." },
+                            { inlineData: { mimeType: "image/jpeg", data: cleanBase64 } }
+                        ]
+                    }]
+                })
+            });
+
+            if (!response.ok) throw new Error("Yêu cầu gửi lên API Gemini không thành công!");
+
+            const data = await response.json();
+            txt.innerText = "Đang xử lý xuất dữ liệu ảnh mới...";
+
+            let aiResponseText = data.candidates[0].content.parts[0].text.trim();
+            
+            // Xử lý chuỗi nếu AI cố tình bọc trong định dạng markdown code block
+            if (aiResponseText.includes("data:image")) {
+                aiResponseText = aiResponseText.split(',')[1] || aiResponseText;
+            }
+            aiResponseText = aiResponseText.replace(/```html|```jpeg|```png|```jpg|```/g, "").trim();
+            aiResponseText = aiResponseText.replace(/\s/g, ""); // Xóa khoảng trắng và dấu xuống hàng thừa
+
+            let finalAiImageSrc = "data:image/jpeg;base64," + aiResponseText;
+
+            // Đưa ảnh mới tạo từ AI lên đầu danh sách lưu trữ
+            let aiItem = {
+                id: Date.now(),
+                type: 'PHOTO',
+                src: finalAiImageSrc,
+                duration: ""
+            };
+            mediaItems.unshift(aiItem);
+            updateAlbumPreview();
+
+            // Tự động chuyển vùng giao diện tới ảnh AI vừa tạo để người dùng xem trực tiếp kết quả
+            overlay.style.display = 'none';
+            openDetailViewer(aiItem);
+            
+            // Nếu đang bật lưới Gallery thì vẽ lại lưới để cập nhật ảnh mới luôn
+            if(document.getElementById('galleryModal').style.display === 'flex') {
+                renderGalleryGrid();
+            }
+
+        } catch (error) {
+            alert("Lỗi xử lý AI: " + error.message);
+            overlay.style.display = 'none';
+        }
+    }
 
     window.onload = () => { buildDialTicks(); startCamera(); };
 </script>
