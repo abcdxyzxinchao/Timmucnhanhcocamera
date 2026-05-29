@@ -268,12 +268,15 @@
                     <option value="8K">8K UltraHD</option>
                 </select>
                 <select id="fpsSelector" class="res-badge-select" onchange="restartStream()">
-                    <option value="120">120 FPS Max</option>
-                    <option value="90">90 FPS</option>
-                    <option value="60">60 FPS Ultra</option>
+                    <option value="960">960 FPS (Super Slow-Mo)</option>
+                    <option value="480">480 FPS (Ultra Slow)</option>
+                    <option value="240">240 FPS (Slow Motion)</option>
+                    <option value="120">120 FPS (Pro Motion)</option>
+                    <option value="90">90 FPS Gaming</option>
+                    <option value="60">60 FPS Ultra Smooth</option>
                     <option value="30" selected>30 FPS Standard</option>
                     <option value="24">24 FPS Cinematic</option>
-                    <option value="15">15 FPS Saving</option>
+                    <option value="15">15 FPS Battery Save</option>
                     <option value="1">1 FPS TimeLapse</option>
                 </select>
             </div>
@@ -554,7 +557,6 @@
 
     function processSelectedWithAI(e) { if(e) e.preventDefault(); if(currentViewingItem && currentViewingItem.type === 'PHOTO') callGeminiAiEdit(currentViewingItem.src); }
 
-    // ================= CHUYỂN HƯỚNG GỌI QUA PROXY SERVERLESS VERCEL AN TOÀN =================
     async function callGeminiAiEdit(base64Data) {
         const overlay = document.getElementById('aiLoadingOverlay');
         const txt = document.getElementById('aiLoadingText');
@@ -564,18 +566,17 @@
         try {
             let cleanBase64 = base64Data.includes(",") ? base64Data.split(',')[1] : base64Data;
             
-            // Gọi endpoint nội bộ bảo mật của Vercel
             const response = await fetch('/api/gemini', {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ base64Data: cleanBase64 })
             });
 
-            if (!response.ok) {
-                throw new Error("Mã phản hồi từ Serverless Proxy lỗi: " + response.status);
-            }
-
             const jsonResult = await response.json();
+            
+            if (!response.ok || jsonResult.error) {
+                throw new Error(jsonResult.error || "Lỗi không xác định từ Serverless Node");
+            }
             
             let aiAnalysisText = "Không nhận được phản hồi phân tích lý tưởng.";
             if (jsonResult.candidates && jsonResult.candidates[0].content.parts[0].text) {
@@ -619,7 +620,7 @@
         } catch (error) {
             overlay.style.display = 'none';
             console.error(error);
-            alert("Yêu cầu gửi dữ liệu phân tích thất bại!\nHãy đảm bảo bạn đã tạo đúng thư mục api/gemini.js trên GitHub.");
+            alert("Lỗi xử lý AI: Yêu cầu gửi lên API Gemini không thành công!\nHãy kiểm tra lại API Key hoặc cấu hình Environment Variables.");
         }
     }
 
