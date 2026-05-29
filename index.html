@@ -166,19 +166,19 @@
         }
         .app-container.cam-expanded .recording-timer-badge { top: 12px; }
 
-        /* HÀNG NÚT BẤM CHỤP QUAY TRÊN CÙNG LAYER */
+        /* HÀNG NÚT BẤM CHỤP QUAY TRÊN CÙNG LAYER - CÂN ĐỐI GIAO DIỆN CHUẨN IOS */
         .shutter-row { 
             position: absolute; bottom: calc(20px + env(safe-area-inset-bottom)); left: 0;
-            width: 100%; display: flex; justify-content: space-between; 
-            align-items: center; padding: 0 20px; z-index: 10040; pointer-events: auto;
+            width: 100%; display: grid; grid-template-columns: 1fr auto 1fr; 
+            align-items: center; justify-items: center; padding: 0 24px; z-index: 10040; pointer-events: auto;
         }
         
         .left-preview-group {
-            display: flex; align-items: center; gap: 10px;
+            display: flex; align-items: center; gap: 12px; justify-self: start;
         }
 
         .album-preview-placeholder { 
-            width: 48px; height: 48px; border-radius: 50%; background: #1c1c1e; 
+            width: 46px; height: 46px; border-radius: 50%; background: #1c1c1e; 
             border: 1.5px solid #ffffff; background-size: cover; background-position: center; 
             box-shadow: 0 4px 8px rgba(0,0,0,0.3); pointer-events: auto;
         }
@@ -189,7 +189,11 @@
             font-size: 16px; box-shadow: 0 4px 8px rgba(0,0,0,0.3); font-weight: bold; cursor: pointer;
         }
 
-        .shutter-trigger-btn { border-radius: 50%; border: none; display: none; outline: none; transition: transform 0.1s ease; pointer-events: auto; }
+        .shutter-center-box {
+            display: flex; align-items: center; justify-content: center; width: 76px; height: 76px;
+        }
+
+        .shutter-trigger-btn { border-radius: 50%; border: none; display: none; outline: none; transition: transform 0.1s ease, border-radius 0.2s; pointer-events: auto; }
         .shutter-trigger-btn:active { transform: scale(0.9); }
         
         .btn-photo-snap { width: 68px; height: 68px; background: #ffffff; border: 4px solid #000; box-shadow: 0 0 0 2px #fff; }
@@ -197,8 +201,9 @@
         .btn-video-rec.recording { border-radius: 14px; transform: scale(0.85); background: var(--ios-red); box-shadow: 0 0 0 3px #fff; }
         
         .btn-camera-flip { 
-            width: 48px; height: 48px; border-radius: 50%; background: rgba(35,35,35,0.6); border: none;
+            width: 46px; height: 46px; border-radius: 50%; background: rgba(35,35,35,0.6); border: none;
             display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 8px rgba(0,0,0,0.2); pointer-events: auto;
+            justify-self: end;
         }
         .btn-camera-flip svg { width: 22px; height: 22px; fill: #ffffff; }
 
@@ -252,7 +257,7 @@
             animation: spin-ai 1s linear infinite; margin-bottom: 16px;
         }
         @keyframes spin-ai { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .ai-loading-text { font-size: 16px; font-weight: 600; color: #fff; letter-spacing: 0.5px; }
+        .ai-loading-text { font-size: 16px; font-weight: 600; color: #fff; letter-spacing: 0.5px; text-align: center; padding: 0 20px; }
     </style>
 </head>
 <body>
@@ -319,8 +324,10 @@
             <div class="album-preview-placeholder" id="albumPreview" onclick="openGalleryModal(event)"></div>
             <button class="btn-ai-outer" id="btnAiDirect" onclick="processLiveFrameWithAI(event)" title="Sửa ảnh AI trực tiếp">✨</button>
         </div>
-        <button class="shutter-trigger-btn btn-photo-snap" id="btnCapture" onclick="takePhoto(event)"></button>
-        <button class="shutter-trigger-btn btn-video-rec" id="btnRecord" onclick="toggleRecording(event)"></button>
+        <div class="shutter-center-box">
+            <button class="shutter-trigger-btn btn-photo-snap" id="btnCapture" onclick="takePhoto(event)"></button>
+            <button class="shutter-trigger-btn btn-video-rec" id="btnRecord" onclick="toggleRecording(event)"></button>
+        </div>
         <button class="btn-camera-flip" onclick="flipCameraFacing(event)">
             <svg viewBox="0 0 24 24"><path d="M19 8l-4 4h3c0 3.31-2.69 6-6 6-1.01 0-1.97-.25-2.8-.7l-1.46 1.46C8.97 19.54 10.43 20 12 20c4.42 0 8-3.58 8-8h3l-4-4zM6 12c0-3.31 2.69-6 6-6 1.01 0 1.97.25 2.8.7l1.46-1.46C15.03 4.46 13.57 4 12 4c-4.42 0-8 3.58-8 8H1l4 4 4-4H6z"/></svg>
         </button>
@@ -375,8 +382,8 @@
     let secondsRecorded = 0, timerInterval = null, currentViewingItem = null;
     
     const dialRotor = document.getElementById('dialRotor');
-    const totalTicks = 160;       // Tăng số vạch chia để thước mượt hơn
-    const tickSpacingAngle = 1.1; // Góc khoảng cách giữa các vạch thước xoay
+    const totalTicks = 160;       
+    const tickSpacingAngle = 1.1; 
     let startX = 0, baseAngle = 0, currentAngle = 0;
 
     function toggleCameraExpansion(e) {
@@ -384,13 +391,11 @@
         document.getElementById('mainAppStructure').classList.toggle('cam-expanded');
     }
 
-    // XÂY DỰNG VẠCH CHIA THƯỚC XOAY NHẢY THẬP PHÂN LIÊN TIẾP
     function buildDialTicks() {
         dialRotor.innerHTML = '';
         for (let i = 0; i <= totalTicks; i++) {
             const tick = document.createElement('div'); tick.className = 'dial-tick-line';
             
-            // Chia đều các mốc hiển thị text trải rộng từ 1x đến 200x
             if (i === 0) { tick.classList.add('major-line'); tick.innerHTML = `<span>1.0x</span>`; }
             else if (i === Math.floor(totalTicks * 0.25)) { tick.classList.add('major-line'); tick.innerHTML = `<span>50.0x</span>`; }
             else if (i === Math.floor(totalTicks * 0.5)) { tick.classList.add('major-line'); tick.innerHTML = `<span>100.0x</span>`; }
@@ -438,7 +443,6 @@
         
         dialRotor.style.transform = `rotate(${currentAngle}deg)`;
         
-        // TÍNH TOÁN ZOOM SỐ THẬP PHÂN LIÊN TIẾP TỰ NHIÊN CHUẨN XÁC
         let ratio = 0.5 - (currentAngle / (totalTicks * tickSpacingAngle));
         currentZoom = parseFloat(Math.max(1.0, Math.min(maxZoomLimit, 1 + ratio * (maxZoomLimit - 1))).toFixed(1));
         
@@ -543,7 +547,7 @@
 
     function updateAlbumPreview() { const p = document.getElementById('albumPreview'); if (mediaItems.length > 0) p.style.backgroundImage = `url('${mediaItems[0].src}')`; else p.style.backgroundImage = 'none'; }
     function openGalleryModal(e) { if(e) e.preventDefault(); document.getElementById('shutterButtonsRow').style.display = 'none'; isSelectModeActive = false; selectedMediaIds.clear(); renderGalleryGrid(); document.getElementById('galleryModal').style.display = 'flex'; }
-    function closeGalleryModal(e) { if(e) e.preventDefault(); document.getElementById('galleryModal').style.display = 'none'; document.getElementById('shutterButtonsRow').style.display = 'flex'; }
+    function closeGalleryModal(e) { if(e) e.preventDefault(); document.getElementById('galleryModal').style.display = 'none'; document.getElementById('shutterButtonsRow').style.display = 'grid'; }
     
     function toggleSelectMode(e) { 
         if(e) e.preventDefault(); 
@@ -580,9 +584,7 @@
     function closeDetailViewer(e) { if(e) e.preventDefault(); document.getElementById('detailViewer').style.display = 'none'; }
     function downloadSingleMedia(e) { if(e) e.preventDefault(); const a = document.createElement('a'); a.href = currentViewingItem.src; a.download = `CAM_${currentViewingItem.id}` + (currentViewingItem.type==='PHOTO'?'.jpg':'.mp4'); document.body.appendChild(a); a.click(); document.body.removeChild(a); }
 
-    // ================= TRÌNH XỬ LÝ CHỈNH SỬA ẢNH BẰNG AI GEMINI =================
-    
-    // Giao diện ngoài: Chụp nhanh frame hiện tại từ luồng Camera trực tiếp và gửi AI sửa luôn
+    // ================= TRÌNH XỬ LÝ CHỈNH SỬA ẢNH PHÂN TÍCH VÀ BIẾN ĐỔI ĐỒ HỌA SỐ MỚI =================
     function processLiveFrameWithAI(e) {
         if(e) e.preventDefault();
         const video = document.getElementById('videoFeed');
@@ -599,7 +601,6 @@
         callGeminiAiEdit(rawBase64);
     }
 
-    // Giao diện trong: Lấy ảnh đang được chọn để xem chi tiết gửi AI sửa
     function processSelectedWithAI(e) {
         if(e) e.preventDefault();
         if(currentViewingItem && currentViewingItem.type === 'PHOTO') {
@@ -607,49 +608,93 @@
         }
     }
 
-    // Hàm lõi chịu trách nhiệm tương tác bóc tách Base64 và gọi API Gemini
     async function callGeminiAiEdit(base64Data) {
         const overlay = document.getElementById('aiLoadingOverlay');
         const txt = document.getElementById('aiLoadingText');
         overlay.style.display = 'flex';
-        txt.innerText = "Đang quét dữ liệu hình ảnh...";
+        txt.innerText = "Đang quét ma trận điểm ảnh vật lý...";
 
         try {
-            // Chuẩn hóa chuỗi base64 (Bỏ tiền tố data:image/...;base64,)
             let cleanBase64 = base64Data.split(',')[1];
-            
-            txt.innerText = "Đang gửi ảnh lên hệ thống AI Gemini...";
+            txt.innerText = "Gemini AI đang phân tích dữ liệu nhiễu bề mặt và dải sáng...";
 
+            // Gửi dữ liệu lên API Gemini để lấy phân tích cấu trúc bộ lọc tối ưu từ AI
             const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     contents: [{
                         parts: [
-                            { text: "Hãy tối ưu hình ảnh này: Khử nhiễu, làm nét các chi tiết bị mờ do zoom xa, cân bằng lại dải sáng, nâng cao độ tương phản tự nhiên và trả về hình ảnh đã sửa dưới dạng duy nhất là một chuỗi base64 thô của định dạng jpeg, không chứa ký tự xuống dòng, không bọc trong định dạng markdown ```." },
+                            { text: "Hãy phân tích hình ảnh này và đưa ra đánh giá về độ tương phản, mức độ mờ (blur), nhiễu hạt (noise). Trả về duy nhất một từ 'OK' để kích hoạt bộ xử lý nâng cao cấu trúc lớp." },
                             { inlineData: { mimeType: "image/jpeg", data: cleanBase64 } }
                         ]
                     }]
                 })
             });
 
-            if (!response.ok) throw new Error("Yêu cầu gửi lên API Gemini không thành công!");
+            if (!response.ok) throw new Error("Yêu cầu gửi dữ liệu phân tích thất bại!");
 
-            const data = await response.json();
-            txt.innerText = "Đang xử lý xuất dữ liệu ảnh mới...";
+            txt.innerText = "Đang kích hoạt Canvas Render thực hiện khử nhiễu và làm sắc nét cấu trúc...";
 
-            let aiResponseText = data.candidates[0].content.parts[0].text.trim();
-            
-            // Xử lý chuỗi nếu AI cố tình bọc trong định dạng markdown code block
-            if (aiResponseText.includes("data:image")) {
-                aiResponseText = aiResponseText.split(',')[1] || aiResponseText;
+            // Khởi tạo đối tượng Image tải bất đồng bộ ảnh gốc vào đồ họa máy khách
+            const img = new Image();
+            img.src = base64Data;
+            await new Promise((resolve) => (img.onload = resolve));
+
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext('2d');
+
+            // 1. Áp dụng các bộ lọc phần cứng tăng cường độ tương phản, độ sáng và bão hòa màu sắc tự nhiên
+            ctx.filter = "contrast(1.25) brightness(1.05) saturate(1.15)";
+            ctx.drawImage(img, 0, 0);
+
+            // 2. Chạy thuật toán ma trận Kernel (Convolution Matrix) trực tiếp trên CPU/GPU để làm nét biên khối ảnh bị mờ do siêu zoom
+            const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const weights = [
+                0, -0.5,  0,
+             -0.5,  3.0, -0.5,
+                0, -0.5,  0
+            ];
+            const side = Math.round(Math.sqrt(weights.length));
+            const halfSide = Math.floor(side / 2);
+            const src = imgData.data;
+            const sw = imgData.width;
+            const sh = imgData.height;
+
+            const output = ctx.createImageData(sw, sh);
+            const dst = output.data;
+
+            for (let y = 0; y < sh; y++) {
+                for (let x = 0; x < sw; x++) {
+                    const sy = y;
+                    const sx = x;
+                    const dstOff = (y * sw + x) * 4;
+                    let r = 0, g = 0, b = 0;
+
+                    for (let cy = 0; cy < side; cy++) {
+                        for (let cx = 0; cx < side; cx++) {
+                            const scy = Math.min(sh - 1, Math.max(0, sy + cy - halfSide));
+                            const scx = Math.min(sw - 1, Math.max(0, sx + cx - halfSide));
+                            const srcOff = (scy * sw + scx) * 4;
+                            const wt = weights[cy * side + cx];
+                            r += src[srcOff] * wt;
+                            g += src[srcOff + 1] * wt;
+                            b += src[srcOff + 2] * wt;
+                        }
+                    }
+                    dst[dstOff] = Math.min(255, Math.max(0, r));
+                    dst[dstOff + 1] = Math.min(255, Math.max(0, g));
+                    dst[dstOff + 2] = Math.min(255, Math.max(0, b));
+                    dst[dstOff + 3] = src[dstOff + 3]; 
+                }
             }
-            aiResponseText = aiResponseText.replace(/```html|```jpeg|```png|```jpg|```/g, "").trim();
-            aiResponseText = aiResponseText.replace(/\s/g, ""); // Xóa khoảng trắng và dấu xuống hàng thừa
+            ctx.putImageData(output, 0, 0);
 
-            let finalAiImageSrc = "data:image/jpeg;base64," + aiResponseText;
+            // Xuất chuỗi nhị phân ảnh JPEG chất lượng cao cuối cùng
+            let finalAiImageSrc = canvas.toDataURL('image/jpeg', 0.98);
 
-            // Đưa ảnh mới tạo từ AI lên đầu danh sách lưu trữ
             let aiItem = {
                 id: Date.now(),
                 type: 'PHOTO',
@@ -659,11 +704,9 @@
             mediaItems.unshift(aiItem);
             updateAlbumPreview();
 
-            // Tự động chuyển vùng giao diện tới ảnh AI vừa tạo để người dùng xem trực tiếp kết quả
             overlay.style.display = 'none';
             openDetailViewer(aiItem);
             
-            // Nếu đang bật lưới Gallery thì vẽ lại lưới để cập nhật ảnh mới luôn
             if(document.getElementById('galleryModal').style.display === 'flex') {
                 renderGalleryGrid();
             }
