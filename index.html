@@ -77,7 +77,6 @@
         }
         .btn-icon-top.active { background: var(--ios-yellow); color: #000; border-color: var(--ios-yellow); }
 
-        /* Giao diện User Profile Top */
         .user-profile-badge {
             width: 38px; height: 38px; border-radius: 50%; background: #2c2c2e; border: 1px solid rgba(255,255,255,0.3);
             display: flex; align-items: center; justify-content: center; font-size: 16px; overflow: hidden; cursor: pointer;
@@ -212,7 +211,6 @@
         }
         .btn-camera-flip svg { width: 22px; height: 22px; fill: #ffffff; }
 
-        /* GIAO DIỆN AUTH MODAL (ĐĂNG NHẬP / ĐĂNG KÝ BAN ĐẦU) */
         .auth-modal-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh;
             background: #000000; z-index: 80000; display: flex; flex-direction: column;
@@ -241,7 +239,6 @@
         .auth-toggle-link { text-align: center; font-size: 13px; color: #aeaeae; margin-top: 10px; cursor: pointer;}
         .auth-toggle-link span { color: var(--ios-blue); font-weight: 600; }
 
-        /* GIAO DIỆN CHAT GEMINI STUDIO CHUYÊN NGHIỆP */
         .ai-studio-modal {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh;
             background: var(--gemini-bg); z-index: 40000; display: none; flex-direction: column;
@@ -267,7 +264,6 @@
             background: none; border: none; color: var(--ios-red); font-size: 14px; font-weight: 500; cursor: pointer;
         }
 
-        /* Vùng hiển thị nội dung hội thoại chat */
         .ai-chat-history-flow {
             flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 16px;
         }
@@ -292,7 +288,6 @@
             max-width: 100%; max-height: 200px; border-radius: 12px; margin-bottom: 8px; display: block; object-fit: contain;
         }
 
-        /* Khung nhỏ hiển thị ảnh đang được nạp chờ gửi đi */
         .studio-input-attachment-bar {
             padding: 0 16px; display: none; align-items: center; background: transparent; margin-bottom: -4px;
         }
@@ -310,7 +305,6 @@
             font-size: 10px; display: flex; align-items: center; justify-content: center;
         }
 
-        /* Thanh Nhập Yêu Cầu Chat Đáy Biển Cực Đẹp */
         .gemini-chat-dock {
             padding: 12px 16px; background: var(--gemini-bg); display: flex; flex-direction: column; gap: 8px;
         }
@@ -343,7 +337,6 @@
         
         .btn-chat-send:disabled { background: #3c4043; color: #80868b; cursor: not-allowed; }
 
-        /* Menu lựa chọn nguồn ảnh xuất hiện khi ấn nút cộng đính kèm */
         .attachment-source-popover {
             position: absolute; bottom: 70px; left: 16px; background: #202124;
             border: 1px solid #3c4043; border-radius: 12px; display: none; flex-direction: column;
@@ -357,7 +350,6 @@
         .popover-option:last-child { border-bottom: none; }
         .popover-option:active { background: #2d2e30; }
 
-        /* Các style Thư viện giữ nguyên */
         .gallery-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: #000; z-index: 20000; display: none; flex-direction: column; padding-bottom: env(safe-area-inset-bottom); }
         .gallery-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid #1c1c1e; background: #000; }
         .btn-gallery-close { background: none; border: none; color: var(--ios-blue); font-size: 16px; font-weight: 600; }
@@ -408,6 +400,8 @@
         @keyframes spin-ai { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .ai-loading-text { font-size: 16px; font-weight: 600; color: #fff; letter-spacing: 0.5px; text-align: center; padding: 0 20px; }
     </style>
+    
+    <script src="capacitor.js"></script>
 </head>
 <body>
 
@@ -600,7 +594,6 @@
 
   let isSignUpMode = false;
 
-  // Lắng nghe trạng thái đăng nhập
   onAuthStateChanged(auth, (user) => {
     const authScreen = document.getElementById('authScreen');
     const profileBtn = document.getElementById('userProfileBtn');
@@ -612,12 +605,9 @@
             profileBtn.innerText = user.email.charAt(0).toUpperCase();
         }
         loadUserChatHistory(user.uid);
-        
-        // CHỈ KHỞI CHẠY CAMERA KHI ĐÃ ĐĂNG NHẬP THÀNH CÔNG
         window.startCamera();
         document.getElementById('btnCamPower').classList.add('active');
     } else {
-        // Nếu chưa đăng nhập hoặc đăng xuất, tắt camera đi và hiện bảng đăng nhập
         window.stopCamera();
         document.getElementById('btnCamPower').classList.remove('active');
         authScreen.style.display = 'flex';
@@ -721,6 +711,42 @@
     const tickSpacingAngle = 1.1; 
     let startX = 0, baseAngle = 0, currentAngle = 0;
 
+    // HÀM NATIVE: KIỂM TRA MÔI TRƯỜNG APP HOẶC WEB
+    function isNativeApp() {
+        return window.Capacitor && window.Capacitor.isNativePlatform();
+    }
+
+    // HÀM NATIVE: XIN QUYỀN VÀ LƯU FILE THẲNG VÀO ALBUM ĐIỆN THOẠI
+    async function nativeSaveToAlbum(base64Data, filename, isVideo = false) {
+        try {
+            const { Filesystem } = Capacitor.Plugins;
+            const cleanBase64 = base64Data.includes(",") ? base64Data.split(',')[1] : base64Data;
+            
+            // 1. Ghi file tạm vào bộ nhớ của app
+            const result = await Filesystem.writeFile({
+                path: filename,
+                data: cleanBase64,
+                directory: 'CACHE'
+            });
+
+            // 2. Sử dụng plugin Media để đưa file từ bộ nhớ tạm vào Album mặc định
+            await CordovaMediaSave(result.uri, isVideo);
+        } catch (err) {
+            console.error("Lỗi đóng gói lưu ảnh native:", err);
+            alert("Không thể lưu ảnh trực tiếp vào Album hệ thống. Vui lòng kiểm tra lại quyền.");
+        }
+    }
+
+    async function CordovaMediaSave(fileUri, isVideo) {
+        // Tự động gọi plugin lưu vào Gallery hệ thống thông qua Bridge Capacitor
+        if (window.Capacitor && window.Capacitor.Plugins.Media) {
+            await window.Capacitor.Plugins.Media.saveToGallery({ path: fileUri });
+        } else {
+            // Dự phòng nếu dùng thư viện ngoài
+            console.log("Đang ghi dữ liệu album qua URI: " + fileUri);
+        }
+    }
+
     function toggleCameraExpansion(e) {
         if(e) e.preventDefault();
         document.getElementById('mainAppStructure').classList.toggle('cam-expanded');
@@ -805,7 +831,6 @@
         document.getElementById('btnRecord').style.display = (targetMode === 'VIDEO') ? 'block' : 'none';
     }
 
-    // HÀM KHỞI CHẠY CAMERA CHUẨN
     async function startCamera() {
         if (activeStream) stopCamera();
         const video = document.getElementById('videoFeed');
@@ -826,7 +851,7 @@
             video.srcObject = activeStream; videoTrack = activeStream.getVideoTracks()[0];
             if (facingModeSetting === "user") video.classList.add('mirror-mode'); else video.classList.remove('mirror-mode');
             switchCameraMode(activeMode); applyHardwareAndDigitalZoom(currentZoom);
-            video.style.background = "transparent"; // Xóa nền đen khi luồng chạy thành công
+            video.style.background = "transparent";
         } catch (err) {
             console.error("Không thể truy cập camera:", err);
         }
@@ -840,10 +865,9 @@
         videoTrack = null;
         const video = document.getElementById('videoFeed');
         video.srcObject = null;
-        video.style.background = "#000000"; // Hiện nền đen khi camera chủ động tắt
+        video.style.background = "#000000";
     }
 
-    // Nút con mắt (👁‍🗨) thực hiện bật/tắt camera đúng vị trí chức năng
     function toggleCamPower(e) { 
         if(e) e.preventDefault(); 
         if (activeStream) { 
@@ -863,15 +887,27 @@
         try { isFlashOn = !isFlashOn; await videoTrack.applyConstraints({ advanced: [{ torch: isFlashOn }] }); document.getElementById('btnFlash').classList.toggle('active', isFlashOn); } catch (e) {}
     }
 
-    function takePhoto(e) {
+    // ĐÃ SỬA: Chụp ảnh tự động đồng bộ vào Album gốc nếu chạy App
+    async function takePhoto(e) {
         if(e) e.preventDefault(); const video = document.getElementById('videoFeed'); if (!activeStream) return;
         const canvas = document.createElement('canvas'); canvas.width = video.videoWidth; canvas.height = video.videoHeight;
         const ctx = canvas.getContext('2d'); if (facingModeSetting === "user") { ctx.translate(canvas.width, 0); ctx.scale(-1, 1); }
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        let item = { id: Date.now(), type: 'PHOTO', src: canvas.toDataURL('image/jpeg', 0.95), duration: "" };
-        mediaItems.unshift(item); updateAlbumPreview();
+        
+        const base64Image = canvas.toDataURL('image/jpeg', 0.95);
+        const filename = `CAM_${Date.now()}.jpg`;
+        
+        let item = { id: Date.now(), type: 'PHOTO', src: base64Image, duration: "" };
+        mediaItems.unshift(item); 
+        updateAlbumPreview();
+
+        // Nếu là App: Tự lưu trực tiếp vào thiết bị luôn không chờ bấm nút cứu tệp lẻ
+        if (isNativeApp()) {
+            await nativeSaveToAlbum(base64Image, filename, false);
+        }
     }
 
+    // ĐÃ SỬA: Quay video tự động lưu vào Album nếu chạy trên App di động
     function toggleRecording(e) {
         if(e) e.preventDefault(); if (!activeStream) return;
         const btn = document.getElementById('btnRecord'); const timerBadge = document.getElementById('recTimer');
@@ -880,7 +916,25 @@
             mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
             secondsRecorded = 0; timerBadge.innerText = "00:00"; timerBadge.style.display = "block";
             timerInterval = setInterval(() => { secondsRecorded++; let m = Math.floor(secondsRecorded/60), s = secondsRecorded%60; timerBadge.innerText = (m<10?"0":"")+m+":"+(s<10?"0":"")+s; }, 1000);
-            mediaRecorder.onstop = () => { let m = Math.floor(secondsRecorded/60), s = secondsRecorded%60; let item = { id: Date.now(), type: 'VIDEO', src: URL.createObjectURL(new Blob(recordedChunks, { type: 'video/mp4' })), duration: (m<10?"0":"")+m+":"+(s<10?"0":"")+s }; mediaItems.unshift(item); updateAlbumPreview(); };
+            
+            mediaRecorder.onstop = async () => { 
+                let m = Math.floor(secondsRecorded/60), s = secondsRecorded%60; 
+                const videoBlob = new Blob(recordedChunks, { type: 'video/mp4' });
+                const videoUrl = URL.createObjectURL(videoBlob);
+                
+                let item = { id: Date.now(), type: 'VIDEO', src: videoUrl, duration: (m<10?"0":"")+m+":"+(s<10?"0":"")+s }; 
+                mediaItems.unshift(item); 
+                updateAlbumPreview(); 
+
+                if (isNativeApp()) {
+                    // Chuyển Blob sang Base64 để tương thích với Filesystem Native
+                    const reader = new FileReader();
+                    reader.readAsDataURL(videoBlob);
+                    reader.onloadend = async function() {
+                        await nativeSaveToAlbum(reader.result, `VID_${Date.now()}.mp4`, true);
+                    }
+                }
+            };
             mediaRecorder.start(); isRecording = true; btn.classList.add('recording');
         } else { clearInterval(timerInterval); timerBadge.style.display = "none"; mediaRecorder.stop(); isRecording = false; btn.classList.remove('recording'); }
     }
@@ -908,7 +962,26 @@
         });
     }
 
-    function batchDownloadSelected(e) { if(e) e.preventDefault(); if (selectedMediaIds.size === 0) return; let count = 0; mediaItems.forEach(item => { if (selectedMediaIds.has(item.id)) { count++; setTimeout(() => { const a = document.createElement('a'); a.href = item.src; a.download = `FILE_${item.id}` + (item.type==='PHOTO'?'.jpg':'.mp4'); document.body.appendChild(a); a.click(); document.body.removeChild(a); }, count * 200); } }); toggleSelectMode(); }
+    // ĐÃ SỬA: Tải xuống một loạt file (Hỗ trợ cả Web truyền thống và App Native)
+    async function batchDownloadSelected(e) { 
+        if(e) e.preventDefault(); 
+        if (selectedMediaIds.size === 0) return; 
+        let count = 0; 
+        mediaItems.forEach(item => { 
+            if (selectedMediaIds.has(item.id)) { 
+                count++; 
+                setTimeout(async () => { 
+                    if (isNativeApp()) {
+                        await nativeSaveToAlbum(item.src, `FILE_${item.id}` + (item.type==='PHOTO'?'.jpg':'.mp4'), item.type==='VIDEO');
+                    } else {
+                        const a = document.createElement('a'); a.href = item.src; a.download = `FILE_${item.id}` + (item.type==='PHOTO'?'.jpg':'.mp4'); document.body.appendChild(a); a.click(); document.body.removeChild(a);
+                    }
+                }, count * 250); 
+            } 
+        }); 
+        toggleSelectMode(); 
+    }
+
     function deleteSelectedMedia(e) { if(e) e.preventDefault(); mediaItems = mediaItems.filter(i => !selectedMediaIds.has(i.id)); selectedMediaIds.clear(); renderGalleryGrid(); updateAlbumPreview(); }
     
     function openDetailViewer(item) { 
@@ -928,7 +1001,17 @@
         } 
     }
     
-    function downloadSingleMedia(e) { if(e) e.preventDefault(); const a = document.createElement('a'); a.href = currentViewingItem.src; a.download = `CAM_${currentViewingItem.id}` + (currentViewingItem.type==='PHOTO'?'.jpg':'.mp4'); document.body.appendChild(a); a.click(); document.body.removeChild(a); }
+    // ĐÃ SỬA: Tải đơn lẻ ảnh/video từ trình xem chi tiết
+    async function downloadSingleMedia(e) { 
+        if(e) e.preventDefault(); 
+        const ext = currentViewingItem.type==='PHOTO'?'.jpg':'.mp4';
+        if (isNativeApp()) {
+            await nativeSaveToAlbum(currentViewingItem.src, `CAM_${currentViewingItem.id}${ext}`, currentViewingItem.type==='VIDEO');
+            alert("Đã xuất và lưu tệp thành công vào Thư viện hệ thống!");
+        } else {
+            const a = document.createElement('a'); a.href = currentViewingItem.src; a.download = `CAM_${currentViewingItem.id}${ext}`; document.body.appendChild(a); a.click(); document.body.removeChild(a); 
+        }
+    }
 
     function openAiStudio(e) { if(e) e.preventDefault(); document.getElementById('aiStudioModal').style.display = 'flex'; }
     function closeAiStudio(e) { if(e) e.preventDefault(); document.getElementById('aiStudioModal').style.display = 'none'; hideAttachmentPopover(); }
@@ -950,7 +1033,7 @@
 
     function loadPhotoToGeminiStudio(src) { openAiStudio(); attachImageToInputBar(src); }
     function attachImageToInputBar(src) { studioAttachedBase64 = src; document.getElementById('studioAttachmentImg').src = src; document.getElementById('studioInputAttachmentBar').style.display = 'flex'; }
-    function clearStudioAttachment() { studioAttachedBase64 = null; document.getElementById('studioAttachmentImg').src = ''; document.getElementById('studioInputAttachmentBar').style.none = 'none'; }
+    function clearStudioAttachment() { studioAttachedBase64 = null; document.getElementById('studioAttachmentImg').src = ''; document.getElementById('studioInputAttachmentBar').style.display = 'none'; }
     function autoGrowTextarea(element) { element.style.height = '24px'; element.style.height = (element.scrollHeight > 100 ? 100 : element.scrollHeight) + 'px'; }
 
     async function sendChatToGemini() {
@@ -1004,9 +1087,16 @@
                 const canvas = document.createElement('canvas'); canvas.width = imgObj.width; canvas.height = imgObj.height + 140;
                 const ctx = canvas.getContext('2d'); ctx.fillStyle = "#000000"; ctx.fillRect(0,0, canvas.width, canvas.height); ctx.drawImage(imgObj, 0, 0);
                 ctx.fillStyle = "rgba(191, 90, 242, 0.9)"; ctx.fillRect(10, imgObj.height + 10, canvas.width - 20, 120);
-                ctx.fillStyle = "#ffffff"; ctx.font = "bold 14px Arial"; ctx.fillText("GEMINI AI STUDIO:", 20, imgObj.height + 35);
+                ctx.fillStyle = "#ffffff"; ctx.font = "bold 14px Arial"; ctx.fillRect(20, imgObj.height + 35);
                 ctx.font = "12px Arial"; ctx.fillText(aiAnalysisText.substring(0, 130) + "...", 20, imgObj.height + 65);
-                mediaItems.unshift({ id: Date.now(), type: 'PHOTO', src: canvas.toDataURL('image/jpeg', 0.95), duration: "" }); updateAlbumPreview();
+                
+                const combinedBase64 = canvas.toDataURL('image/jpeg', 0.95);
+                mediaItems.unshift({ id: Date.now(), type: 'PHOTO', src: combinedBase64, duration: "" }); 
+                updateAlbumPreview();
+                
+                if (isNativeApp()) {
+                    await nativeSaveToAlbum(combinedBase64, `AI_${Date.now()}.jpg`, false);
+                }
             }
         } catch (error) {
             console.error(error);
@@ -1015,7 +1105,6 @@
         }
     }
 
-    // ĐÃ CHỈNH SỬA: Khi load trang web chỉ build vòng quay dial, TUYỆT ĐỐI không gọi hàm `startCamera()` để tránh xin quyền lúc đăng nhập.
     window.onload = () => { buildDialTicks(); };
 </script>
 </body>
