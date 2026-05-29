@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hệ Thống Giám Sát Camera 200X & AI Edit Pro</title>
+    <title>Hệ Thống Giám Sát Camera 200X & Gemini AI Chat Studio</title>
     <style>
         :root {
             --ios-yellow: #ffcc00;
@@ -13,6 +13,10 @@
             --ios-red: #FF453A;
             --glass-shadow: 0 12px 30px rgba(0, 0, 0, 0.75), inset 0 1px 1px rgba(255, 255, 255, 0.25);
             --ios-purple: #BF5AF2;
+            --gemini-bg: #131314;
+            --gemini-input-bg: #1e1f20;
+            --gemini-bubble-user: #2b2a33;
+            --gemini-bubble-ai: #1e1f20;
         }
 
         html, body {
@@ -59,7 +63,7 @@
         .left-selectors { display: flex; gap: 6px; align-items: center; justify-content: flex-start; flex: 1; }
 
         .res-badge-select {
-            background: rgba(0, 0, 0, 0.6); color: var(--ios-yellow); border: 1px solid rgba(255,255,255,0.2.5);
+            background: rgba(0, 0, 0, 0.6); color: var(--ios-yellow); border: 1px solid rgba(255,255,255,0.25);
             padding: 6px 8px; font-size: 11px; font-weight: 600; border-radius: 12px; outline: none;
             backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
             max-width: 95px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;
@@ -201,51 +205,119 @@
         }
         .btn-camera-flip svg { width: 22px; height: 22px; fill: #ffffff; }
 
-        /* Giao diện Trang Studio Chỉnh Ảnh AI Chuyên Nghiệp */
+        /* GIAO DIỆN CHAT GEMINI STUDIO CHUYÊN NGHIỆP (GIỐNG ẢNH MẪU 100%) */
         .ai-studio-modal {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh;
-            background: #0d0d0e; z-index: 40000; display: none; flex-direction: column;
-            padding-bottom: calc(12px + env(safe-area-inset-bottom));
+            background: var(--gemini-bg); z-index: 40000; display: none; flex-direction: column;
+            padding-bottom: env(safe-area-inset-bottom);
             padding-top: env(safe-area-inset-top);
         }
+        
         .ai-studio-header {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 16px 20px; background: #161618; border-bottom: 0.5px solid rgba(255,255,255,0.1);
+            padding: 14px 18px; background: var(--gemini-bg); border-bottom: 1px solid #28292a;
         }
-        .ai-studio-body {
-            flex: 1; display: flex; flex-direction: column; padding: 16px; overflow-y: auto; gap: 16px;
-        }
-        .ai-image-preview-box {
-            width: 100%; aspect-ratio: 4/3; background: #000; border-radius: 16px;
-            border: 1px dashed rgba(255,255,255,0.2); display: flex; align-items: center;
-            justify-content: center; overflow: hidden; position: relative;
-        }
-        .ai-image-preview-box img { width: 100%; height: 100%; object-fit: contain; }
-        .ai-upload-placeholder { text-align: center; color: rgba(255,255,255,0.4); font-size: 14px; display: flex; flex-direction: column; gap: 8px; }
         
-        .ai-action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .btn-studio-action {
-            background: #1c1c1e; border: 1px solid rgba(255,255,255,0.15); color: #fff;
-            padding: 12px; border-radius: 12px; font-weight: 600; font-size: 13px;
-            display: flex; align-items: center; justify-content: center; gap: 6px;
+        .ai-studio-title {
+            font-size: 17px; font-weight: 600; color: #e3e3e3; display: flex; align-items: center; gap: 8px;
         }
-        .btn-studio-action:active { background: #2c2c2e; }
         
-        .ai-prompt-container {
-            background: #161618; border-radius: 16px; padding: 12px;
-            border: 1px solid rgba(191, 90, 242, 0.3); display: flex; flex-direction: column; gap: 10px;
+        .ai-studio-title span {
+            background: linear-gradient(45deg, #4285f4, #9b72cb, #d96570);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700;
         }
-        .ai-prompt-input {
-            width: 100%; background: transparent; border: none; color: #fff;
-            font-size: 14px; outline: none; resize: none; min-height: 60px;
-            font-family: inherit;
-        }
-        .btn-studio-submit {
-            background: var(--ios-purple); color: #fff; border: none; padding: 12px;
-            border-radius: 10px; font-weight: 700; font-size: 14px; letter-spacing: 0.5px;
-        }
-        .btn-studio-submit:disabled { background: #3a3a3c; color: rgba(255,255,255,0.3); }
 
+        /* Vùng hiển thị nội dung hội thoại chat */
+        .ai-chat-history-flow {
+            flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 16px;
+        }
+        
+        .chat-bubble {
+            max-width: 85%; padding: 12px 16px; border-radius: 18px; font-size: 15px; line-height: 1.5;
+            word-break: break-word; animation: bubbleFade 0.25s ease-out forwards;
+        }
+        @keyframes bubbleFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .chat-bubble.user {
+            background-color: var(--gemini-bubble-user); color: #f5f5f7; align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .chat-bubble.ai {
+            background-color: var(--gemini-bubble-ai); color: #e3e3e3; align-self: flex-start;
+            border-bottom-left-radius: 4px; border: 1px solid #28292a;
+        }
+
+        .chat-attached-img {
+            max-width: 100%; max-height: 200px; border-radius: 12px; margin-bottom: 8px; display: block; object-fit: contain;
+        }
+
+        /* Khung nhỏ hiển thị ảnh đang được nạp chờ gửi đi */
+        .studio-input-attachment-bar {
+            padding: 0 16px; display: none; align-items: center; background: transparent; margin-bottom: -4px;
+        }
+        
+        .attachment-preview-pill {
+            position: relative; display: inline-block; width: 64px; height: 64px;
+            border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); overflow: hidden;
+        }
+        
+        .attachment-preview-pill img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .btn-remove-attachment {
+            position: absolute; top: -4px; right: -4px; background: rgba(0,0,0,0.8);
+            color: #fff; border: none; border-radius: 50%; width: 18px; height: 18px;
+            font-size: 10px; display: flex; align-items: center; justify-content: center;
+        }
+
+        /* Thanh Nhập Yêu Cầu Chat Đáy Biển Cực Đẹp (Giống App Chat Thật) */
+        .gemini-chat-dock {
+            padding: 12px 16px; background: var(--gemini-bg); display: flex; flex-direction: column; gap: 8px;
+        }
+        
+        .gemini-input-wrapper {
+            background-color: var(--gemini-input-bg); border-radius: 28px; padding: 6px 6px 6px 16px;
+            display: flex; align-items: center; gap: 12px; border: 1px solid #3c4043; transition: border-color 0.2s;
+        }
+        
+        .gemini-input-wrapper:focus-within { border-color: #8ab4f8; }
+
+        .gemini-main-textarea {
+            flex: 1; background: transparent; border: none; color: #f5f5f7;
+            font-size: 15px; outline: none; resize: none; max-height: 100px; height: 24px;
+            font-family: inherit; line-height: 24px; padding: 0;
+        }
+        
+        .gemini-main-textarea::placeholder { color: #80868b; }
+
+        .btn-chat-attach-trigger {
+            background: none; border: none; color: #8ab4f8; font-size: 20px;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px;
+        }
+
+        .btn-chat-send {
+            background: #8ab4f8; color: #131314; border: none; width: 36px; height: 36px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 16px; font-weight: bold; transition: opacity 0.2s;
+        }
+        
+        .btn-chat-send:disabled { background: #3c4043; color: #80868b; cursor: not-allowed; }
+
+        /* Menu lựa chọn nguồn ảnh xuất hiện khi ấn nút cộng đính kèm */
+        .attachment-source-popover {
+            position: absolute; bottom: 70px; left: 16px; background: #202124;
+            border: 1px solid #3c4043; border-radius: 12px; display: none; flex-direction: column;
+            overflow: hidden; z-index: 45000; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        
+        .popover-option {
+            padding: 12px 18px; font-size: 14px; color: #e3e3e3; background: transparent;
+            border: none; text-align: left; width: 160px; cursor: pointer; border-bottom: 1px solid #28292a;
+        }
+        .popover-option:last-child { border-bottom: none; }
+        .popover-option:active { background: #2d2e30; }
+
+        /* Các style Thư viện giữ nguyên */
         .gallery-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: #000; z-index: 20000; display: none; flex-direction: column; padding-bottom: env(safe-area-inset-bottom); }
         .gallery-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid #1c1c1e; background: #000; }
         .btn-gallery-close { background: none; border: none; color: var(--ios-blue); font-size: 16px; font-weight: 600; }
@@ -273,7 +345,7 @@
         .gallery-item.selected .gallery-item-checkbox { background: var(--ios-blue); border-color: #fff; display: flex; align-items: center; justify-content: center; }
         .gallery-item.selected .gallery-item-checkbox::after { content: ''; width: 5px; height: 9px; border: solid white; border-width: 0 2.5px 2.5px 0; transform: rotate(45deg); margin-bottom: 2px; }
 
-        .gallery-footer-actions { display: none; background: #1c1e1e; padding: 16px; justify-content: space-between; gap: 12px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .gallery-footer-actions { display: none; background: #1c1c1e; padding: 16px; justify-content: space-between; gap: 12px; border-top: 1px solid rgba(255,255,255,0.1); }
         .btn-footer-action { flex: 1; border: none; padding: 14px; font-size: 14px; font-weight: 600; border-radius: 12px; color: white; }
         
         .detail-viewer-popup { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: #000; z-index: 30000; display: none; flex-direction: column; }
@@ -360,7 +432,7 @@
     <div class="shutter-row" id="shutterButtonsRow">
         <div class="left-preview-group">
             <div class="album-preview-placeholder" id="albumPreview" onclick="openGalleryModal(event)"></div>
-            <button class="btn-ai-outer" id="btnAiDirect" onclick="openAiStudio(event)" title="Mở Studio AI">✨</button>
+            <button class="btn-ai-outer" id="btnAiDirect" onclick="openAiStudio(event)" title="Mở Gemini AI Studio">✨</button>
         </div>
         <div class="shutter-center-box">
             <button class="shutter-trigger-btn btn-photo-snap" id="btnCapture" onclick="takePhoto(event)"></button>
@@ -374,36 +446,37 @@
 
 <div class="ai-studio-modal" id="aiStudioModal">
     <div class="ai-studio-header">
-        <button class="btn-gallery-close" onclick="closeAiStudio(event)" style="color: #fff;">✕ Đóng</button>
-        <div style="font-weight:700; color:var(--ios-purple); font-size:16px;">Gemini AI Studio</div>
+        <button class="btn-gallery-close" onclick="closeAiStudio(event)" style="color: #8ab4f8;">✕ Đóng</button>
+        <div class="ai-studio-title"><span>Gemini</span> Advanced</div>
         <div style="width:40px;"></div>
     </div>
-    <div class="ai-studio-body">
-        <div class="ai-image-preview-box" id="aiStudioPreviewBox">
-            <div class="ai-upload-placeholder" id="studioPlaceholder">
-                <span>🔮 Chưa có ảnh nào được nạp</span>
-                <span style="font-size:11px; color:rgba(255,255,255,0.3)">Hãy tải file lên hoặc chụp nhanh qua app</span>
-            </div>
-            <img id="studioPreviewImg" style="display:none;" src="">
-        </div>
-
-        <div class="ai-action-row">
-            <button class="btn-studio-action" onclick="document.getElementById('hiddenFileInput').click()">
-                📂 Tải ảnh từ máy
-            </button>
-            <button class="btn-studio-action" onclick="captureCurrentFrameToStudio()">
-                📸 Lấy từ Camera
-            </button>
-        </div>
-        <input type="file" id="hiddenFileInput" accept="image/*" style="display:none;" onchange="handleStudioFileSelect(event)">
-
-        <div class="ai-prompt-container">
-            <textarea class="ai-prompt-input" id="aiPromptInput" placeholder="Nhập yêu cầu phân tích/sửa đổi ảnh của bạn vào đây (Ví dụ: Phân tích độ nét vật thể, kiểm tra ánh sáng...)"></textarea>
-            <button class="btn-studio-submit" id="btnStudioSubmit" onclick="submitStudioToGemini()">
-                ⚡ Gửi Yêu Cầu Đến Gemini AI
-            </button>
+    
+    <div class="ai-chat-history-flow" id="aiChatHistoryFlow">
+        <div class="chat-bubble ai">
+            Xin chào! Tôi là trợ lý Gemini AI. Hãy tải ảnh lên điện thoại hoặc lấy khung hình từ ứng dụng camera, sau đó nhập bất kỳ yêu cầu văn bản nào bạn muốn để tôi xử lý nhé!
         </div>
     </div>
+
+    <div class="studio-input-attachment-bar" id="studioInputAttachmentBar">
+        <div class="attachment-preview-pill">
+            <img id="studioAttachmentImg" src="">
+            <button class="btn-remove-attachment" onclick="clearStudioAttachment()">✕</button>
+        </div>
+    </div>
+
+    <div class="gemini-chat-dock">
+        <div class="gemini-input-wrapper">
+            <button class="btn-chat-attach-trigger" onclick="toggleAttachmentMenu(event)">＋</button>
+            <textarea class="gemini-main-textarea" id="geminiMainTextarea" placeholder="Nhập yêu cầu sửa/phân tích ảnh..." oninput="autoGrowTextarea(this)"></textarea>
+            <button class="btn-chat-send" id="btnChatSend" onclick="sendChatToGemini()">➔</button>
+        </div>
+    </div>
+
+    <div class="attachment-source-popover" id="attachmentPopover">
+        <button class="popover-option" onclick="triggerDeviceUpload()">📂 Từ điện thoại</button>
+        <button class="popover-option" onclick="captureLiveAppFrame()">📸 Lấy từ App Camera</button>
+    </div>
+    <input type="file" id="hiddenStudioFileInput" accept="image/*" style="display:none;" onchange="handleDeviceFileUploaded(event)">
 </div>
 
 <div class="gallery-modal" id="galleryModal">
@@ -423,7 +496,7 @@
     <div class="viewer-header">
         <button class="btn-gallery-close" onclick="closeDetailViewer(event)" style="color:#fff;">✕ Đóng</button>
         <div style="display:flex; gap:8px;">
-            <button class="btn-ai-edit" id="btnAiDetail" onclick="processSelectedWithAI(event)">✨ Đưa vào Studio AI</button>
+            <button class="btn-ai-edit" id="btnAiDetail" onclick="processSelectedWithAI(event)">✨ Đưa vào Gemini</button>
             <button class="btn-save-media" onclick="downloadSingleMedia(event)">📥 Lưu file</button>
         </div>
     </div>
@@ -447,7 +520,7 @@
     let facingModeSetting = "environment", activeMode = "PHOTO", mediaItems = [], isSelectModeActive = false, selectedMediaIds = new Set();
     let activeStream = null, videoTrack = null, isFlashOn = false, mediaRecorder = null, recordedChunks = [], isRecording = false, collapseTimer = null;
     let secondsRecorded = 0, timerInterval = null, currentViewingItem = null;
-    let studioSelectedBase64 = null; // Biến lưu trữ ảnh hiện tại trong Studio AI
+    let studioAttachedBase64 = null; 
     
     const dialRotor = document.getElementById('dialRotor');
     const totalTicks = 160;       
@@ -609,7 +682,7 @@
         const grid = document.getElementById('galleryGrid'); grid.innerHTML = '';
         mediaItems.forEach(item => {
             const div = document.createElement('div'); div.className = `gallery-item ${selectedMediaIds.has(item.id) ? 'selected' : ''}`;
-            div.innerHTML = item.type === 'PHOTO' ? `<img src="${item.src}"><div class="gallery-ai-badge" onclick="event.stopPropagation(); loadPhotoToStudio('${item.src}')">✨ AI</div>` : `<video src="${item.src}"></video><div class="video-duration-tag">${item.duration}</div>`;
+            div.innerHTML = item.type === 'PHOTO' ? `<img src="${item.src}"><div class="gallery-ai-badge" onclick="event.stopPropagation(); loadPhotoToGeminiStudio('${item.src}')">✨ AI</div>` : `<video src="${item.src}"></video><div class="video-duration-tag">${item.duration}</div>`;
             const chk = document.createElement('div'); chk.className = 'gallery-item-checkbox'; div.appendChild(chk);
             div.onclick = () => { if (isSelectModeActive) { if(selectedMediaIds.has(item.id)) selectedMediaIds.delete(item.id); else selectedMediaIds.add(item.id); renderGalleryGrid(); } else openDetailViewer(item); };
             grid.appendChild(div);
@@ -632,13 +705,13 @@
         if(currentViewingItem && currentViewingItem.type === 'PHOTO') {
             closeDetailViewer();
             closeGalleryModal();
-            loadPhotoToStudio(currentViewingItem.src);
+            loadPhotoToGeminiStudio(currentViewingItem.src);
         } 
     }
     
     function downloadSingleMedia(e) { if(e) e.preventDefault(); const a = document.createElement('a'); a.href = currentViewingItem.src; a.download = `CAM_${currentViewingItem.id}` + (currentViewingItem.type==='PHOTO'?'.jpg':'.mp4'); document.body.appendChild(a); a.click(); document.body.removeChild(a); }
 
-    /* LOGIC TOÀN BỘ HỆ THỐNG GEMINI AI STUDIO MỚI */
+    /* LOGIC TOÀN DIỆN CHO CHAT GEMINI STUDIO */
     function openAiStudio(e) {
         if(e) e.preventDefault();
         document.getElementById('aiStudioModal').style.display = 'flex';
@@ -647,56 +720,118 @@
     function closeAiStudio(e) {
         if(e) e.preventDefault();
         document.getElementById('aiStudioModal').style.display = 'none';
+        hideAttachmentPopover();
     }
 
-    function updateStudioImageDisplay(src) {
-        studioSelectedBase64 = src;
-        document.getElementById('studioPlaceholder').style.display = 'none';
-        const img = document.getElementById('studioPreviewImg');
-        img.src = src;
-        img.style.display = 'block';
+    function toggleAttachmentMenu(e) {
+        if(e) e.preventDefault();
+        const popover = document.getElementById('attachmentPopover');
+        popover.style.display = (popover.style.display === 'flex') ? 'none' : 'flex';
     }
 
-    function captureCurrentFrameToStudio() {
-        const video = document.getElementById('videoFeed');
-        if (!activeStream) { alert("Camera chưa bật!"); return; }
-        const canvas = document.createElement('canvas'); canvas.width = video.videoWidth; canvas.height = video.videoHeight;
-        const ctx = canvas.getContext('2d'); if (facingModeSetting === "user") { ctx.translate(canvas.width, 0); ctx.scale(-1, 1); }
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        updateStudioImageDisplay(canvas.toDataURL('image/jpeg', 0.95));
+    function hideAttachmentPopover() {
+        document.getElementById('attachmentPopover').style.display = 'none';
     }
 
-    function handleStudioFileSelect(e) {
+    function triggerDeviceUpload() {
+        hideAttachmentPopover();
+        document.getElementById('hiddenStudioFileInput').click();
+    }
+
+    function handleDeviceFileUploaded(e) {
         const file = e.target.files[0];
         if (!file) return;
         const reader = new FileReader();
-        reader.onload = function(event) {
-            updateStudioImageDisplay(event.target.result);
+        reader.onload = function(evt) {
+            attachImageToInputBar(evt.target.result);
         };
         reader.readAsDataURL(file);
     }
 
-    function loadPhotoToStudio(src) {
-        openAiStudio();
-        updateStudioImageDisplay(src);
+    function captureLiveAppFrame() {
+        hideAttachmentPopover();
+        const video = document.getElementById('videoFeed');
+        if (!activeStream) { alert("Camera chưa được khởi chạy!"); return; }
+        const canvas = document.createElement('canvas'); canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+        const ctx = canvas.getContext('2d'); if (facingModeSetting === "user") { ctx.translate(canvas.width, 0); ctx.scale(-1, 1); }
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        attachImageToInputBar(canvas.toDataURL('image/jpeg', 0.95));
     }
 
-    async function submitStudioToGemini() {
-        if (!studioSelectedBase64) { alert("Vui lòng nạp ảnh vào Studio trước!"); return; }
-        const promptText = document.getElementById('aiPromptInput').value.trim() || "Bức ảnh này được chụp ở chế độ siêu zoom kỹ thuật số, hãy phân tích độ nét vật thể và độ sáng.";
+    function loadPhotoToGeminiStudio(src) {
+        openAiStudio();
+        attachImageToInputBar(src);
+    }
+
+    function attachImageToInputBar(src) {
+        studioAttachedBase64 = src;
+        document.getElementById('studioAttachmentImg').src = src;
+        document.getElementById('studioInputAttachmentBar').style.display = 'flex';
+    }
+
+    function clearStudioAttachment() {
+        studioAttachedBase64 = null;
+        document.getElementById('studioAttachmentImg').src = '';
+        document.getElementById('studioInputAttachmentBar').style.display = 'none';
+    }
+
+    function autoGrowTextarea(element) {
+        element.style.height = '24px';
+        element.style.height = (element.scrollHeight > 100 ? 100 : element.scrollHeight) + 'px';
+    }
+
+    async function sendChatToGemini() {
+        const textarea = document.getElementById('geminiMainTextarea');
+        const promptText = textarea.value.trim();
         
-        const overlay = document.getElementById('aiLoadingOverlay');
-        const txt = document.getElementById('aiLoadingText');
-        overlay.style.display = 'flex';
-        txt.innerText = "Gemini AI đang xử lý cấu trúc ảnh theo yêu cầu của bạn...";
+        if (!promptText && !studioAttachedBase64) return;
+        
+        const historyFlow = document.getElementById('aiChatHistoryFlow');
+        
+        // 1. Tạo giao diện tin nhắn của Người dùng gửi đi
+        const userBubble = document.createElement('div');
+        userBubble.className = 'chat-bubble user';
+        if (studioAttachedBase64) {
+            userBubble.innerHTML += `<img class="chat-attached-img" src="${studioAttachedBase64}">`;
+        }
+        if (promptText) {
+            userBubble.innerHTML += `<div>${promptText}</div>`;
+        }
+        historyFlow.appendChild(userBubble);
+        historyFlow.scrollTop = historyFlow.scrollHeight;
+
+        // Lưu bản copy ảnh và chữ để gửi API trước khi xóa sạch thanh input
+        const apiBase64 = studioAttachedBase64;
+        const apiPrompt = promptText || "Hãy phân tích hình ảnh này thật chi tiết.";
+
+        // Reset thanh nhập liệu giống app chat thật
+        textarea.value = '';
+        textarea.style.height = '24px';
+        clearStudioAttachment();
+
+        // 2. Tạo tin nhắn chờ (Loading) từ Gemini
+        const aiResponseBubble = document.createElement('div');
+        aiResponseBubble.className = 'chat-bubble ai';
+        aiResponseBubble.innerHTML = `<span style="color:rgba(255,255,255,0.4)">Gemini đang suy nghĩ...</span>`;
+        historyFlow.appendChild(aiResponseBubble);
+        historyFlow.scrollTop = historyFlow.scrollHeight;
 
         try {
-            let cleanBase64 = studioSelectedBase64.includes(",") ? studioSelectedBase64.split(',')[1] : studioSelectedBase64;
+            let cleanBase64 = "";
+            if (apiBase64) {
+                cleanBase64 = apiBase64.includes(",") ? apiBase64.split(',')[1] : apiBase64;
+            } else {
+                // Nếu người dùng không chọn ảnh, tự lấy luôn frame live phía sau để chat đa phương thức
+                const video = document.getElementById('videoFeed');
+                const canvas = document.createElement('canvas'); canvas.width = video.videoWidth || 640; canvas.height = video.videoHeight || 480;
+                const ctx = canvas.getContext('2d'); ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                cleanBase64 = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
+            }
             
             const response = await fetch('/api/gemini', {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ base64Data: cleanBase64, customPrompt: promptText })
+                body: JSON.stringify({ base64Data: cleanBase64, customPrompt: apiPrompt })
             });
 
             const jsonResult = await response.json();
@@ -705,48 +840,37 @@
                 throw new Error(jsonResult.error || "Lỗi không xác định từ Server Node");
             }
             
-            let aiAnalysisText = "Không nhận được phản hồi phân tích.";
+            let aiAnalysisText = "Không nhận được phản hồi phù hợp.";
             if (jsonResult.candidates && jsonResult.candidates[0].content.parts[0].text) {
                 aiAnalysisText = jsonResult.candidates[0].content.parts[0].text;
             }
 
-            const imgObj = new Image();
-            imgObj.src = studioSelectedBase64;
-            await new Promise(r => imgObj.onload = r);
+            // Cập nhật câu trả lời thực tế từ AI vào bong bóng chat
+            aiResponseBubble.innerHTML = aiAnalysisText.replace(/\n/g, "<br>").replace(/[\*\#\`]/g, "");
+            historyFlow.scrollTop = historyFlow.scrollHeight;
 
-            const canvas = document.createElement('canvas');
-            canvas.width = imgObj.width;
-            canvas.height = imgObj.height + 140;
-            const ctx = canvas.getContext('2d');
-            
-            ctx.fillStyle = "#000000";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(imgObj, 0, 0);
+            // Đồng thời vẽ nhãn kết quả tạo ảnh lưu trữ vào thư viện máy để giữ nguyên tính năng logic cũ
+            if (apiBase64) {
+                const imgObj = new Image();
+                imgObj.src = apiBase64;
+                await new Promise(r => imgObj.onload = r);
+                const canvas = document.createElement('canvas');
+                canvas.width = imgObj.width; canvas.height = imgObj.height + 140;
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = "#000000"; ctx.fillRect(0,0, canvas.width, canvas.height);
+                ctx.drawImage(imgObj, 0, 0);
+                ctx.fillStyle = "rgba(191, 90, 242, 0.9)"; ctx.fillRect(10, imgObj.height + 10, canvas.width - 20, 120);
+                ctx.fillStyle = "#ffffff"; ctx.font = "bold 14px Arial"; ctx.fillText("GEMINI AI STUDIO:", 20, imgObj.height + 35);
+                ctx.font = "12px Arial"; ctx.fillText(aiAnalysisText.substring(0, 130) + "...", 20, imgObj.height + 65);
+                
+                mediaItems.unshift({ id: Date.now(), type: 'PHOTO', src: canvas.toDataURL('image/jpeg', 0.95), duration: "" });
+                updateAlbumPreview();
+            }
 
-            ctx.fillStyle = "rgba(191, 90, 242, 0.9)";
-            ctx.fillRect(10, imgObj.height + 10, canvas.width - 20, 120);
-
-            ctx.fillStyle = "#ffffff";
-            ctx.font = "bold 14px Arial";
-            ctx.fillText("GEMINI AI STUDIO RESULT:", 20, imgObj.height + 35);
-            
-            ctx.font = "12px Arial";
-            let shortText = aiAnalysisText.replace(/[\*\#\`]/g, "").substring(0, 140) + "...";
-            ctx.fillText(shortText, 20, imgObj.height + 65);
-
-            let enhancedAiSrc = canvas.toDataURL('image/jpeg', 0.95);
-            let aiItem = { id: Date.now(), type: 'PHOTO', src: enhancedAiSrc, duration: "" };
-            
-            mediaItems.unshift(aiItem);
-            updateAlbumPreview();
-            overlay.style.display = 'none';
-            closeAiStudio();
-            openDetailViewer(aiItem);
-            
         } catch (error) {
-            overlay.style.display = 'none';
             console.error(error);
-            alert("Lỗi kết nối Gemini: Gửi yêu cầu không thành công!\nHãy đảm bảo bạn đã lưu GEMINI_API_KEY chính xác trên biến môi trường Vercel.");
+            aiResponseBubble.innerHTML = `<span style="color:var(--ios-red)">⚠️ Lỗi kết nối AI: Yêu cầu không thành công. Hãy chắc chắn đã cấu hình GEMINI_API_KEY trên Vercel.</span>`;
+            historyFlow.scrollTop = historyFlow.scrollHeight;
         }
     }
 
